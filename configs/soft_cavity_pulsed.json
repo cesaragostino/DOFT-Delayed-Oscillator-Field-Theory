@@ -1,0 +1,15 @@
+{
+  "graph": {
+    "dim": 3,
+    "shape": "ball",
+    "radius_layers": [8, 16, 24, 32, 48, 64],
+    "anisotropy": 0.0
+  },
+  "delays": { "tau_per_link": 1, "dynamic": false },
+  "tolerance": { "inner": 0.10, "skin": 0.04, "outer": 0.02, "epsilon_rest": 1e-3 },
+  "skin": { "duty": [1.0, 0.6, 0.3], "filter": "highpass-soft" },
+  "sweep": { "ic_waves": [0, 1, 2] },
+  "probes": { "pulse_period": 32, "pulse_amplitude": 0.01 },
+  "runtime": { "steps": 20000, "dt_policy": "safe" },
+  "outputs": { "write_skin_parquet": true, "spectra": true }
+}
