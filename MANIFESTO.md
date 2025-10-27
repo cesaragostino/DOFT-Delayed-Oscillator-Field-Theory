@@ -1,182 +1,286 @@
-# DOFT Manifesto v1.3
+# DOFT — MANIFESTO v1.6 (Consolidated Edition)
 
-> **Delay-Oscillator Field Theory (DOFT):** a bottom-up framework where spacetime, fields, and “constants” emerge from a large network of coupled oscillators with finite, state-dependent delays. This document consolidates the conceptual core, working equations, testable predictions, critiques addressed so far, and a practical roadmap for simulation and falsification.
+> **Delay-Oscillator Field Theory (DOFT):** a bottom-up framework where **spacetime, fields, "constants", and memory** emerge from the interplay of **resonance and chaos** within a large network of coupled oscillators governed by finite, state-dependent delays. This document consolidates the foundational axioms (v1.3), operational protocols (v1.4.1c), and the unified resonance-memory framework (v1.5).
 
----
+> **Status:** Research Alpha  
+> **Version:** 1.6 (Consolidation of v1.3, v1.4.1c, and v1.5)  
+> **License:** MIT
 
-## 0) One-page overview
-
-- **Ontology:** The universe is modeled as a graph of identical **oscillators** (nodes) connected by **links** that transmit influence with **finite delays**. No pre-given spacetime. Causality and geometry **emerge** from the delay structure.
-- **Dynamics:** Each node obeys a **delay differential equation (DDE)** with damping, weak noise (“quantum floor”), and nonlinear, delayed coupling to neighbors. Delays can **depend on the state**, enabling backreaction and gravity-like effects.
-- **Emergence:** Coarse-graining produces an effective **wave equation with memory**, an **index of refraction** $n_\mathrm{eff}(x)$ from delay gradients, and **holonomies** on cycles that play the role of gauge phases.
-- **Constants:** The **speed limit** emerges as $c \approx a/\tau_0$ (link scale over minimal delay). An effective **Planck’s constant** $\hbar_\mathrm{eff}$ arises from the invariant action area of steady-state cycles sustained by the noise floor. The **Newton constant** $G$ maps to the sensitivity of delays to local energy density.
-- **Phenomenology:** DOFT reproduces Rydberg-like spectra via **quantum-defect analogues** from short holonomy loops, links naturally to **analogue gravity** (Hawking radiation from a horizon in $n_\mathrm{eff}$), and predicts **matter/antimatter** to curve the same geometry.
-- **Testability:** We define falsifiable **cross-domain** tests (atomic spectra ↔ analogue gravity), **self-averaging** diagnostics, Prony-based kernel identification, and scaling laws for $\hbar_\mathrm{eff}$.
-- **New axiom (A0):** **Law of Preservation of Chaos (LPC):** in closed subsystems the “chaos functional” cannot increase without bound; open subsystems can export/import chaos via fluxes. Order appears as dissipative organization of an initial chaotic budget.
+This document consolidates the theoretical framework of DOFT (v1.3), the operational core (v1.4.1c), and the unified memory model (v1.5) into a single manifesto.
 
 ---
 
-## 1) Axioms
-
-- **A0 – Law of Preservation of Chaos (LPC).**
-There exists a non-negative functional $\mathcal{K}[q]$ (e.g., Kolmogorov-Sinai entropy-rate proxy or sum of positive Lyapunov exponents) with balance
-$$\frac{d\mathcal{K}}{dt} = \Phi_\mathrm{in} - \Phi_\mathrm{out} - \mathcal{D}, \qquad \mathcal{D}\ge 0.$$
-In closed subsystems $\Phi_\mathrm{in}=\Phi_\mathrm{out}=0\Rightarrow d\mathcal{K}/dt\le 0$.
-
-- **A1 – Local delayed dynamics.** (*microscopic, possibly complex amplitudes* $q_i\in\mathbb{C}$)
-$$\ddot q_i + 2\gamma_i \dot q_i + \omega_i^2 q_i + \alpha_i |q_i|^2 q_i
-= \sum_{j\in \mathcal{N}(i)} K_{ij}\, \sin\!\big(A_{ij}(t)\big)\, q_j\!\big(t-\tau_{ij}(t)\big) + \xi_i(t).$$
-Here $\xi_i$ is a weak, broadband noise (“quantum floor”).
-
-- **A2 – Spacetime as delay-graph.**
-The matrix of delays $\{\tau_{ij}\}$ defines cones of influence; geometry and clock rates emerge from path sums of delays.
-
-- **A3 – Holonomy primacy.**
-Physical invariants are **loop phases**
-$$W(\ell)=\exp\!\Big(i\sum_{(ij)\in \ell} A_{ij}\Big),$$
-with link phases $A_{ij}$ accumulated by transport. Local gauge choices are unphysical; only holonomies matter.
-
-- **A4 – Quantum floor.**
-A minimal stochastic excitation $\xi$ exists. In v1.2+, this noise is treated as **emergent** from high-dimensional chaotic microdynamics consistent with A0 (Addendum A4′).
-
-- **A5 – State-dependent delays (backreaction).**
-$\tau_{ij}=\tau_{ij}\!\big[q,\dot q,\rho\big]$ vary with local fields and coarse energy density $\rho$. Delay gradients generate an effective refractive index and geodesic bending.
-
-- **A6 – Coarse-graining to continuum.**
-Block-averaging over mesoscopic patches yields a **wave-with-memory** PDE with kernels $M$ and a spatially varying $n_\mathrm{eff}(x)$.
+## 0) Golden rule & scope
+- DOFT operates **only with delays and resonance**; no imported metrics or external fields.  
+- **Internal coherence dominates:** every addition must fit operational definitions.  
+- **Falsifiability first:** all claims must lead to measurable or simulatable contradictions.
 
 ---
 
-## 2) Working equations and continuum limit
+## 1) Core Premises (Unified from v1.4/v1.5)
 
-### 2.1 Discrete graph (micro)
+1.  **Delayed Oscillator Core (RE).** Each coupling features a per-link delay defining local time.
+2.  **Loop-Closure (RCB).** A loop remains coherent when phase misfit is within tolerance; tolerance tightens as energy decays.
+3.  **Composite Interference (IC).** Interference modulates effective delay but does not create new REs.
+4.  **Relational Space & Cyclic Time.** Space emerges from propagation delays; time is counted in cycles.
+5.  **Abrupt Creation, Layered Evolution.** Creation occurs as shocks; evolution proceeds by layers.
+6.  **Destruction Requires Cycles.** Collapse demands several cycles, creating observable hysteresis.
+7.  **Cavity + Skin.** A coherent interior bounded by a marginally static skin.
+8.  **Skin Gating & Pulses.** The skin filters frequencies, transmitting in short duty windows.
+9.  **Regimes & Breakpoint (R_*).** Transition from clean (few modes) to dirty (many surface modes).
+10. **Propagation Measure — LPC(t).** Layers-per-cycle decreases from early high speed to convergence.
+11. **Pulsed/Breathing Propagation.** The skin opens and closes quasi-periodically, yielding pulse trains.
+12. **Skin States.** Defined by radial/tangential closure with tolerance margins μ.
+13. **Anisotropy & Joints.** Asphericity and loop incompatibility create hotspots and lower R_*.
+14. **Delay Kernel & Operational Noise.** Delay distribution defines noise via off-harmonic power.
+15. **Residual Floor.** Collapse leaves structural and asymptotic floors (A/B).
+16. **Parametric Resonance.** Time-modulated delay/tolerance yields Floquet-type nonreciprocal modes.
+
+---
+
+## 2) Foundational Axioms (from v1.3)
+
+-   **A0 – Law of Preservation of Chaos (LPC).**
+    There exists a non-negative functional $\mathcal{K}[q]$ (e.g., Kolmogorov-Sinai entropy-rate proxy) with balance:
+    $$\frac{d\mathcal{K}}{dt} = \Phi_\mathrm{in} - \Phi_\mathrm{out} - \mathcal{D}, \qquad \mathcal{D}\ge 0.$$
+    In closed subsystems $\Phi_\mathrm{in}=\Phi_\mathrm{out}=0\Rightarrow d\mathcal{K}/dt\le 0$.
+
+-   **A1 – Local delayed dynamics.**
+    $$\ddot q_i + 2\gamma_i \dot q_i + \omega_i^2 q_i + \alpha_i |q_i|^2 q_i
+    = \sum_{j\in \mathcal{N}(i)} K_{ij}\, \sin\!\big(A_{ij}(t)\big)\, q_j\!\big(t-\tau_{ij}(t)\big) + \xi_i(t).$$
+    Here $\xi_i$ is a weak, broadband noise (“quantum floor”).
+
+-   **A2 – Spacetime as delay-graph.**
+    The matrix of delays $\{\tau_{ij}\}$ defines cones of influence; geometry and clock rates emerge from path sums of delays.
+
+-   **A3 – Holonomy primacy.**
+    Physical invariants are **loop phases** $W(\ell)=\exp\!\Big(i\sum_{(ij)\in \ell} A_{ij}\Big)$. Local gauge choices are unphysical; only holonomies matter.
+
+-   **A4 – Quantum floor.**
+    A minimal stochastic excitation $\xi$ exists, treated as emergent from high-dimensional chaotic microdynamics consistent with A0.
+
+-   **A5 – State-dependent delays (backreaction).**
+    $\tau_{ij}=\tau_{ij}\!\big[q,\dot q,\rho\big]$ vary with local fields and coarse energy density $\rho$.
+
+-   **A6 – Coarse-graining to continuum.**
+    Block-averaging yields a **wave-with-memory** PDE.
+
+---
+
+## 3) Operational Formulation (Micro & Macro)
+
+### 3.1 Discrete Graph (Micro) (from v1.3)
+The fundamental dynamics are governed by the DDE (Axiom A1):
 $$\ddot q_i + 2\gamma \dot q_i + \omega_0^2 q_i + \alpha |q_i|^2 q_i = \sum_{j} K_{ij}\, \sin\!\big(A_{ij}\big)\, q_j\!\big(t-\tau_{ij}\big) + \xi_i(t), \qquad \tau_{ij}=\tau_0 + \delta\tau_{ij}[q,\rho].$$
 
-### 2.2 Memory-compressed surrogate
-Replace pure delays by a finite Prony chain
-$$\dot y_m = -\theta_m y_m + \beta_m q, \qquad q(t-\tau)\;\approx\; \sum_m w_m\, y_m(t), \quad \sum_m w_m \approx 1,$$
-
-with $\{\theta_m,w_m\}$ identified from data via **generalized Prony/Vector-Fitting** to preserve spectra and decay.
-
-### 2.3 Continuum coarse-graining
+### 3.2 Continuum Coarse-Graining (from v1.3)
 On scales $\gg a$ (mean link length), a wave-with-memory PDE emerges:
 $$\partial_t^2 \phi + 2\Gamma\,\partial_t \phi + \Omega^2 \phi
 -\nabla\!\cdot\!\big(c^2\,n_{\mathrm{eff}}^{-2}(x)\,\nabla \phi\big)
 +\int_0^t M\!\left(x,t-t'\right)\,\phi(t')\,\mathrm{d}t'
 = \Xi(x,t).$$
+where $c \approx a/\tau_0$ is the emergent causal speed and $n_\mathrm{eff}(x)$ encodes averaged delay gradients.
 
-where $c \approx a/\tau_0$ is the emergent causal speed, $n_\mathrm{eff}(x)$ encodes averaged delay gradients (horizons occur when **flow – group speed** changes sign with $v_g=c/n_\mathrm{eff}$), and $M$ inherits the memory poles from $\{\theta_m,w_m\}$.
-*Note:* $\Gamma$ is the **effective** macroscopic damping obtained by coarse-graining $\gamma$.
-
----
-
-## 3) Emergent “constants”
-
-- **Speed limit $c$.**
-$$c \simeq \frac{a}{\tau_0}$$
-up to renormalizations from connectivity and weak disorder.
-
-- **Planck constant $\hbar$ as action floor.**
-The stationary stochastic dynamics with A0+A4′ sustains **limit-cycle ensembles** whose phase-space area per cycle stabilizes to
-$$A_0 \equiv \oint p\,dq \;\approx\; 2\pi\, \hbar_\mathrm{eff}.$$
-We estimate $\hbar_\mathrm{eff}$ from local fluctuations as an **operational proxy**
-$\;\hbar_\mathrm{eff}\sim \sigma_Q \sigma_P\;$ 
-
-(up to a numerical factor), and test **self-averaging** scaling:
-$$\frac{\mathrm{Var}(\hbar_\mathrm{eff})}{\big(\mathbb{E}[\hbar_\mathrm{eff}]\big)^2} \;\sim\; N^{-\beta_\hbar}.$$
-
-- **Newton constant $G$ as delay-sensitivity map.**
-In the continuum,
-$$n_\mathrm{eff}^2(x) \;\simeq\; 1 \;+\; \alpha_\tau\, \rho(x),
-\qquad \alpha_\tau \equiv \frac{\partial n_\mathrm{eff}^2}{\partial \rho}.$$
-Linearizing ray bending and matching to weak-field GR gives a constitutive link
-$$G \;\propto\; c^2\,\alpha_\tau,$$
-after proper normalization. This is a working **hypothesis to be derived** from the microdynamics.
+### 3.3 Effective Delay (from v1.5)
+Operationally, the complex dynamics are summarized by an effective delay:
+\[
+\tau_{eff}(t) = \tau_{RE} [1 + \sigma_{IC}(t)] / d_{skin}(t),
+\quad LPC(t) = 1/\tau_{eff}(t)
+\]
+- \(\tau_{RE}\): elementary per‑link delay.
+- \(\sigma_{IC}(t)\): aggregate interference complexity.
+- \(d_{skin}(t)\in(0,1]\): skin duty (fraction of a cycle the skin is transmissive).
 
 ---
 
-## 4) Gauge/holonomy and atomic phenomenology
+## 4) Emergent "Constants" (from v1.3)
 
-- **Holonomy as short-loop physics.**
-Small cycles around “cores” induce phase defects that shift effective Rydberg energies:
-$$E_{n\ell} \;\approx\; -\frac{R_\mathrm{eff}}{(n-\delta_\ell)^2}, \qquad
-\delta_\ell \;\text{from short-loop holonomies and local polarizability}.$$
+-   **Speed limit $c$.**
+    $c \simeq \frac{a}{\tau_0}$ (link scale over minimal delay).
 
-- **Predictions:**
-(i) Collapse of line families when scaling $\nu_{m}$ by $(n^\*)^3 R_\mathrm{eff}$;
-(ii) linear trends of $\delta_\ell$ vs. $1/(n^\*)^2$ with slopes correlated to ionic core **static polarizability** $\alpha_0$;
-(iii) Rydberg wave-packet times $T_\mathrm{cl}\propto (n^\*)^3$, $T_\mathrm{rev}\propto (n^\*)^4$.
+-   **Planck constant $\hbar$ as action floor.**
+    The stationary stochastic dynamics (A0+A4) sustains **limit-cycle ensembles** whose phase-space area per cycle stabilizes to $A_0 \equiv \oint p\,dq \;\approx\; 2\pi\, \hbar_\mathrm{eff}$. We test its self-averaging properties.
 
----
-
-## 5) Gravity analogue, horizons, and antimatter
-
-- **Index gradient and geodesics.**
-Rays follow Fermat in $n_{\mathrm{eff}}(x)$. A **horizon** forms where a drift $u$ exceeds local wave group speed $v_g = c / n_{\mathrm{eff}}$.
-
-- **Hawking analogue.**
-$$T_H \;\propto\; \bigl|\partial_x\big(u - v_g\big)\bigr| \;\;\text{at}\;\; x_H.$$
-
-In DOFT this depends on $|\partial_x n_{\mathrm{eff}}|$, which is set by delay gradients.
-
-- **Antimatter.**
-Curvature depends on the **magnitude** of delay gradients, not the sign of phase. Prediction: **same gravitational response** for matter/antimatter at leading order.
+-   **Newton constant $G$ as delay-sensitivity map.**
+    In the continuum, $n_\mathrm{eff}^2(x) \;\simeq\; 1 \;+\; \alpha_\tau\, \rho(x)$. Linearizing ray bending and matching to weak-field GR gives a constitutive link $G \;\propto\; c^2\,\alpha_\tau$. This is a working hypothesis.
 
 ---
 
-## 6) Law of Preservation of Chaos (LPC) in practice
+## 5) Memory, Inertia & Metaestability (from v1.5)
 
-We monitor a chaos proxy $\mathcal{K}$ (finite-window Lyapunov sum, entropy rate, or broadband spectral entropy) and enforce **no blow-up** in closed subsystems. In open subsystems we allow fluxes but require boundedness via mild **chaos braking** (adaptive reduction of fast-memory weights) **only** when $\mathcal{K}$ violates target envelopes—this is a *physical surrogate* for dissipation, not a numerical hack.
-
----
-
-## 7) Critiques addressed (and what remains)
-
-1. **“Analogies ≠ causation.”**
-We use analogues to choose **falsifiable observables**; we do **not** infer identity. The programme is *predict → test → reject/retain parameters* across domains.
-
-2. **Coarse-graining rigor.**
-The PDE with memory is not assumed; we **derive** kernels by Prony/Vector-Fitting from micro time-series, then validate via **a posteriori** error bounds (residual energy, BIBO stability, passivity).
-
-3. **DDE intractability.**
-We replace pure delays by **few-pole** memory that preserves dominant poles/zeros; convergence is checked by **model-order increase until residuals plateau**.
-
-4. **Non-self-averaging at criticality.**
-We explicitly **measure** scaling exponents $\beta_\hbar,\beta_c$. If they do not approach 1 (strong self-averaging) in the regimes claimed to be universal, DOFT **fails** there.
-
-5. **Emergent constants still “sketched.”**
-Correct: $\hbar, G$ derivations must be **closed**. We outline a stochastic-invariant action proof for $\hbar_\mathrm{eff}$ and a constitutive derivation for $G$; both are priority items in the roadmap.
+-   **Memory** = retained correlation over cycles.
+-   **Inertia** = accumulated memory × structural persistence.
+-   **Metaestability** = balance of chaos (noise, per A0) and order (memory) where $\lambda_{Lyap} \approx 0$.
+-   **Condition:** $\rho = \sigma_{int}/\sigma_{ext} \approx 1$ (entropy produced ≈ entropy exported).
 
 ---
 
-## 8) Testable predictions & falsification
+## 6) Unified Physical Framework (from v1.5)
 
-### 8.1 Cross-domain tie-down
-- Fit $R_\mathrm{eff}$ and $\delta_\ell(n)$ on **one** alkali (e.g., Cs).
-- **Without retuning**, predict: (i) wave-packet times; (ii) $\nu$ collapse; (iii) analogue-gravity $T_H$ vs. $\partial_x n_\mathrm{eff}$ in a **mapped** optical/BEC device.
-- **Fail** of (iii) given success of (i–ii) → refutation of common mechanism.
+This is the "Resonance–Memory–Cluster" model introduced in v1.5.
 
-### 8.2 Self-averaging of $\hbar_\mathrm{eff}$
-- Partition the network into $d=2,4,8,16,32,\dots$ blocks; compute
-$$R(d)=\frac{\mathrm{Var}(\hbar_\mathrm{eff})}{\big(\mathbb{E}[\hbar_\mathrm{eff}]\big)^2}.$$
+### 6.1 The Bit as Persistent Difference
+The fundamental bit = **minimum stable asymmetry** in a resonant field. Persistence = phase continuity.
 
-- Fit $\log R = -\beta_\hbar \log N + b$; **expect** $\beta_\hbar \approx 1$ in homogeneous regimes.
-- **Fail** (persistent $\beta_\hbar \ll 1$) → noise is not homogeneous or the coarse-grain model is wrong.
+### 6.2 Resonance as Memory
+A resonance is **a fluctuation that replays itself**. When coupled with delay, it becomes a **cycle of memory** — the first form of “history”.
 
-### 8.3 Hawking analogue slope
-- Measure $T_H$ vs. $\partial_x(u-v_g)$; DOFT predicts proportionality with coefficient set by memory-kernel curvature. Mismatch beyond bounds → reject kernel identification or A5 parametrization.
+### 6.3 Layered Memory
+Each layer stores correlations of the previous one:
+\[
+M_{\ell} = \alpha_{\ell} r_{\ell}^2 - (\beta_{\ell} N_{\ell} + \lambda_{\ell}) M_{\ell} + \sum_k A_{\ell k} M_k
+\]
+creating depth and temporal inertia.
 
-### 8.4 Antimatter gravity
-- Any leading-order deviation between matter/antimatter geodesics conflicts with DOFT’s phase-insensitive curvature.
+### 6.4 Cluster Formation and Delay
+Clusters are **resonances linked by finite delays**. Propagation sequence introduces **retardation**, generating causal order and distance. Delays ($\tau$) encode spatialization: time-ordering becomes geometry.
+
+### 6.5 Ladrillo Universal (Universal Brick)
+The base unit of all structure = **auto-sustained oscillation with feedback and delay**. All systems —from quantum coherence to culture— are configurations of these bricks.
 
 ---
 
-## 9) Numerical methodology (for collaborators)
+## 7) Physical Equivalence Across Domains (from v1.5)
+| Domain | Mechanism of Memory | Equivalent DOFT Construct |
+|---------|--------------------|----------------------------|
+| Quantum | Phase coherence | Elementary RE |
+| Chemical | Oscillatory cycles | Layered interference IC |
+| Biological | Genetic/synaptic storage | Skin + residual floor |
+| Cognitive | Neural attractors | LPC(t) convergence |
+| Symbolic | Language recursion | Cluster propagation |
+| Technological | Feedback networks | Parametric modulation |
 
-- **Integrator:** explicit or semi-implicit schemes with delay-buffers; for memory surrogate use ODE solvers with adaptive steps and **energy monitors**.
-- **Kernel ID:** generalized **Prony/Vector-Fitting** on node/cluster impulse responses; enforce **stability & passivity**; report $L_2$ residuals and Hankel singular values.
-- **Uncertainty:** bootstrap across disorder seeds and lattice realizations; report CIs on $\beta_\hbar$, $c$, $\hbar_\mathrm{eff}$.
-- **LPC audit:** track $\mathcal{K}(t)$, chaos-flux counters, and “brake” interventions; interventions must **decrease** $\mathcal{K}$ in closed subsystems.
-- **Reproducibility artifacts:** CSVs for summaries, per-run logs, and time-series; JSON for parameters; seeds/version pins.
 
-**Suggested CSV schema** (example):
+---
+
+## 8) Predictions & Verification (Consolidated)
+
+### 8.1 High-Level Predictions (from v1.5)
+- f ∝ 1/R in clean regime.
+- Breakpoint R_* visible in log P_DOFT vs log R.
+- Rest duty collapses near R_*.
+- Φ rises with interference complexity.
+- LPC(t) converges during structure build-up.
+- Parametric resonance exhibits threshold $\delta_c$ and NR(dB) > 0.
+
+### 8.2 Detailed Falsifiable Predictions (from v1.4.1c)
+- **B1 — $f(R)$:** $f \sim 1/R$ in clean regime.
+- **B2 — Breakpoint:** Clear $R_*$ in $\log P_\mathrm{DOFT}$ vs $\log R$.
+- **B3 — Skin rest:** $\%t_\mathrm{rest}$ high in clean; collapses near $R_*$.
+- **B4 — Off‑harmonics:** $\Phi$ rises as duty decreases or $\sigma_\mathrm{IC}$ increases.
+- **L1 — LPC(t):** Decreases and converges with slow drift during structure formation.
+- **G1 — Anisotropy:** Reduces $R_*$; hot‑spots at loop‑incompatible joints.
+- **P1 — Threshold $\delta_c$:** $\mu_\mathrm{max}>0$ at finite modulation amplitude.
+- **P2 — Protection:** With $\tau=T/n$, `protected_k0 = true`.
+- **P3 — Nonreciprocity:** **NR(dB) > 0** for traveling modulation.
+
+### 8.3 Atomic & Gravity Predictions (from v1.3)
+- **Atomic:** Holonomy (short loops) induce phase defects that shift effective Rydberg energies: $E_{n\ell} \;\approx\; -R_\mathrm{eff}/(n-\delta_\ell)^2$.
+- **Hawking Analogue:** A horizon forms where a drift $u$ exceeds local wave group speed $v_g = c / n_{\mathrm{eff}}$. $T_H \;\propto\; \bigl|\partial_x\big(u - v_g\big)\bigr|$, set by delay gradients.
+- **Antimatter:** Curvature depends on the **magnitude** of delay gradients. Prediction: **same gravitational response** for matter/antimatter at leading order.
+
+---
+
+## 9) Simulation, Observables & Data (Consolidated)
+
+### 9.1 Operational Observables (from v1.4.1c / v1.5)
+- **$P_\mathrm{DOFT}$** (power): Decoherence flux per cycle across the skin.
+- **$\Phi$** (off‑harmonic noise): Spectral power fraction outside integer harmonics.
+- **Skin rest duty $\%t_\mathrm{rest}$**: Fraction of period with $|\dot\phi_\mathrm{skin}|<\epsilon$.
+- **Effective delay** (probe latency): Cycles to peak response after a local pulse.
+- **$R_*$**: Slope break in $\log P_\mathrm{DOFT}$ vs $\log R$.
+- **Tilt $n_\mathrm{DOFT}$**: Spectral index on the phase/pattern spectrum.
+- **Parametric metrics:** $\mu_\mathrm{max}$ (Floquet growth), **NR(dB)** (nonreciprocal gain).
+
+### 9.2 Memory Observables (from v1.5)
+- **r_hat** = $\sigma(a1 \mu + a2 \mathrm{rest}\% - a3 \Phi)$
+- **M_hat** = $r_{hat}^2 / (\epsilon + \Phi) \times (1 / (\epsilon + P_\mathrm{DOFT\_norm}))$
+- **N_hat** = $b1 \Phi + b2 \mathrm{Var}(d_{skin}) + b3 \sigma_{IC}$
+- **$\rho_{est}$** = $\Phi / P_\mathrm{DOFT\_norm}$
+- `lambda_lyap_est`
+
+### 9.3 Simulation Controls (from v1.4.1c)
+- **Geometry:** 3D ball, $R$ (layers) sweep 8–64.
+- **Delays:** $\tau_\mathrm{RE}$ (constant).
+- **Tolerances:** $\mathrm{tol}_\mathrm{inner}>\mathrm{tol}_\mathrm{skin}>\mathrm{tol}_\mathrm{outer}$.
+- **Skin duty $d$**: Sweep 1.0 $\to$ 0.1.
+- **IC(t):** Activate routes in **waves** (build‑up).
+- **Modulation:** Time-modulate tolerance or delay: $p_j(t)=p_0[1+\delta f(t+j\tau)]$.
+
+### 9.4 Data Contracts (from v1.4.1c & v1.5)
+Add to **`runs.csv`**:
+`lpc_mean, lpc_drift, skin_duty, phi_offharm, rstar_est, mu_max, nr_db, resonant_k, protected_k0, r_hat, M_hat, N_hat, rho_est, lambda_lyap_est`
+
+---
+
+## 10) Experimental Program (from v1.4.1c)
+
+-   **Phase A — Soft‑cavity (skin, $R_*$, duty):**
+    -   **E1 — $f$ vs $R$:** $R\in[8,64]$ $\Rightarrow$ expect $f\sim 1/R$.
+    -   **E2 — Law & $R_*$:** $\log P_\mathrm{DOFT}$ vs $\log R$; locate break.
+    -   **E3 — Skin rest & pulses:** $\%t_\mathrm{rest}$, pulse trains vs $R$.
+-   **Phase B — Build‑up / LPC:**
+    -   **E7 — LPC vs build‑up:** IC(t) in **waves**; duty $d$ decreased $\to$ track **LPC(t)**.
+    -   **E8 — Pulses/duty:** sweep $d$; measure $\Phi$ and pulse trains.
+-   **Phase C — Parametric resonance (add‑on):**
+    -   **E11 — Threshold $\delta_c$:** sweep modulation amplitude; detect eigenvalue crossing.
+    -   **E13 — Nonreciprocity:** measure NR(dB) in unstable bands (traveling modulation).
+    -   **E15 — Size scaling:** rings $n=\{8,16,32\}$ to verify protection scales with $n$.
+
+---
+
+## 11) Critiques Addressed (from v1.3)
+
+1.  **“Analogies ≠ causation.”**
+    We use analogues to choose **falsifiable observables** across domains (e.g., atomic spectra $\leftrightarrow$ analogue gravity). Failure to predict one from the other refutes the common mechanism.
+2.  **Coarse-graining rigor.**
+    The PDE with memory is not assumed; we **derive** kernels by Prony/Vector-Fitting from micro time-series.
+3.  **DDE intractability.**
+    We replace pure delays by **few-pole** memory that preserves dominant poles/zeros.
+4.  **Emergent constants still “sketched.”**
+    Correct. The $\hbar$ and $G$ derivations must be formally closed. This is a priority.
+
+---
+
+## 12) Philosophical Context (from v1.5)
+
+> The universe began to remember when a fluctuation found its own echo.  
+> From that moment, every layer of reality —from particles to thought— has been a way of **sustaining difference through resonance**.
+
+
+Life, mind, and technology are **forms of extended resonance**, each with growing memory depth and slower relaxation. The DOFT framework formalizes this continuum through measurable oscillatory constructs.
+
+---
+
+## 13) Versioning & License
+
+-   **History:** v1.3 (Foundations) $\to$ v1.4.1c (Operational Core) $\to$ v1.5 (Memory Framework).
+-   **This Version (v1.6):** A comprehensive merge, reintegrating the foundational axioms and emergent physics of v1.3 with the operational protocols of v1.4.1c and the unified memory model of v1.5.
+
+**License:** MIT — free to use, cite, and extend under attribution.
+
+---
+---
+
+## Appendix A — Glossary (operational) (from v1.4.1c)
+
+RE: elementary per‑link delay • RCB: loop‑closure rule • IC: composite interference (effective delay modulator) • Cavity: coherent interior • Skin: marginal boundary; nearly static most of each cycle; filters & pulses • $R$: radius in layers • $R_*$: clean→dirty breakpoint • $P_\mathrm{DOFT}$: decoherence flux per cycle • $\Phi$: off‑harmonic power fraction • Effective delay: latency (cycles) to peak response • LPC(t): layers per cycle (propagation) • Floor A/B: post‑collapse residual (A asymptotic; B structural) • $\mu$: skin margin • C⊥/C∥: normal/tangential closure conditions • NR(dB): nonreciprocal gain • $\mu_\mathrm{max}$: Floquet growth rate per period.
+
+## Appendix B — LPC(t) Context Note (from v1.4.1c)
+
+The LPC(t) pattern—very high at the beginning (no structure), then falling and converging as grains/skin form—provides a DOFT‑native account for early fast effective propagation without invoking external field dynamics. It emerges from IC build‑up and skin gating in units of cycles/layers, and it leaves measurable signatures (tilt $n_\mathrm{DOFT}$, $R_*$, $\Phi$, pulse trains) that we test operationally here.
+
+## Appendix C — Example Configs (from v1.4.1c)
+
+**configs/soft_cavity_pulsed.json**
+```json
+{
+  "graph": { "dim": 3, "shape": "ball", "radius_layers": [8, 16, 24, 32, 48, 64], "anisotropy": 0.0 },
+  "delays": { "tau_per_link": 1, "dynamic": false },
+  "tolerance": { "inner": 0.10, "skin": 0.04, "outer": 0.02, "epsilon_rest": 1e-3 },
+  "skin": { "duty": [1.0, 0.6, 0.3], "filter": "highpass-soft" },
+  "sweep": { "ic_waves": [0, 1, 2] },
+  "probes": { "pulse_period": 32, "pulse_amplitude": 0.01 },
+  "runtime": { "steps": 20000, "dt_policy": "safe" },
+  "outputs": { "write_skin_parquet": true, "spectra": true }
+}

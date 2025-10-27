@@ -1,0 +1,15 @@
+{
+  "graph": { "dim": 1, "shape": "ring", "sites": 32 },
+  "delays": { "tau_per_link": 1 },
+  "tolerance": { "inner": 0.08, "skin": 0.05, "outer": 0.03, "epsilon_rest": 1e-3 },
+  "modulation": {
+    "parameter": "tolerance",          
+    "delta": [0.00, 0.02, 0.05, 0.10],
+    "period_T": [32, 40, 48, 64],
+    "spatial_tau": ["0", "T/8", "T/16"],   
+    "waveform": "cos"                  
+  },
+  "skin": { "duty": 1.0 },             
+  "runtime": { "steps": 40000 },
+  "outputs": { "spectra": true }
+}
