@@ -94,17 +94,14 @@ These three patterns form the “alphabet” of cohesive behavior across layers.
 ## 5. Operational Definitions
 
 - **Layer Memory:**  
-  ```math
-  \mathfrak{M}_\ell=\{VEVs,\ gaps,\ non\text{-}local\ corrections,\ topological\ terms\}
-  ```
-- **Transition of Layer:**  
-  ```math
-  (\phi,K,V)_\ell \to (\phi,K_{\text{eff}},V_{\text{eff}})_{\ell+1}
-  ```
-- **Observable Brick:**  
-  The pair $(\text{collective mode},K_{\text{eff}})$ surviving to the next scale.
+  $\mathfrak{M}_\ell = \{ \text{VEVs},\ \text{gaps},\ \text{non-local corrections},\ \text{topological terms} \}$
 
----
+- **Transition of Layer:**  
+  $(\phi, K, V)_\ell \;\to\; (\phi, K_{\text{eff}}, V_{\text{eff}})_{\ell+1}$
+
+- **Observable Brick:**  
+  The pair $(\text{collective mode}, K_{\text{eff}})$ surviving to the next scale.
+
 
 ## 6. Shortcut over the Standard Model
 
