@@ -95,7 +95,7 @@ A condensed-matter lattice is a physical example of how **oscillators and resona
    H = \sum_i \frac{p_i^2}{2m_i} + \sum_{i,j}V(|r_i-r_j|)
    ```
 
-   becomes an effective field description where the kernel \(K(k) = m\omega^2(k)\) encodes the medium’s response to perturbations.
+   becomes an effective field description where the kernel $\(K(k) = m\omega^2(k)\)$ encodes the medium’s response to perturbations.
 
 4. **Emergent Quasi-Particles**  
    Phonons, magnons, and plasmons are *collective excitations* — not fundamental, but stable, resonant envelopes.  
