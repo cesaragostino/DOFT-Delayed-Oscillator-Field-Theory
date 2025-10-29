@@ -78,7 +78,7 @@ Each tag maps to an entry below. If a work spans multiple themes, it is listed o
 
 ---
 
-## G. Kernel, Gauge, Higgs Analogue
+## G. XY model, Anderson–Higgs, lattice gauge emergence, RG coarse-graining
 
 - Anderson, P.W. (1963). *Plasmons, gauge invariance, and mass.* Phys. Rev. 130, 439.
 - Kogut, J.B. (1979). *An introduction to lattice gauge theory and spin systems.* Rev. Mod. Phys. 51, 659.

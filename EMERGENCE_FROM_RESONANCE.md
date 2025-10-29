@@ -108,12 +108,3 @@ These three patterns form the “alphabet” of cohesive behavior across layers.
 - A confinement scale Λ arises naturally from non-linear coupling growth.
 
 ---
-
-## 8. Roadmap
-
-1. Add **Appendix A – Bricks and Memory** to `MANIFESTO.md`.  
-2. Insert a “How to read DOFT as a shortcut” paragraph in `README.md`.  
-3. Keep this file (`EMERGENCE_FROM_RESONANCE.md`) as a stand-alone theoretical add-on.  
-4. Extend `REFERENCES.md` with 3–5 classical analog sources (XY model, Anderson–Higgs, lattice gauge emergence, RG coarse-graining).
-
----
