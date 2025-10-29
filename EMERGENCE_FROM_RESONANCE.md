@@ -90,10 +90,11 @@ A condensed-matter lattice is a physical example of how **oscillators and resona
    The periodic atomic potential shapes electronic wavefunctions, forcing them into allowed and forbidden energy ranges. The result is an **effective energy landscape** (bands and band gaps) determined by resonance conditions.
 
 3. **Coarse-Graining → Effective Potentials**  
-   The microscopic details (atomic positions, individual couplings) are averaged into **effective parameters** — such as effective mass and potential. The full Hamiltonian  
-   ```math
+   The microscopic details (atomic positions, individual couplings) are averaged into **effective parameters** — such as effective mass and potential. The full Hamiltonian
+     
+   $$
    H = \sum_i \frac{p_i^2}{2m_i} + \sum_{i,j}V(|r_i-r_j|)
-   ```
+   $$
 
    becomes an effective field description where the kernel $\(K(k) = m\omega^2(k)\)$ encodes the medium’s response to perturbations.
 
