@@ -96,7 +96,8 @@ These three patterns form the “alphabet” of cohesive behavior across layers.
 - **Layer Memory:**  
   $\mathfrak{M}_\ell = \{ \text{VEVs},\ \text{gaps},\ \text{non-local corrections},\ \text{topological terms} \}$
 
-- **Transition of Layer:**  
+- **Transition of Layer:**
+
 $$
 (\phi, K, V)_\ell \to (\phi, K_{\mathrm{eff}}, V_{\mathrm{eff}})_{\ell+1}
 $$
