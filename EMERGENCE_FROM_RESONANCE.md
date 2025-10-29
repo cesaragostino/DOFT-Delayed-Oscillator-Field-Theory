@@ -93,7 +93,8 @@ A condensed-matter lattice is a physical example of how **oscillators and resona
    The microscopic details (atomic positions, individual couplings) are averaged into **effective parameters** — such as effective mass and potential. The full Hamiltonian  
    ```math
    H = \sum_i \frac{p_i^2}{2m_i} + \sum_{i,j}V(|r_i-r_j|)
-  ```
+   ```
+
    becomes an effective field description where the kernel \(K(k) = m\omega^2(k)\) encodes the medium’s response to perturbations.
 
 4. **Emergent Quasi-Particles**  
