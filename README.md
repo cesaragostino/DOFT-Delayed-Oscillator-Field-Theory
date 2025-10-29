@@ -270,6 +270,19 @@ Introduced in v1.5, this framework defines **memory** as retained correlation ov
 
 Time-modulation of system parameters (like delay or tolerance) can create nonreciprocal modes (one-way gain) and Floquet-type instabilities.
 
+### Frequency–Complexity and Memory
+
+In DOFT, **frequency** acts as a hidden coordinate of evolution across layers.  
+Each frequency band hosts a different density of resonances and nonlinear couplings,
+producing distinct **degrees of complexity** in its emergent kernels.
+Low frequencies favor **collective orders and topological memory**,
+while high frequencies yield **richer internal symmetries and hybridized fields**.
+This dual behavior defines the **Frequency–Complexity Law**, linking
+the structure of physical forces to the depth of their resonant ancestry —
+the higher the spectral activity, the more intricate the memory encoded
+in the emergent fields.
+
+
 ### Law of Chaos Preservation (LPC / Axiom A0)
 
 In closed systems, the chaos functional $\mathcal{K}$ is conserved. Order emerges as a dissipative organization of this chaos budget. This is the foundational axiom (A0) from v1.3.
