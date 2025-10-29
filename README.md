@@ -243,6 +243,13 @@ This simulation suite is designed to test these consolidated predictions:
 
 ## Core concepts
 
+### How to Read DOFT as a Shortcut
+
+DOFT can be seen as an emergent framework where the known fields and forces are effective layers of a deeper multi-resonant substrate.  
+Bricks (mode + kernel) replace point particles; Memory (order parameters, gaps, topology) replaces static constants.  
+Each layer iterates with memory, reproducing the known gauge structures as stable resonant envelopes.  
+[Read “Emergence from Resonance” →](./EMERGENCE_FROM_RESONANCE.md)
+
 ### Oscillators with Delays (RE) & Loop Closure (RCB)
 
 The substrate is a graph of oscillators (Axiom A1). The fundamental interaction is the **Loop-Closure Rule (RCB)**: a loop is coherent if its phase misfit is within tolerance. This is the basis of resonance.

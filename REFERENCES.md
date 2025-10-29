@@ -75,9 +75,21 @@ Each tag maps to an entry below. If a work spans multiple themes, it is listed o
 **[PRN-2]** M. R. Osborne & G. K. Smyth, “A modified Prony algorithm for exponential function fitting,” _SIAM J. Sci. Comput._ **16** (1995) 119–138.  
 **[UQ-1]** Bradley Efron & Robert Tibshirani, _An Introduction to the Bootstrap_, Chapman & Hall/CRC, 1993.
 
+
 ---
 
-## G. Methodological and reproducibility references
+## G. Kernel, Gauge, Higgs Analogue
+
+- Anderson, P.W. (1963). *Plasmons, gauge invariance, and mass.* Phys. Rev. 130, 439.
+- Kogut, J.B. (1979). *An introduction to lattice gauge theory and spin systems.* Rev. Mod. Phys. 51, 659.
+- Wilson, K.G. (1971). *Renormalization group and critical phenomena.* Phys. Rev. B4, 3174.
+- Josephson, B.D. (1962). *Possible new effects in superconductive tunnelling.* Phys. Lett. 1, 251.
+- Wen, X.G. (2004). *Quantum Field Theory of Many-body Systems.* Oxford University Press.
+
+
+---
+
+## H. Methodological and reproducibility references
 
 **[REP-1]** Victoria Stodden, “Reproducible Research: Tools and Strategies for Scientific Computing,” _Computing in Science & Engineering_ **11** (2009) 11–12.  
 **[REP-2]** Nicole J. Goodman et al., “Ten simple rules for reproducible computational research,” _PLoS Comput. Biol._ **10** (2014) e1003285.

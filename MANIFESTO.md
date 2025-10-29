@@ -262,15 +262,22 @@ Life, mind, and technology are **forms of extended resonance**, each with growin
 ---
 ---
 
-## Appendix A — Glossary (operational) (from v1.4.1c)
+## Appendix A – Bricks and Memory
+
+In the emergent interpretation of DOFT, every observable configuration is built from bricks defined as **(collective mode, coupling kernel)**.  
+Memory is the persistence of order parameters and non-local correlations after each coarse-graining step.  
+Layers interact through an iterative rule where the effective action and memory of one layer seed the next.  
+This appendix formalizes the DOFT shortcut connecting resonant micro-dynamics to the macroscopic forces described in conventional field theories.
+
+## Appendix B — Glossary (operational) (from v1.4.1c)
 
 RE: elementary per‑link delay • RCB: loop‑closure rule • IC: composite interference (effective delay modulator) • Cavity: coherent interior • Skin: marginal boundary; nearly static most of each cycle; filters & pulses • $R$: radius in layers • $R_*$: clean→dirty breakpoint • $P_\mathrm{DOFT}$: decoherence flux per cycle • $\Phi$: off‑harmonic power fraction • Effective delay: latency (cycles) to peak response • LPC(t): layers per cycle (propagation) • Floor A/B: post‑collapse residual (A asymptotic; B structural) • $\mu$: skin margin • C⊥/C∥: normal/tangential closure conditions • NR(dB): nonreciprocal gain • $\mu_\mathrm{max}$: Floquet growth rate per period.
 
-## Appendix B — LPC(t) Context Note (from v1.4.1c)
+## Appendix C — LPC(t) Context Note (from v1.4.1c)
 
 The LPC(t) pattern—very high at the beginning (no structure), then falling and converging as grains/skin form—provides a DOFT‑native account for early fast effective propagation without invoking external field dynamics. It emerges from IC build‑up and skin gating in units of cycles/layers, and it leaves measurable signatures (tilt $n_\mathrm{DOFT}$, $R_*$, $\Phi$, pulse trains) that we test operationally here.
 
-## Appendix C — Example Configs (from v1.4.1c)
+## Appendix D — Example Configs (from v1.4.1c)
 
 **configs/soft_cavity_pulsed.json**
 ```json
