@@ -97,7 +97,7 @@ These three patterns form the “alphabet” of cohesive behavior across layers.
   $\mathfrak{M}_\ell = \{ \text{VEVs},\ \text{gaps},\ \text{non-local corrections},\ \text{topological terms} \}$
 
 - **Transition of Layer:**  
-  $(\phi, K, V)_\ell \;\to\; (\phi, K_{\text{eff}}, V_{\text{eff}})_{\ell+1}$
+  $(\phi, K, V)_\ell \to (\phi, K_{\mathrm{eff}}, V_{\mathrm{eff}})_{\ell+1}$
 
 - **Observable Brick:**  
   The pair $(\text{collective mode}, K_{\text{eff}})$ surviving to the next scale.
