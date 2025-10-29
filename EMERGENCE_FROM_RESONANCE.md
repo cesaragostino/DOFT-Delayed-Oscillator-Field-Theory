@@ -151,3 +151,49 @@ $$
 
 ---
 
+## 8. Frequency–Complexity Heuristic
+
+In DOFT, complexity is understood as the richness of the emergent kernels —  
+how many branches, internal indices, nonlinear couplings, and topological
+structures a given frequency band can sustain.
+
+### 8.1 Empirical Anchors Across Frequency Scales
+
+| Domain / Phenomenon | Typical Frequency | Dominant Degrees of Freedom | Kernel Behavior | Relative Complexity |
+|----------------------|------------------:|-----------------------------|-----------------|--------------------:|
+| **Acoustics (macroscopic)** | Hz–kHz | Pressure waves | Linear, single branch | Low |
+| **Magnons (spin waves)** | GHz–THz | Spin orientation | Dispersion with spin index | ↑ |
+| **Phonons (crystals)** | 0.1–10 THz | Atomic displacements | Multiple branches (L/T, acoustic/optical) | ↑↑ |
+| **Plasmons / Polaritons** | THz–PHz | Charge–EM coupling | Hybridized, gapped | ↑↑↑ |
+| **Excitons / Excitonic Polaritons** | ~PHz | Electron–hole pairs | Internal singlet/triplet, topological bands | ↑↑↑ |
+| **Superconductivity** | sub-THz | Cooper pairs | Broken U(1), Anderson–Higgs, vortices | ↑↑↑↑ |
+| **Superfluids / BECs** | kHz–MHz | Condensate phase | Two branches (phonon/roton), defects | ↑↑↑↑ |
+| **Nuclear Transitions** | ~10²⁰ Hz | Nucleon levels | Discrete multipoles | ↑↑ |
+| **QCD (confinement)** | ~10²² Hz | Quarks, gluons | Non-abelian, gap, topology | ↑↑↑↑ |
+| **Electroweak (EWSB)** | ~10²⁵ Hz | Gauge + Higgs | Mixed symmetry, Yukawas | ↑↑↑↑ |
+| **Beyond EWSB / GUT scale** | ≥10³⁴ Hz | Unified gauge fields | Fewer parameters, higher internal dimension | (complex yet compact) |
+
+### 8.2 Observations
+
+- Complexity is **non-monotonic** with frequency.  
+  Peaks appear both at low bands (collective orders, topology)
+  and at high bands (dense resonances, internal symmetries).
+- Two main drivers:
+  1. **Spectral density and hybridization** → richer branching of modes.  
+  2. **Nonlinearity and symmetry breaking** → gaps, defects, topological memory.
+- Therefore, as frequency increases:
+  - internal structure and index space expand,
+  - kernels become multi-modal,
+  - but at extreme UV, unification may *simplify* description while preserving internal richness.
+
+### 8.3 DOFT Law of Frequency–Complexity (Heuristic)
+
+> The effective complexity \(C(\omega)\) increases with the density of resonances and
+> the degree of nonlinear coupling that allows symmetry breaking or topological
+> organization.  
+> \(C(\omega)\) exhibits maxima at both **high** and **low** frequency bands:
+> - high ω → more internal indices and hybrid kernels;  
+> - low ω → collective order and topological coherence.  
+> Complexity is therefore **non-monotonic** in frequency.
+
+---
