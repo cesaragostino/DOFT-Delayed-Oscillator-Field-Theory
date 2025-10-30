@@ -20,9 +20,9 @@ The goal is to show that the same **hierarchical resonance mechanism** explains 
 
 From the DOFT action:
 
-\[
+$$
 S = \int dt \sum_\ell \Big[ \tfrac{1}{2}\dot{\phi}_\ell^2 - \tfrac{1}{2}\omega_\ell^2\phi_\ell^2 - \tfrac{\alpha_\ell}{4}\phi_\ell^4 - \sum_m K_{\ell m}(t-t')\,\phi_\ell(t)\phi_m(t') \Big],
-\]
+$$
 
 the Euler–Lagrange equation with memory produces a **frequency response function** for each layer:
 
