@@ -165,7 +165,7 @@ If the pattern holds at field scales, the **CMB acoustic peaks** and **solar osc
 
 1. **Frequency shift vs. temperature**  
    Verify the correction law experimentally in Al, Pb, Nb:
-   $\(\Delta\omega/\omega = -\beta X - \Gamma X^2 - \Eta d X.\)$
+   $\(\Delta\omega/\omega = -\beta X - \Gamma X^2 - \eta d X.\)$
 
 2. **Cross-material locking ratios**  
    Expect repeated occurrence of ratios $\(\{28, 210, 1050\}\)$ in other superconductors (Sn, In, Hg, Ta).
