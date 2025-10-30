@@ -95,7 +95,7 @@ The resulting value aligns with the **electroweak scale**, identifying the vacuu
 
 ### 4.2 Physical Interpretation
 
-- \(\omega_\*\): frequency of perfect coherence.
+- $\(\omega_\*\)$: frequency of perfect coherence.
 - Each subsequent \(\omega_\ell\): projection through noise and delay kernels.
 - The apparent temperature floor of matter corresponds to the **residual noise** of this projection cascade.
 
