@@ -116,7 +116,7 @@ This formula reproduces the empirical correction laws obtained from Al, Pb, and 
 ### 5.1 Degeneracy Structure
 
 Each layer ($\ell$) defines a subspace of degenerate oscillation modes with dimension ($n_\ell$).
-If the coupling matrix (K_{\ell m$}) respects degeneracies of **3, 2, and 1**, the global resonance symmetry naturally becomes:
+If the coupling matrix ($K_{\ell m}$) respects degeneracies of **3, 2, and 1**, the global resonance symmetry naturally becomes:
 
 $$
 G_{\mathrm{res}} = SU(3) \times SU(2) \times U(1).
