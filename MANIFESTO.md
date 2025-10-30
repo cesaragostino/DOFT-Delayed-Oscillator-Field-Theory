@@ -103,7 +103,7 @@ Entropy growth corresponds to the spread of phase coherence across layers—memo
 Expanding the oscillation frequency with temperature yields:
 
 $$
-\frac{\Delta\omega_\ell}{\omega_\ell} \approx -\beta_\ell X - \Gamma X^2 - \Eta d_\ell X,
+\frac{\Delta\omega_\ell}{\omega_\ell} \approx -\beta_\ell X - \Gamma X^2 - \eta d_\ell X,
 $$
 
 where ($X = \Theta_D / T_c$) (thermal noise proxy) and ($d_\ell$) is the distance from the innermost layer.
