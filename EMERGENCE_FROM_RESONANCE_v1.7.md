@@ -38,9 +38,9 @@ Deviations correspond to measurable frequency shifts.
 Each layer represents a **coarse-grained projection** of the one below, following the Mori–Zwanzig projection principle.  
 The sequence of coarse-graining defines the **memory cascade**:
 
-\[
+$$
 \text{EW} \rightarrow \text{QCD} \rightarrow \text{Nuclear} \rightarrow \text{Electronic} \rightarrow \text{Rotonic} \rightarrow \text{Thermal}.
-\]
+$$
 
 Each level has its own characteristic frequency and corresponding energy window.
 
@@ -81,15 +81,15 @@ These **ratios correspond to stable mode-locking zones** of nonlinear coupled os
 
 The innermost oscillator frequency (the **Mother Frequency**) is defined by the curvature of the effective potential:
 
-\[
+$$
 \omega_\*^2 = \frac{\partial^2 V_{\mathrm{eff}}}{\partial \phi^2}\Big|_{\phi=0}.
-\]
+$$
 
 For QCD–EW coupling, this gives:
 
-\[
+$$
 \omega_\* = 1050\,\omega_{\mathrm{QCD}}, \quad E_\* \approx 200\text{--}260\,\mathrm{GeV}.
-\]
+$$
 
 The resulting value aligns with the **electroweak scale**, identifying the vacuum symmetry-breaking layer as the point of maximal coherence.
 
@@ -115,9 +115,9 @@ The resulting value aligns with the **electroweak scale**, identifying the vacuu
 
 A correction law extracted from the oscillator model matches observed deviations:
 
-\[
+$$
 \frac{\Delta\omega}{\omega} \approx -\beta X - \Gamma X^2 - \Eta d X, \quad X = \frac{\Theta_D}{T_c},
-\]
+$$
 
 with global parameters:
 
@@ -147,9 +147,9 @@ The same pattern ratios \(\{4,28,210,1050\}\) observed in He-4 and superconducto
 
 For a 6-layer chain governed by
 
-\[
+$$
 \ddot{\phi}_\ell + 2\zeta_\ell\omega_\ell\dot{\phi}_\ell + \omega_\ell^2\phi_\ell = \kappa(\phi_{\ell-1} - 2\phi_\ell + \phi_{\ell+1}),
-\]
+$$
 
 mode-locking occurs at the same prime-product ratios as the empirical table.  The appearance of 1050 as a harmonic stabilizer supports the universality of the pattern.
 
@@ -165,10 +165,10 @@ If the pattern holds at field scales, the **CMB acoustic peaks** and **solar osc
 
 1. **Frequency shift vs. temperature**  
    Verify the correction law experimentally in Al, Pb, Nb:
-   \(\Delta\omega/\omega = -\beta X - \Gamma X^2 - \Eta d X.\)
+   $\(\Delta\omega/\omega = -\beta X - \Gamma X^2 - \Eta d X.\)$
 
 2. **Cross-material locking ratios**  
-   Expect repeated occurrence of ratios \(\{28, 210, 1050\}\) in other superconductors (Sn, In, Hg, Ta).
+   Expect repeated occurrence of ratios $\(\{28, 210, 1050\}\)$ in other superconductors (Sn, In, Hg, Ta).
 
 3. **Phase-locking in driven oscillator chains**  
    Laboratory analogues (optical lattices or microwave cavities) should reproduce the prime grammar.
