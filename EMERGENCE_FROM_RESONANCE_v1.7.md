@@ -30,7 +30,7 @@ $$
 \omega_{\ell,\mathrm{eff}}^2 = \omega_\ell^2 + \int_0^t K_{\ell\ell}(\tau)\,e^{-i\omega_\ell\tau}\,d\tau.
 $$
 
-This formalism connects theoretical frequencies \(\omega_\ell\) with **observable resonances** \(\omega_{\ell,\mathrm{eff}}\).  
+This formalism connects theoretical frequencies \(\omega_\ell\) with **observable resonances** $\(\omega_{\ell,\mathrm{eff}}\)$.  
 Deviations correspond to measurable frequency shifts.
 
 ### 2.2 Layer Coarse-Graining
