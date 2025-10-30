@@ -203,7 +203,7 @@ Thus, what physics calls *fields* and *forces* are reinterpreted as **hierarchie
 
 - The same **frequency ratios** governing superfluid helium, superconductors, and quantum fields emerge naturally from a single Lagrangian with memory kernels.
 - The **Mother Frequency** $\(\omega_\*\)$ corresponds to the curvature of the effective potential and matches the electroweak scale.  
-- Thermal and anharmonic corrections ($\(\beta, \Gamma, \eta\$)) explain real-world deviations.  
+- Thermal and anharmonic corrections $\(\beta, \Gamma, \eta\$) explain real-world deviations.  
 - DOFT provides both **numerical testability** and **conceptual unification** of coherence, resonance, and field emergence.
 
 ---
