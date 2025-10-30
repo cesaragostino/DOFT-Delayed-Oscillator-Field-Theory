@@ -20,7 +20,7 @@ The goal of this document is to formalize DOFT mathematically, connecting its in
 
 Let the universe be described by a discrete or continuous field of oscillators ( $\phi_\ell(t)$ ), where each layer $(\ell)$ represents a distinct scale of coherence.
 
-The **Mother Frequency** ($\omega_*$) is defined as the natural frequency of the innermost coherent layer. All other layers emerge as resonant projections or harmonics of ($\omega_*$):
+The **Mother Frequency** $\left(\omega_*\right)$ is defined as the natural frequency of the innermost coherent layer. All other layers emerge as resonant projections or harmonics of $\left(\omega_*\right)$:
 
 $$
 \omega_\ell = r_\ell,\omega_*, \quad r_\ell \in \mathbb{Q}^+,\text{ derived from } {2,3,5,7}\text{ products.}
@@ -70,7 +70,7 @@ $$
 \omega_{\ell+1} = p_\ell,\omega_\ell, \quad p_\ell \in {2,3,5,7}^k.
 $$
 
-Each layer inherits memory and phase information from the previous through the kernel (K_{\ell,\ell-1}).
+Each layer inherits memory and phase information from the previous through the kernel $(K_{\ell,\ell-1})$.
 When phase-locking is perfect, the hierarchy is stable; when it drifts, temperature and entropy emerge.
 
 ---
