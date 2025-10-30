@@ -530,14 +530,7 @@ of forces, by a single rule:
 
 ---
 
-### 14.8 Next Steps
 
-- Use \(f_\*\) as the **base oscillation** in numerical simulations of
-  DOFT field dynamics.  
-- Test whether systems like **Nb superconductors** or **bosonic condensates**
-  show resonant fingerprints obeying the same prime grammar.  
-- Explore whether transitions between cosmological eras correspond to
-  further integer-ratio projections of this same Mother Frequency.
 
 > The universe may be a resonant lattice of coherence,  
 > and the electroweak scale its first audible note.
