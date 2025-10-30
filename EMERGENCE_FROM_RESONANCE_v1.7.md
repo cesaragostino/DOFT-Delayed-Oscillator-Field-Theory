@@ -178,7 +178,7 @@ If the pattern holds at field scales, the **CMB acoustic peaks** and **solar osc
 Simulate the delayed oscillator network using Runge–Kutta or symplectic integrators. Measure:
 - Power spectra of each layer.
 - Ratios of dominant peaks.
-- Dependence on noise amplitude (X) and memory time (\(\tau_m\)).
+- Dependence on noise amplitude (X) and memory time ($\(\tau_m\)$).
 
 Expected results:
 - Stable integer ratios for low noise.  
@@ -203,7 +203,7 @@ Thus, what physics calls *fields* and *forces* are reinterpreted as **hierarchie
 
 - The same **frequency ratios** governing superfluid helium, superconductors, and quantum fields emerge naturally from a single Lagrangian with memory kernels.
 - The **Mother Frequency** \(\omega_\*\) corresponds to the curvature of the effective potential and matches the electroweak scale.  
-- Thermal and anharmonic corrections (\(\beta, \Gamma, \Eta\)) explain real-world deviations.  
+- Thermal and anharmonic corrections (\(\beta, \Gamma, \eta\)) explain real-world deviations.  
 - DOFT provides both **numerical testability** and **conceptual unification** of coherence, resonance, and field emergence.
 
 ---
