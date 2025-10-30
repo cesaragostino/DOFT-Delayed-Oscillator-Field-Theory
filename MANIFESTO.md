@@ -36,7 +36,7 @@ $$
 S = \int dt \sum_\ell \Bigg[ \frac{1}{2}\dot{\phi}*\ell^2 - \frac{1}{2}\omega*\ell^2\phi_\ell^2 - \frac{\alpha_\ell}{4}\phi_\ell^4 - \sum_m K_{\ell m}(t-t'),\phi_\ell(t)\phi_m(t') \Bigg].
 $$
 
-The kernel ($K_{\ell m}(\tau)$) introduces **delay and memory** into the system, encoding how past states influence present dynamics.
+The kernel $(K_{\ell m}(\tau))$ introduces **delay and memory** into the system, encoding how past states influence present dynamics.
 
 Applying the variational principle yields the **Euler–Lagrange equation with memory:**
 
