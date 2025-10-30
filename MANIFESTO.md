@@ -20,7 +20,7 @@ The goal of this document is to formalize DOFT mathematically, connecting its in
 
 Let the universe be described by a discrete or continuous field of oscillators ( $\phi_\ell(t)$ ), where each layer (\ell) represents a distinct scale of coherence.
 
-The **Mother Frequency** $(\omega_*)$ is defined as the natural frequency of the innermost coherent layer. All other layers emerge as resonant projections or harmonics of $(\omega_*)$:
+The **Mother Frequency** ($\omega_*$) is defined as the natural frequency of the innermost coherent layer. All other layers emerge as resonant projections or harmonics of ($\omega_*$):
 
 $$
 \omega_\ell = r_\ell,\omega_*, \quad r_\ell \in \mathbb{Q}^+,\text{ derived from } {2,3,5,7}\text{ products.}
@@ -32,19 +32,19 @@ These ratios form the **prime-locking grammar** of the universe—a discrete set
 
 The action (S) governing the delayed oscillator field is defined as:
 
-[
+$$
 S = \int dt \sum_\ell \Bigg[ \frac{1}{2}\dot{\phi}*\ell^2 - \frac{1}{2}\omega*\ell^2\phi_\ell^2 - \frac{\alpha_\ell}{4}\phi_\ell^4 - \sum_m K_{\ell m}(t-t'),\phi_\ell(t)\phi_m(t') \Bigg].
-]
+$$
 
-The kernel (K_{\ell m}(\tau)) introduces **delay and memory** into the system, encoding how past states influence present dynamics.
+The kernel ($K_{\ell m}(\tau)$) introduces **delay and memory** into the system, encoding how past states influence present dynamics.
 
 Applying the variational principle yields the **Euler–Lagrange equation with memory:**
 
-[
+$$
 \ddot{\phi}*\ell + 2\zeta*\ell\omega_\ell\dot{\phi}*\ell + \omega*\ell^2\phi_\ell + \alpha_\ell\phi_\ell^3 = \sum_m \int_0^t K_{\ell m}(\tau),\phi_m(t-\tau),d\tau + \xi_\ell(t).
-]
+$$
 
-Here, (\xi_\ell(t)) represents thermal fluctuations (noise), and (\zeta_\ell) is the local damping coefficient.
+Here, ($\xi_\ell(t)$) represents thermal fluctuations (noise), and ($\zeta_\ell$) is the local damping coefficient.
 
 This form unifies oscillation, delay, and memory into one generalized field equation.
 
@@ -56,19 +56,19 @@ This form unifies oscillation, delay, and memory into one generalized field equa
 
 The **Mother Frequency** is not postulated but emerges from the curvature of the effective potential (V_{\mathrm{eff}}):
 
-[
+$$
 \omega_*^2 = \frac{\partial^2 V_{\mathrm{eff}}}{\partial \phi^2}\Bigg|_{\phi=0}.
-]
+$$
 
-The potential (V_{\mathrm{eff}}) results from coarse-graining fast modes via the **Mori–Zwanzig projection**, integrating out higher-frequency oscillators. This process defines the hierarchy of layers as successive coarse-grainings of the universal field.
+The potential ($V_{\mathrm{eff}}$) results from coarse-graining fast modes via the **Mori–Zwanzig projection**, integrating out higher-frequency oscillators. This process defines the hierarchy of layers as successive coarse-grainings of the universal field.
 
 ### 3.2 Hierarchical Frequencies
 
 The resonant frequencies follow a multiplicative hierarchy:
 
-[
+$$
 \omega_{\ell+1} = p_\ell,\omega_\ell, \quad p_\ell \in {2,3,5,7}^k.
-]
+$$
 
 Each layer inherits memory and phase information from the previous through the kernel (K_{\ell,\ell-1}).
 When phase-locking is perfect, the hierarchy is stable; when it drifts, temperature and entropy emerge.
@@ -79,22 +79,22 @@ When phase-locking is perfect, the hierarchy is stable; when it drifts, temperat
 
 ### 4.1 Temperature from Fluctuation–Dissipation
 
-Thermal noise (\xi_\ell(t)) and damping (\zeta_\ell) are related by the **fluctuation–dissipation theorem (FDT):**
+Thermal noise ($\xi_\ell(t)$) and damping ($\zeta_\ell$) are related by the **fluctuation–dissipation theorem (FDT):**
 
-[
+$$
 \langle \xi_\ell(t)\xi_m(t')\rangle = 2k_B T_{\mathrm{eff}},\zeta_\ell,\delta_{\ell m},\delta(t-t').
-]
+$$
 
-Here, (T_{\mathrm{eff}}) represents the *effective temperature* associated with the local desynchronization of phases.
-As coherence decreases, (T_{\mathrm{eff}}) increases.
+Here, ($T_{\mathrm{eff}}$) represents the *effective temperature* associated with the local desynchronization of phases.
+As coherence decreases, ($T_{\mathrm{eff}}$) increases.
 
 ### 4.2 Entropy as Phase Dispersion
 
 Define the **resonant entropy** as the logarithm of the accessible coherent phase-space volume:
 
-[
+$$
 S = k_B \ln \int \prod_\ell d\phi_\ell, e^{-\frac{(\phi_\ell-\langle\phi_\ell\rangle)^2}{2\sigma_\ell^2}}.
-]
+$$
 
 Entropy growth corresponds to the spread of phase coherence across layers—memory dilution through resonance.
 
@@ -102,11 +102,11 @@ Entropy growth corresponds to the spread of phase coherence across layers—memo
 
 Expanding the oscillation frequency with temperature yields:
 
-[
+$$
 \frac{\Delta\omega_\ell}{\omega_\ell} \approx -\beta_\ell X - \Gamma X^2 - \Eta d_\ell X,
-]
+$$
 
-where (X = \Theta_D / T_c) (thermal noise proxy) and (d_\ell) is the distance from the innermost layer.
+where ($X = \Theta_D / T_c$) (thermal noise proxy) and ($d_\ell$) is the distance from the innermost layer.
 This formula reproduces the empirical correction laws obtained from Al, Pb, and Nb superconductors.
 
 ---
@@ -115,25 +115,25 @@ This formula reproduces the empirical correction laws obtained from Al, Pb, and 
 
 ### 5.1 Degeneracy Structure
 
-Each layer (\ell) defines a subspace of degenerate oscillation modes with dimension (n_\ell).
-If the coupling matrix (K_{\ell m}) respects degeneracies of **3, 2, and 1**, the global resonance symmetry naturally becomes:
+Each layer ($\ell$) defines a subspace of degenerate oscillation modes with dimension ($n_\ell$).
+If the coupling matrix ($K_{\ell m$}) respects degeneracies of **3, 2, and 1**, the global resonance symmetry naturally becomes:
 
-[
+$$
 G_{\mathrm{res}} = SU(3) \times SU(2) \times U(1).
-]
+$$
 
 This group structure is not imposed but **emerges** from the combinatorial degeneracy of phase-locked resonances.
 
 ### 5.2 Field Interaction Mapping
 
-Define the field vector (\Phi = (\phi_1,\phi_2,\ldots)).
+Define the field vector ($\Phi = (\phi_1,\phi_2,\ldots)$).
 The effective gauge-like interaction arises from the symmetry of the kernel:
 
-[
+$$
 \mathcal{L}*{\mathrm{int}} = \frac{1}{2}\sum*{\ell m} (\partial_t\Phi_\ell),K_{\ell m},(\partial_t\Phi_m).
-]
+$$
 
-When (K_{\ell m}) takes a block-diagonal form corresponding to subspaces of dimensions 3, 2, and 1, it produces **gauge-invariant transformations** equivalent to the Standard Model group.
+When ($K_{\ell m}$) takes a block-diagonal form corresponding to subspaces of dimensions 3, 2, and 1, it produces **gauge-invariant transformations** equivalent to the Standard Model group.
 
 Thus, gauge symmetry is reinterpreted as **resonant degeneracy symmetry**.
 
@@ -144,7 +144,7 @@ Thus, gauge symmetry is reinterpreted as **resonant degeneracy symmetry**.
 To progress from heuristic to testable physics, DOFT proposes concrete predictions:
 
 1. **Superconducting Tc Prediction**
-   \(T_c^{\mathrm{pred}} = \Theta_D / X_{\mathrm{DOFT}}\) where (X_{\mathrm{DOFT}}\) is extracted from prime-locking ratios (e.g., 1050, 210).
+   $\(T_c^{\mathrm{pred}} = \Theta_D / X_{\mathrm{DOFT}}\) where (X_{\mathrm{DOFT}}\)$ is extracted from prime-locking ratios (e.g., 1050, 210).
    Cross-check: predicted (T_c) for Pb, Nb, Al match experimental values within 10%.
 
 2. **Resonance Ratios Across Scales**
@@ -159,7 +159,7 @@ To progress from heuristic to testable physics, DOFT proposes concrete predictio
    Simulation of oscillator networks with degeneracy patterns 3,2,1 should yield **stable resonant attractors** corresponding to SU(3)×SU(2)×U(1) symmetry.
 
 4. **Thermal Drift Measurement**
-   The relation (\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X) can be measured directly in superconducting and phononic systems.
+   The relation $(\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X)$ can be measured directly in superconducting and phononic systems.
 
 ---
 
