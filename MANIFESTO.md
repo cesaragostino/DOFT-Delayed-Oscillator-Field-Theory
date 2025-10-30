@@ -116,7 +116,7 @@ This formula reproduces the empirical correction laws obtained from Al, Pb, and 
 ### 5.1 Degeneracy Structure
 
 Each layer ($\ell$) defines a subspace of degenerate oscillation modes with dimension ($n_\ell$).
-If the coupling matrix ($K_{\ell m$}) respects degeneracies of **3, 2, and 1**, the global resonance symmetry naturally becomes:
+If the coupling matrix ($K_{\ell m$}$) respects degeneracies of **3, 2, and 1**, the global resonance symmetry naturally becomes:
 
 $$
 G_{\mathrm{res}} = SU(3) \times SU(2) \times U(1).
@@ -126,7 +126,7 @@ This group structure is not imposed but **emerges** from the combinatorial degen
 
 ### 5.2 Field Interaction Mapping
 
-Define the field vector ($\Phi = (\phi_1,\phi_2,\ldots)$).
+Define the field vector $(\Phi = (\phi_1,\phi_2,\ldots))$.
 The effective gauge-like interaction arises from the symmetry of the kernel:
 
 $$
@@ -144,7 +144,7 @@ Thus, gauge symmetry is reinterpreted as **resonant degeneracy symmetry**.
 To progress from heuristic to testable physics, DOFT proposes concrete predictions:
 
 1. **Superconducting Tc Prediction**
-   $\(T_c^{\mathrm{pred}} = \Theta_D / X_{\mathrm{DOFT}}\) where (X_{\mathrm{DOFT}}\)$ is extracted from prime-locking ratios (e.g., 1050, 210).
+   \(T_c^{\mathrm{pred}} = \Theta_D / X_{\mathrm{DOFT}}\) where (X_{\mathrm{DOFT}}\) is extracted from prime-locking ratios (e.g., 1050, 210).
    Cross-check: predicted (T_c) for Pb, Nb, Al match experimental values within 10%.
 
 2. **Resonance Ratios Across Scales**
@@ -159,7 +159,7 @@ To progress from heuristic to testable physics, DOFT proposes concrete predictio
    Simulation of oscillator networks with degeneracy patterns 3,2,1 should yield **stable resonant attractors** corresponding to SU(3)×SU(2)×U(1) symmetry.
 
 4. **Thermal Drift Measurement**
-   The relation $(\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X)$ can be measured directly in superconducting and phononic systems.
+   The relation (\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X) can be measured directly in superconducting and phononic systems.
 
 ---
 
