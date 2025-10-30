@@ -20,10 +20,7 @@ The goal of this document is to formalize DOFT mathematically, connecting its in
 
 Let the universe be described by a discrete or continuous field of oscillators ( $\phi_\ell(t)$ ), where each layer $(\ell)$ represents a distinct scale of coherence.
 
-The **Mother Frequency** ($\omega_*$) is defined as the natural frequency of the innermost coherent layer. All other layers emerge as resonant projections or harmonics of ($\omega_*$):
-
 The **Mother Frequency** $\omega^{\ast}$ is defined as the natural frequency of the innermost coherent layer. All other layers emerge as resonant projections or harmonics of $\omega^{\ast}$:
-
 
 $$
 \omega_\ell = r_\ell,\omega_*, \quad r_\ell \in \mathbb{Q}^+,\text{ derived from } {2,3,5,7}\text{ products.}
