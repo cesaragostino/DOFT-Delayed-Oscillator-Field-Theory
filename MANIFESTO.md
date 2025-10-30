@@ -44,7 +44,7 @@ $$
 \ddot{\phi}*\ell + 2\zeta*\ell\omega_\ell\dot{\phi}*\ell + \omega*\ell^2\phi_\ell + \alpha_\ell\phi_\ell^3 = \sum_m \int_0^t K_{\ell m}(\tau),\phi_m(t-\tau),d\tau + \xi_\ell(t).
 $$
 
-Here, ($\xi_\ell(t)$) represents thermal fluctuations (noise), and ($\zeta_\ell$) is the local damping coefficient.
+Here, $(\xi_\ell(t))$ represents thermal fluctuations (noise), and ($\zeta_\ell$) is the local damping coefficient.
 
 This form unifies oscillation, delay, and memory into one generalized field equation.
 
@@ -159,7 +159,7 @@ To progress from heuristic to testable physics, DOFT proposes concrete predictio
    Simulation of oscillator networks with degeneracy patterns 3,2,1 should yield **stable resonant attractors** corresponding to SU(3)×SU(2)×U(1) symmetry.
 
 4. **Thermal Drift Measurement**
-   The relation $(\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X)$ can be measured directly in superconducting and phononic systems.
+   The relation $(\Delta\omega/\omega \propto -\Gamma X^2 - \eta d X)$ can be measured directly in superconducting and phononic systems.
 
 ---
 
