@@ -286,31 +286,35 @@ in the emergent fields.
 
 In DOFT, **temperature** is redefined as the residual *phase noise* that emerges
 when resonant layers of the universal oscillator network are not perfectly
-synchronized with the **mother frequency**.  
+synchronized with the **mother frequency**.
 Heat is not random motion but the measurable footprint of **memory collisions** —
 tiny mismatches of phase between successive layers of coherence.
 
 Lowering temperature corresponds to **reducing dephasing** and restoring
-alignment with the inner resonance.  
+alignment with the inner resonance.
 Superconductors and superfluids do not invent new order;
 they simply **unveil** the coherence that was already present once noise subsides.
 
 The thermodynamic landscape of DOFT can be visualized as a chain of
 resonant transformations, linking the invisible substrate to the
 observable world:
+
+```
 Resonant substrate
-↓
+        ↓
 Mother frequency (self-coherent origin)
-↓
+        ↓
 Layer shifting and collective resonance
-↓
+        ↓
 Phase noise (temperature / thermal field)
-↓
+        ↓
 Observable order and physical forces
+```
 
 At the deepest level, **memory, order, and temperature** are different
-aspects of the same process:  
+aspects of the same process:
 the universe cooling and synchronizing itself with its own foundational rhythm.
+
 
 
 ### Law of Chaos Preservation (LPC / Axiom A0)
