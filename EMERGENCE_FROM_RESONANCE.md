@@ -198,7 +198,7 @@ structures a given frequency band can sustain.
 
 ---
 
-## 9. Left blank to take a break
+## 9. Pause for concept assimilation
 
 ---
 
