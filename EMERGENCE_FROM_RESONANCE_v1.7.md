@@ -20,15 +20,15 @@ The goal is to show that the same **hierarchical resonance mechanism** explains 
 
 From the DOFT action:
 
-$$
+\[
 S = \int dt \sum_\ell \Big[ \tfrac{1}{2}\dot{\phi}_\ell^2 - \tfrac{1}{2}\omega_\ell^2\phi_\ell^2 - \tfrac{\alpha_\ell}{4}\phi_\ell^4 - \sum_m K_{\ell m}(t-t')\,\phi_\ell(t)\phi_m(t') \Big],
-$$
+\]
 
 the Euler–Lagrange equation with memory produces a **frequency response function** for each layer:
 
-\[
+$$
 \omega_{\ell,\mathrm{eff}}^2 = \omega_\ell^2 + \int_0^t K_{\ell\ell}(\tau)\,e^{-i\omega_\ell\tau}\,d\tau.
-\]
+$$
 
 This formalism connects theoretical frequencies \(\omega_\ell\) with **observable resonances** \(\omega_{\ell,\mathrm{eff}}\).  
 Deviations correspond to measurable frequency shifts.
