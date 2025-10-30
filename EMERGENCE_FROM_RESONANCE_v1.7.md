@@ -124,8 +124,8 @@ with global parameters:
 | Parameter | Value | Meaning |
 |:-----------|:-------:|:-----------|
 | $\(\beta\)$ | per layer | linear noise coupling |
-| \(\Gamma \approx 2.7\times10^{-7}\) | thermal curvature |
-| \(\Eta \approx 1.3\times10^{-8}\) | memory propagation |
+| $\(\Gamma \approx 2.7\times10^{-7}\)$ | thermal curvature |
+| $\(\Eta \approx 1.3\times10^{-8}\)$ | memory propagation |
 
 These parameters were found to **eliminate the drift of error with distance** from the core, confirming the DOFT assumption that *outer layers amplify inner desynchronizations*.
 
@@ -133,9 +133,9 @@ These parameters were found to **eliminate the drift of error with distance** fr
 
 | Correction | Effect | Physical Origin |
 |:------------|:-------:|:----------------|
-| \(\beta X\) | linear detuning | direct noise impact |
-| \(\Gamma X^2\) | curvature | anharmonic shift |
-| \(\Eta d X\) | drift removal | memory propagation |
+| $\(\beta X\)$ | linear detuning | direct noise impact |
+| $\(\Gamma X^2\)$ | curvature | anharmonic shift |
+| $\(\Eta d X\)$ | drift removal | memory propagation |
 
 ---
 
