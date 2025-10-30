@@ -54,7 +54,7 @@ This form unifies oscillation, delay, and memory into one generalized field equa
 
 ### 3.1 Definition from Effective Potential
 
-The **Mother Frequency** is not postulated but emerges from the curvature of the effective potential (V_{\mathrm{eff}}):
+The **Mother Frequency** is not postulated but emerges from the curvature of the effective potential $(V_{\mathrm{eff}})$:
 
 $$
 \omega_*^2 = \frac{\partial^2 V_{\mathrm{eff}}}{\partial \phi^2}\Bigg|_{\phi=0}.
