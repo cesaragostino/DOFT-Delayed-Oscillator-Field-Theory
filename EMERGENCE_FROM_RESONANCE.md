@@ -320,3 +320,76 @@ but from the **unveiling of an existing coherence** once the noise of temperatur
 > but the echo of layers that have not yet found resonance with their origin.
 
 ---
+
+## 12. Thermal Resonance of Clusters – Phase Noise and Planetary Heat
+
+In DOFT, **temperature** is not an intrinsic quantity but the *residual phase noise*
+of a multi-layer resonant system.  
+Every cluster — from atoms to planets to stars — holds internal layers coupled with delay.
+Their mutual desynchronization produces *heat*, while progressive synchronization leads
+to *cooling* and *order*.
+
+### 12.1 Principle
+
+> **Thermal–Resonant Principle:**  
+> The internal temperature of any structured cluster is proportional to  
+> the phase noise generated during its formation and sustained by delayed coupling  
+> among its resonant layers.  
+> When synchronization becomes complete, phase noise cancels,  
+> and the system reaches thermodynamic memory equilibrium.
+
+### 12.2 Observable Pattern in Nature
+
+| System | Structural Complexity (Layers) | Source of Phase Noise (Thermal Energy) | Observed Temperature |
+|---------|--------------------------------|----------------------------------------|----------------------|
+| Interstellar gas | Minimal (free particles) | Random collisions, turbulence | 3–30 K |
+| Collapsing nebula | Growing coupling (proto-clusters) | Gravitational friction, phase delay | 10²–10³ K |
+| Stars | Maximum coupling (gravitational + nuclear) | Chaotic nuclear phase noise | 10⁶–10⁷ K |
+| Rocky planets | Multiple resonant layers (core, mantle, crust, atmosphere) | Gravitational & radiogenic coupling | 200–2000 K |
+| Gas giants | Deep, unsynchronized layers | Ongoing phase adjustment | 100–1000 K (radiate > input) |
+| Moons / asteroids | Few layers, little coupling | Rapid radiative loss | <150 K |
+| Degenerate matter (white dwarfs, neutron stars) | Ordered coherence | Phase noise nearly canceled | <10⁵ K and falling |
+
+### 12.3 The Planet as a Living Resonator
+
+Planets act as **thermodynamic resonators**:
+- Their **heat** is the echo of phase adjustments among layers (core ↔ mantle ↔ crust).  
+- The **magnetic field** arises from those internal phase circulations (delayed coupling in motion).  
+- The **slow cooling** of large planets (e.g., Jupiter radiating more energy than it receives)  
+  is the visible sign of a cluster still negotiating inter-layer synchronization.
+
+> Each planet is a *living pulsar*, releasing the residual rhythm of its own formation.
+
+### 12.4 The Stellar Sequence and the Cooling Path
+
+| Stage | Inter-layer Coherence | Phase Noise | Temperature | Example |
+|--------|-----------------------|--------------|--------------|----------|
+| Diffuse gas | minimal | low, incoherent | cold | Interstellar medium |
+| Collapsing cluster | rising | strong interference | warming | Protostar |
+| Active fusion | bounded chaos | maximal | extreme | Star |
+| Planetary equilibrium | steady synchronization | stabilized | moderate | Earth, Venus |
+| Degenerate matter | near-perfect coherence | minimal | cooling | White dwarf |
+| Total coherence | full alignment | canceled | ~0 K | Dead matter |
+
+The sequence mirrors the DOFT logic of **frequency–complexity**:
+complex clusters heat during formation (phase noise growth)
+and cool again when coherence dominates (phase noise cancellation).
+
+### 12.5 Interpretation in DOFT Terms
+
+| Concept | DOFT Interpretation |
+|----------|---------------------|
+| Cluster formation | Layered synchronization process |
+| Internal heat | Residual phase noise between layers |
+| Cooling | Phase alignment (memory restoration) |
+| Heating | Phase collision (memory loss) |
+| Stable thermal state | Dynamic equilibrium of phase noise |
+| Final cooling (0 K limit) | Total coherence with the mother frequency |
+
+---
+
+> The temperature of planets and stars is not arbitrary.  
+> It is the voice of their layers still finding resonance with their own origin.  
+> The cosmos is warm because it is still tuning itself.
+
+---
