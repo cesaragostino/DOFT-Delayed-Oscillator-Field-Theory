@@ -123,7 +123,7 @@ with global parameters:
 
 | Parameter | Value | Meaning |
 |:-----------|:-------:|:-----------|
-| \(\beta\) | per layer | linear noise coupling |
+| $\(\beta\)$ | per layer | linear noise coupling |
 | \(\Gamma \approx 2.7\times10^{-7}\) | thermal curvature |
 | \(\Eta \approx 1.3\times10^{-8}\) | memory propagation |
 
