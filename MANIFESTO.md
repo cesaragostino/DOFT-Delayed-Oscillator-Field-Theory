@@ -79,13 +79,13 @@ When phase-locking is perfect, the hierarchy is stable; when it drifts, temperat
 
 ### 4.1 Temperature from Fluctuation–Dissipation
 
-Thermal noise ($\xi_\ell(t)$) and damping ($\zeta_\ell$) are related by the **fluctuation–dissipation theorem (FDT):**
+Thermal noise $(\xi_\ell(t))$ and damping ($\zeta_\ell$) are related by the **fluctuation–dissipation theorem (FDT):**
 
 $$
 \langle \xi_\ell(t)\xi_m(t')\rangle = 2k_B T_{\mathrm{eff}},\zeta_\ell,\delta_{\ell m},\delta(t-t').
 $$
 
-Here, ($T_{\mathrm{eff}}$) represents the *effective temperature* associated with the local desynchronization of phases.
+Here, $(T_{\mathrm{eff}})$ represents the *effective temperature* associated with the local desynchronization of phases.
 As coherence decreases, ($T_{\mathrm{eff}}$) increases.
 
 ### 4.2 Entropy as Phase Dispersion
@@ -159,7 +159,7 @@ To progress from heuristic to testable physics, DOFT proposes concrete predictio
    Simulation of oscillator networks with degeneracy patterns 3,2,1 should yield **stable resonant attractors** corresponding to SU(3)×SU(2)×U(1) symmetry.
 
 4. **Thermal Drift Measurement**
-   The relation (\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X) can be measured directly in superconducting and phononic systems.
+   The relation $(\Delta\omega/\omega \propto -\Gamma X^2 - \Eta d X)$ can be measured directly in superconducting and phononic systems.
 
 ---
 
