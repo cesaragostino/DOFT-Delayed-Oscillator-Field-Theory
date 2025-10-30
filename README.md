@@ -315,6 +315,20 @@ At the deepest level, **memory, order, and temperature** are different
 aspects of the same process:
 the universe cooling and synchronizing itself with its own foundational rhythm.
 
+### Thermal Resonance of Matter
+
+From a DOFT perspective, **heat** is not an independent property of matter but
+the residual *phase noise* of incomplete synchronization within resonant clusters.
+Planets, stars, and even atoms radiate because their internal layers are still
+negotiating coherence with the **mother frequency**.
+
+The observed temperature of a body thus reflects its **degree of inter-layer order**:
+formation increases noise (heating), while synchronization suppresses it (cooling).
+Every structure in the universe is, in this sense, a **living resonator** —
+its warmth is the pulse of its own unfinished resonance.
+
+At the cosmic scale, the **heat of the universe** is simply the trace of its
+ongoing synchronization — a memory of formation still resonating through matter.
 
 
 ### Law of Chaos Preservation (LPC / Axiom A0)
