@@ -30,7 +30,7 @@ $$
 \omega_{\ell,\mathrm{eff}}^2 = \omega_\ell^2 + \int_0^t K_{\ell\ell}(\tau)\,e^{-i\omega_\ell\tau}\,d\tau.
 $$
 
-This formalism connects theoretical frequencies \(\omega_\ell\) with **observable resonances** $\(\omega_{\ell,\mathrm{eff}}\)$.  
+This formalism connects theoretical frequencies $\(\omega_\ell\)$ with **observable resonances** $\(\omega_{\ell,\mathrm{eff}}\)$.  
 Deviations correspond to measurable frequency shifts.
 
 ### 2.2 Layer Coarse-Graining
@@ -96,7 +96,7 @@ The resulting value aligns with the **electroweak scale**, identifying the vacuu
 ### 4.2 Physical Interpretation
 
 - $\(\omega_\*\)$: frequency of perfect coherence.
-- Each subsequent \(\omega_\ell\): projection through noise and delay kernels.
+- Each subsequent $\(\omega_\ell\)$: projection through noise and delay kernels.
 - The apparent temperature floor of matter corresponds to the **residual noise** of this projection cascade.
 
 ---
@@ -125,7 +125,7 @@ with global parameters:
 |:-----------|:-------:|:-----------|
 | $\(\beta\)$ | per layer | linear noise coupling |
 | $\(\Gamma \approx 2.7\times10^{-7}\)$ | thermal curvature |
-| $\(\Eta \approx 1.3\times10^{-8}\)$ | memory propagation |
+| $\(\eta \approx 1.3\times10^{-8}\)$ | memory propagation |
 
 These parameters were found to **eliminate the drift of error with distance** from the core, confirming the DOFT assumption that *outer layers amplify inner desynchronizations*.
 
@@ -135,7 +135,7 @@ These parameters were found to **eliminate the drift of error with distance** fr
 |:------------|:-------:|:----------------|
 | $\(\beta X\)$ | linear detuning | direct noise impact |
 | $\(\Gamma X^2\)$ | curvature | anharmonic shift |
-| $\(\Eta d X\)$ | drift removal | memory propagation |
+| $\(\eta d X\)$ | drift removal | memory propagation |
 
 ---
 
