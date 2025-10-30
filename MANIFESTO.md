@@ -144,7 +144,7 @@ Thus, gauge symmetry is reinterpreted as **resonant degeneracy symmetry**.
 To progress from heuristic to testable physics, DOFT proposes concrete predictions:
 
 1. **Superconducting Tc Prediction**
-   \(T_c^{\mathrm{pred}} = \Theta_D / X_{\mathrm{DOFT}}\) where (X_{\mathrm{DOFT}}\) is extracted from prime-locking ratios (e.g., 1050, 210).
+   $\(T_c^{\mathrm{pred}} = \Theta_D / X_{\mathrm{DOFT}}\) where (X_{\mathrm{DOFT}}\)$ is extracted from prime-locking ratios (e.g., 1050, 210).
    Cross-check: predicted (T_c) for Pb, Nb, Al match experimental values within 10%.
 
 2. **Resonance Ratios Across Scales**
