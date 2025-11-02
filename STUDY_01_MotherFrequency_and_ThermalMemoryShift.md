@@ -137,7 +137,7 @@ These values were obtained by fitting Al, Pb, Nb superconductors and elimina
 * The quadratic term (ΓX²) represents **anharmonic correction**.
 * The propagation term (Η d X) models **phase‑memory amplification**, explaining why outer layers exhibit greater deviation if uncorrected.
 
-# 4.4 Constrained and Robust Fit (Metals Family)
+### 4.4 Constrained and Robust Fit (Metals Family)
 
 ### Overview
 
