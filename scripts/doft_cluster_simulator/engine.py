@@ -33,6 +33,9 @@ class SimulationEngine:
     def run(self) -> ReportBundle:
         subnet_results: Dict[str, SubnetSimulation] = {}
         for subnet_name in self.config.subnets:
+            subnet_cfg = self.config.subnet_configs.get(subnet_name)
+            if subnet_cfg is not None and not subnet_cfg.enabled:
+                continue
             target = self.dataset.subnets.get(f"{self.config.material}_{subnet_name}")
             if target is None:
                 raise KeyError(f"Missing target for subnet '{subnet_name}'")
@@ -43,6 +46,8 @@ class SimulationEngine:
                 max_evals=self.max_evals,
                 rng=self.rng,
                 anchor=anchor,
+                subnet_config=subnet_cfg,
+                random_starts=self.config.optimization.n_random_starts,
             )
             result = optimizer.optimise(target)
             subnet_results[subnet_name] = SubnetSimulation(
@@ -60,6 +65,9 @@ class SimulationEngine:
         return bundle
 
     def _lookup_anchor(self, subnet_name: str) -> Optional[float]:
+        subnet_cfg = self.config.subnet_configs.get(subnet_name)
+        if subnet_cfg and subnet_cfg.f0_anchor is not None:
+            return subnet_cfg.f0_anchor
         anchor_data = self.config.anchors.get(subnet_name)
         if anchor_data is None:
             return None

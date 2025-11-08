@@ -3,16 +3,16 @@
     "e_exp": [0.7953, 0.6613, 0.5197, 0.3120],
     "q_exp": null,
     "residual_exp": -0.008642,
-    "input_exponents": [1, 0, 0, 0],
-    "notes": "q_exp no disponible en tablas factorized; usar null y desactivar w_q sólo aquí."
+    "input_exponents": [1, 0, 0, 0]
   },
   "MgB2_pi": {
-    "e_exp": [1.2280, 0.7565, 0.2525, 0.4890],
+    "e_exp": [1.228, 0.7565, 0.2525, 0.4890],
     "q_exp": 6.022,
     "residual_exp": -0.006469,
     "input_exponents": [3, 1, 0, 0]
   },
   "MgB2_sigma_vs_pi": {
-    "C_AB_exp": 1.58974
+    "C_AB_exp": 1.58974,
+    "desc": "gap(sigma)/gap(pi)"
   }
 }

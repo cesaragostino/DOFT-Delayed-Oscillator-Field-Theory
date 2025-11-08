@@ -73,11 +73,25 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
 def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
     config = {
         "material": "MgB2",
-        "sub_networks": [
-            {"name": "MgB2_sigma", "X_anchor": 20.8},
-            {"name": "MgB2_pi", "X_anchor": 19.2},
-        ],
-        "contrasts": [{"type": "sigma-vs-pi", "A": "MgB2_sigma", "B": "MgB2_pi", "C_AB_exp": 1.58974}],
+        "sub_networks": {
+            "sigma": {
+                "enabled": True,
+                "L_candidates": [1, 2],
+                "f0_anchor": 20.8,
+                "f0_range": [19.5, 21.0],
+                "init": {"L": 1, "ratios": {"2": 0.01, "7": 0.02}},
+                "bounds": {"ratio_abs_max": 0.15},
+            },
+            "pi": {
+                "enabled": True,
+                "L_candidates": [2],
+                "f0_anchor": 19.2,
+            },
+        },
+        "contrasts": {
+            "sigma_vs_pi": {"enabled": True, "target": 1.58974, "type": "gap_ratio"}
+        },
+        "optimization": {"n_random_starts": 5, "seed": 17},
     }
     path = tmp_path / "config.json"
     path.write_text(json.dumps(config))
@@ -85,5 +99,11 @@ def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
     parsed = MaterialConfig.from_file(path)
     assert parsed.subnets == ["sigma", "pi"]
     assert parsed.anchors["sigma"]["X"] == 20.8
+    assert parsed.subnet_configs["sigma"].l_candidates == [1, 2]
+    assert parsed.subnet_configs["sigma"].f0_range == (19.5, 21.0)
+    assert parsed.subnet_configs["sigma"].init_ratios["r2"] == 0.01
+    assert parsed.subnet_configs["sigma"].ratio_abs_max == 0.15
+    assert parsed.optimization.n_random_starts == 5
     assert parsed.contrasts[0].subnet_a == "MgB2_sigma"
+    assert parsed.contrasts[0].label == "gap_ratio"
     assert parsed.contrasts[0].value == 1.58974
