@@ -9,7 +9,7 @@ import csv
 import json
 from datetime import datetime
 
-from .data import LossWeights, MaterialConfig, SubnetParameters, TargetDataset
+from .data import ContrastTarget, LossWeights, MaterialConfig, SubnetParameters
 from .loss import LossBreakdown
 from .results import SubnetSimulation
 
@@ -182,11 +182,16 @@ def compute_contrast_value(a: SubnetReport, b: SubnetReport) -> float:
     return scale_a / max(scale_b, 1e-6)
 
 
+def _strip_material_prefix(name: str, material: str) -> str:
+    prefix = f"{material}_"
+    return name[len(prefix) :] if name.startswith(prefix) else name
+
+
 def create_report_bundle(
     config: MaterialConfig,
-    dataset: TargetDataset,
     weights: LossWeights,
     subnet_results: Dict[str, SubnetSimulation],
+    contrast_targets: List[ContrastTarget],
 ) -> ReportBundle:
     sub_reports: Dict[str, SubnetReport] = {}
     total_loss = 0.0
@@ -203,16 +208,19 @@ def create_report_bundle(
         total_loss += result.loss.total
 
     contrast_reports: List[ContrastReport] = []
-    for contrast in dataset.contrasts:
-        a_name = contrast.subnet_a.split(f"{config.material}_")[-1]
-        b_name = contrast.subnet_b.split(f"{config.material}_")[-1]
+    for contrast in contrast_targets:
+        if contrast.value is None:
+            continue
+        a_name = _strip_material_prefix(contrast.subnet_a, config.material)
+        b_name = _strip_material_prefix(contrast.subnet_b, config.material)
         report_a = sub_reports.get(a_name)
         report_b = sub_reports.get(b_name)
         if report_a is None or report_b is None:
             continue
         simulated = compute_contrast_value(report_a, report_b)
-        loss = ((simulated - contrast.value) ** 2) * weights.w_c
-        contrast_reports.append(ContrastReport(pair=f"{a_name}_vs_{b_name}", target=contrast.value, simulated=simulated, loss=loss))
+        loss = abs(simulated - contrast.value) * weights.w_c
+        label = contrast.label or f"{a_name}_vs_{b_name}"
+        contrast_reports.append(ContrastReport(pair=label, target=contrast.value, simulated=simulated, loss=loss))
         total_loss += loss
 
     timestamp = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
@@ -224,4 +232,3 @@ def create_report_bundle(
         total_loss=total_loss,
         timestamp=timestamp,
     )
-

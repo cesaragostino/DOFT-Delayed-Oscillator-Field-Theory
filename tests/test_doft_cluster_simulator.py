@@ -20,13 +20,14 @@ def test_target_dataset_handles_missing_values(tmp_path: Path) -> None:
 
     dataset = TargetDataset.from_file(path)
     assert dataset.subnets["MgB2_sigma"].q_exp is None
+    assert dataset.subnets["MgB2_sigma"].use_q is False
     assert dataset.contrasts[0].subnet_b == "MgB2_pi"
 
 
 def test_loss_gates_missing_terms() -> None:
     params = SubnetParameters(L=2, f0=1.5, ratios={"r2": 1.0, "r3": 0.5, "r5": 0.2, "r7": 0.1}, delta={"d2": 0.0, "d3": 0.0, "d5": 0.0, "d7": 0.0}, layer_assignment=[1, 1, 2, 2])
     simulation = SimulationResult(e_sim=[1.0, 0.8, 0.2, 0.4], q_sim=None, residual_sim=-0.015, layer_factors=[1.0, 1.0, 1.18, 1.18])
-    target = SubnetTarget(e_exp=[1.0, 0.7, None, None], q_exp=None, residual_exp=None)
+    target = SubnetTarget(e_exp=[1.0, 0.7, None, None], q_exp=None, residual_exp=None, use_q=False)
     weights = LossWeights(w_e=1.0, w_q=2.0, w_r=3.0)
 
     breakdown = compute_subnet_loss(target, params, simulation, weights, anchor_value=None)
@@ -36,7 +37,12 @@ def test_loss_gates_missing_terms() -> None:
 
 
 def test_engine_runs_end_to_end(tmp_path: Path) -> None:
-    config_data = {"material": "MgB2", "subnets": ["sigma", "pi"], "anchors": {"sigma": {"X": 1.5}, "pi": {"X": 1.6}}}
+    config_data = {
+        "material": "MgB2",
+        "subnets": ["sigma", "pi"],
+        "anchors": {"sigma": {"X": 1.5}, "pi": {"X": 1.6}},
+        "contrasts": [{"type": "sigma-vs-pi", "A": "sigma", "B": "pi", "C_AB_exp": 1.5}],
+    }
     targets = {
         "MgB2_sigma": {"e_exp": [1.0, 0.0, 0.0, 0.0], "q_exp": None, "residual_exp": -0.01},
         "MgB2_pi": {"e_exp": [1.2, 0.7, 0.2, 0.4], "q_exp": 6.0, "residual_exp": -0.02},
@@ -61,4 +67,23 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
     assert (out_dir / "simulation_results.csv").exists()
     assert (out_dir / "report.md").exists()
     assert (out_dir / "manifest.json").exists()
+    assert bundle.contrasts, "Se esperaba al menos un contraste en el bundle"
 
+
+def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
+    config = {
+        "material": "MgB2",
+        "sub_networks": [
+            {"name": "MgB2_sigma", "X_anchor": 20.8},
+            {"name": "MgB2_pi", "X_anchor": 19.2},
+        ],
+        "contrasts": [{"type": "sigma-vs-pi", "A": "MgB2_sigma", "B": "MgB2_pi", "C_AB_exp": 1.58974}],
+    }
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(config))
+
+    parsed = MaterialConfig.from_file(path)
+    assert parsed.subnets == ["sigma", "pi"]
+    assert parsed.anchors["sigma"]["X"] == 20.8
+    assert parsed.contrasts[0].subnet_a == "MgB2_sigma"
+    assert parsed.contrasts[0].value == 1.58974

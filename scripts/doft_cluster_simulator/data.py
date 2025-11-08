@@ -38,6 +38,7 @@ class SubnetTarget:
     q_exp: Optional[float] = None
     residual_exp: Optional[float] = None
     input_exponents: Optional[List[int]] = None
+    use_q: bool = True
 
     @classmethod
     def from_dict(cls, data: Dict[str, object]) -> "SubnetTarget":
@@ -67,11 +68,13 @@ class SubnetTarget:
         if input_exponents is not None:
             input_exponents = [int(v) for v in input_exponents]
 
+        q_clean = None if q_value is None else float(q_value)
         return cls(
             e_exp=_clean_e(data.get("e_exp")),
-            q_exp=None if q_value is None else float(q_value),
+            q_exp=q_clean,
             residual_exp=None if residual_value is None else float(residual_value),
             input_exponents=input_exponents,
+            use_q=q_clean is not None,
         )
 
 
@@ -81,7 +84,8 @@ class ContrastTarget:
 
     subnet_a: str
     subnet_b: str
-    value: float
+    value: Optional[float]
+    label: Optional[str] = None
 
 
 @dataclass
@@ -104,24 +108,71 @@ class SubnetParameters:
         )
 
 
+def _normalize_subnet_name(name: str, material: str) -> str:
+    prefix = f"{material}_"
+    if name.startswith(prefix):
+        return name[len(prefix) :]
+    return name
+
+
 @dataclass
 class MaterialConfig:
-    """Description of the material and available subnets."""
+    """Description of the material, subnets, anchors, and optional contrasts."""
 
     material: str
     subnets: List[str]
     anchors: Dict[str, Dict[str, float]]
+    contrasts: List[ContrastTarget] = field(default_factory=list)
 
     @classmethod
     def from_file(cls, path: Path) -> "MaterialConfig":
         data = json.loads(Path(path).read_text())
         material = str(data["material"])
-        subnets = [str(name) for name in data["subnets"]]
+
+        raw_subnets: Optional[List[str]] = data.get("subnets")
+        if raw_subnets is None:
+            raw_subnets = [str(entry["name"]) for entry in data.get("sub_networks", [])]
+        if not raw_subnets:
+            raise ValueError("material_config.json debe incluir al menos una subred")
+        subnets = [_normalize_subnet_name(str(name), material) for name in raw_subnets]
+
         anchors: Dict[str, Dict[str, float]] = {}
-        raw_anchors = data.get("anchors", {})
-        for subnet, anchor_data in raw_anchors.items():
-            anchors[subnet] = {key: float(value) for key, value in anchor_data.items()}
-        return cls(material=material, subnets=subnets, anchors=anchors)
+        raw_anchors = data.get("anchors")
+        if isinstance(raw_anchors, dict):
+            for subnet, anchor_data in raw_anchors.items():
+                normalized = _normalize_subnet_name(str(subnet), material)
+                if normalized not in subnets:
+                    continue
+                anchors[normalized] = {key: float(value) for key, value in anchor_data.items()}
+        elif data.get("sub_networks"):
+            for entry in data["sub_networks"]:
+                name = _normalize_subnet_name(str(entry.get("name")), material)
+                if name not in subnets or "X_anchor" not in entry:
+                    continue
+                anchors[name] = {"X": float(entry["X_anchor"]) }
+
+        contrasts: List[ContrastTarget] = []
+        for entry in data.get("contrasts", []):
+            a_raw = entry.get("A") or entry.get("a")
+            b_raw = entry.get("B") or entry.get("b")
+            if a_raw is None or b_raw is None:
+                raise ValueError("Cada contraste debe definir los campos 'A' y 'B'")
+            a_name = _normalize_subnet_name(str(a_raw), material)
+            b_name = _normalize_subnet_name(str(b_raw), material)
+            if a_name not in subnets or b_name not in subnets:
+                raise ValueError(f"Contraste inválido: {a_name} o {b_name} no definidos en subnets")
+            value = entry.get("C_AB_exp")
+            label = entry.get("type")
+            contrasts.append(
+                ContrastTarget(
+                    subnet_a=f"{material}_{a_name}",
+                    subnet_b=f"{material}_{b_name}",
+                    value=float(value) if value is not None else None,
+                    label=str(label) if label else None,
+                )
+            )
+
+        return cls(material=material, subnets=subnets, anchors=anchors, contrasts=contrasts)
 
 
 @dataclass
@@ -164,4 +215,3 @@ def load_loss_weights(path: Optional[Path]) -> LossWeights:
     if not isinstance(data, dict):
         raise TypeError("Loss weight file must contain a JSON object")
     return LossWeights.from_json(data)  # type: ignore[arg-type]
-

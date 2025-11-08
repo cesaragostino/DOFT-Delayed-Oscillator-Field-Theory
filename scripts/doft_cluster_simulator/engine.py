@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 import random
 
-from .data import LossWeights, MaterialConfig, TargetDataset
+from .data import ContrastTarget, LossWeights, MaterialConfig, TargetDataset
 from .model import ClusterSimulator
 from .optimizer import SubnetOptimizer
 from .reporting import ReportBundle, create_report_bundle
@@ -53,9 +53,9 @@ class SimulationEngine:
 
         bundle = create_report_bundle(
             config=self.config,
-            dataset=self.dataset,
             weights=self.weights,
             subnet_results=subnet_results,
+            contrast_targets=self._collect_contrasts(),
         )
         return bundle
 
@@ -65,3 +65,13 @@ class SimulationEngine:
             return None
         return anchor_data.get("X")
 
+    def _collect_contrasts(self) -> List[ContrastTarget]:
+        merged: Dict[tuple[str, str], ContrastTarget] = {}
+        for contrast in self.config.contrasts:
+            merged[(contrast.subnet_a, contrast.subnet_b)] = contrast
+        for contrast in self.dataset.contrasts:
+            key = (contrast.subnet_a, contrast.subnet_b)
+            if contrast.label is None and key in merged and merged[key].label is not None:
+                contrast.label = merged[key].label
+            merged[key] = contrast
+        return list(merged.values())

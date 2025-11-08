@@ -50,18 +50,18 @@ def compute_subnet_loss(
             if value is None:
                 continue
             diff = simulation.e_sim[idx] - value
-            e_terms.append(diff * diff)
+            e_terms.append(abs(diff))
     e_loss = (sum(e_terms) / max(len(e_terms), 1)) * weights.w_e if e_terms else 0.0
 
     q_loss = 0.0
-    if target.q_exp is not None and simulation.q_sim is not None:
+    if target.use_q and target.q_exp is not None and simulation.q_sim is not None:
         diff_q = simulation.q_sim - target.q_exp
-        q_loss = (diff_q * diff_q) * weights.w_q
+        q_loss = abs(diff_q) * weights.w_q
 
     residual_loss = 0.0
     if target.residual_exp is not None:
         diff_r = simulation.residual_sim - target.residual_exp
-        residual_loss = (diff_r * diff_r) * weights.w_r
+        residual_loss = abs(diff_r) * weights.w_r
 
     anchor_loss = 0.0
     if anchor_value is not None:
@@ -70,4 +70,3 @@ def compute_subnet_loss(
 
     total = e_loss + q_loss + residual_loss + anchor_loss
     return LossBreakdown(total=total, e_loss=e_loss, q_loss=q_loss, residual_loss=residual_loss, anchor_loss=anchor_loss)
-
