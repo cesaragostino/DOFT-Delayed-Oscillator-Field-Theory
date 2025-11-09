@@ -1,14 +1,29 @@
-"""Random + local search optimizer for DOFT cluster simulation."""
+"""Adaptive optimizer for DOFT cluster simulation parameters."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import Iterable, List, Optional, Sequence, Tuple
 import random
 
-from .data import DELTA_KEYS, PRIME_KEYS, LossWeights, SubnetConfig, SubnetParameters, SubnetTarget
+import numpy as np
+
+from .data import (
+    DELTA_KEYS,
+    ParameterBounds,
+    PRIME_KEYS,
+    PRIMES,
+    LossWeights,
+    SubnetConfig,
+    SubnetParameters,
+    SubnetTarget,
+)
 from .loss import LossBreakdown, compute_subnet_loss
 from .model import ClusterSimulator
+
+
+RATIO_KEY_BY_PRIME = {prime: key for prime, key in zip(PRIMES, PRIME_KEYS)}
+DELTA_KEY_BY_PRIME = {prime: key for prime, key in zip(PRIMES, DELTA_KEYS)}
 
 
 @dataclass
@@ -21,155 +36,193 @@ class OptimizationResult:
 
 
 class SubnetOptimizer:
-    """Search for parameters that minimise the loss for a subnet."""
+    """Gradient-based search (finite-difference Adam) for subnet parameters."""
 
     def __init__(
         self,
         simulator: ClusterSimulator,
         weights: LossWeights,
-        max_evals: int,
+        bounds: ParameterBounds,
+        max_steps: int,
         rng: random.Random,
         anchor: Optional[float],
         subnet_config: Optional[SubnetConfig],
-        random_starts: Optional[int] = None,
+        freeze_primes: Iterable[int],
+        active_primes: Sequence[int],
+        huber_delta: float,
+        lambda_reg: float,
+        layer: int,
+        seed: int,
     ) -> None:
         self.simulator = simulator
         self.weights = weights
-        self.max_evals = max_evals
-        self.rng = rng
+        self.bounds = bounds
+        self.max_steps = max(1, max_steps)
         self.anchor = anchor
         self.subnet_config = subnet_config
-        self.random_starts = random_starts
-        self.allowed_L = self._derive_allowed_layers()
+        self.freeze_primes = tuple(sorted({int(p) for p in freeze_primes}))
+        self.active_primes = tuple(sorted({int(p) for p in active_primes}))
+        self.huber_delta = huber_delta
+        self.lambda_reg = lambda_reg
+        self.layer = max(1, layer)
+        self.seed_rng = random.Random(seed)
+        self.rng = rng
 
-    def optimise(self, target: SubnetTarget) -> OptimizationResult:
+        self.beta1 = 0.9
+        self.beta2 = 0.999
+        self.learning_rate = 1e-2
+        self.min_learning_rate = 1e-4
+        self.lr_factor = 0.5
+        self.lr_plateau_patience = 20
+        self.early_stopping_patience = 50
+        self.min_delta = 1e-5
+        self.grad_clip = 1.0
+        self.fd_epsilon = 1e-3
+
+        self.active_ratio_keys = self._select_keys(RATIO_KEY_BY_PRIME)
+        self.active_delta_keys = self._select_keys(DELTA_KEY_BY_PRIME)
+        self.vector_size = 1 + len(self.active_ratio_keys) + len(self.active_delta_keys)
+
+    def optimise(self, target: SubnetTarget, target_key: str) -> OptimizationResult:
+        vector = self._initial_vector()
+        m = np.zeros(self.vector_size)
+        v = np.zeros(self.vector_size)
+        lr = self.learning_rate
+
         best_params: Optional[SubnetParameters] = None
         best_loss: Optional[LossBreakdown] = None
         best_result = None
+        best_vector = vector.copy()
+        no_improve_steps = 0
+        plateau_steps = 0
 
-        evaluations = 0
-
-        for candidate in self._initial_candidates():
-            loss, simulation_result = self._evaluate(target, candidate)
-            evaluations += 1
-            if best_loss is None or loss.total < best_loss.total:
-                best_params = candidate
+        for step in range(1, self.max_steps + 1):
+            loss, simulation_result, params = self._evaluate_vector(vector, target, target_key)
+            improved = best_loss is None or (loss.total + self.min_delta) < best_loss.total
+            if improved:
                 best_loss = loss
+                best_params = params
                 best_result = simulation_result
-            if evaluations >= self.max_evals:
+                best_vector = vector.copy()
+                no_improve_steps = 0
+                plateau_steps = 0
+            else:
+                no_improve_steps += 1
+                plateau_steps += 1
+
+            if no_improve_steps >= self.early_stopping_patience and lr <= self.min_learning_rate + 1e-9:
                 break
 
-        random_budget = self.random_starts if self.random_starts is not None else self.max_evals
-        random_budget = max(0, min(self.max_evals - evaluations, random_budget))
-        for _ in range(random_budget):
-            candidate = self._sample_parameters()
-            loss, simulation_result = self._evaluate(target, candidate)
-            evaluations += 1
-            if best_loss is None or loss.total < best_loss.total:
-                best_params = candidate
-                best_loss = loss
-                best_result = simulation_result
+            if plateau_steps >= self.lr_plateau_patience:
+                lr = max(self.min_learning_rate, lr * self.lr_factor)
+                plateau_steps = 0
+
+            grad = self._finite_difference_gradient(vector, target, target_key)
+            grad_norm = float(np.linalg.norm(grad))
+            if grad_norm > self.grad_clip and grad_norm > 0:
+                grad = grad * (self.grad_clip / grad_norm)
+
+            m = self.beta1 * m + (1.0 - self.beta1) * grad
+            v = self.beta2 * v + (1.0 - self.beta2) * (grad * grad)
+            m_hat = m / (1.0 - self.beta1 ** step)
+            v_hat = v / (1.0 - self.beta2 ** step)
+
+            vector = vector - lr * (m_hat / (np.sqrt(v_hat) + 1e-8))
+            vector = self._clamp_vector(vector)
 
         if best_params is None or best_loss is None or best_result is None:
-            raise RuntimeError("No candidate evaluated during optimisation")
-
-        local_budget = min(64, max(0, self.max_evals - evaluations))
-        for _ in range(local_budget):
-            candidate = self._perturb(best_params)
-            loss, simulation_result = self._evaluate(target, candidate)
-            if loss.total < best_loss.total:
-                best_params = candidate
-                best_loss = loss
-                best_result = simulation_result
+            # Fallback to last evaluation
+            best_loss, best_result, best_params = self._evaluate_vector(best_vector, target, target_key)
 
         return OptimizationResult(params=best_params, simulation_loss=best_loss, simulation_result=best_result)
 
-    def _evaluate(self, target: SubnetTarget, params: SubnetParameters) -> Tuple[LossBreakdown, "SimulationResult"]:
-        simulation_result = self.simulator.simulate(params)
-        loss = compute_subnet_loss(target, params, simulation_result, self.weights, self.anchor)
-        return loss, simulation_result
+    # ---- internal helpers -------------------------------------------------
 
-    def _initial_candidates(self) -> List[SubnetParameters]:
-        hints: List[SubnetParameters] = []
-        if self.subnet_config is None:
-            return hints
+    def _select_keys(self, mapping: dict[int, str]) -> List[str]:
+        selected: List[str] = []
+        freeze_set = set(self.freeze_primes)
+        for prime in self.active_primes:
+            if prime in freeze_set:
+                continue
+            key = mapping.get(prime)
+            if key:
+                selected.append(key)
+        return selected
+
+    def _initial_vector(self) -> np.ndarray:
+        vector = np.zeros(self.vector_size, dtype=float)
+        anchor = self.anchor if self.anchor is not None else self._default_f0()
+        vector[0] = self._clamp(anchor, self.bounds.f0)
+        noise_scale = 0.01
+        idx = 1
+        for _ in self.active_ratio_keys:
+            vector[idx] = self.seed_rng.gauss(0.0, noise_scale)
+            idx += 1
+        for _ in self.active_delta_keys:
+            vector[idx] = self.seed_rng.gauss(0.0, noise_scale)
+            idx += 1
+        return self._clamp_vector(vector)
+
+    def _default_f0(self) -> float:
+        lo, hi = self.bounds.f0
+        return 0.5 * (lo + hi)
+
+    def _clamp(self, value: float, bounds: Tuple[float, float]) -> float:
+        lo, hi = bounds
+        return min(max(value, lo), hi)
+
+    def _clamp_vector(self, vector: np.ndarray) -> np.ndarray:
+        vector = vector.copy()
+        vector[0] = self._clamp(float(vector[0]), self.bounds.f0)
+        idx = 1
+        for _ in self.active_ratio_keys:
+            vector[idx] = self._clamp(float(vector[idx]), self.bounds.ratios)
+            idx += 1
+        for _ in self.active_delta_keys:
+            vector[idx] = self._clamp(float(vector[idx]), self.bounds.deltas)
+            idx += 1
+        return vector
+
+    def _vector_to_params(self, vector: np.ndarray) -> SubnetParameters:
         ratios = {key: 0.0 for key in PRIME_KEYS}
-        ratios.update(self.subnet_config.init_ratios)
-        L = self._clamp_L(self.subnet_config.init_L or self.allowed_L[0])
-        f0 = self.subnet_config.f0_anchor or self.anchor or 1.5
-        f0 = self._clamp_f0(f0)
-        delta = {key: 0.0 for key in DELTA_KEYS}
-        layer_assignment = [1 for _ in PRIME_KEYS]
-        hints.append(SubnetParameters(L=L, f0=f0, ratios=ratios, delta=delta, layer_assignment=layer_assignment))
-        return hints
+        deltas = {key: 0.0 for key in DELTA_KEYS}
+        idx = 1
+        for key in self.active_ratio_keys:
+            ratios[key] = float(vector[idx])
+            idx += 1
+        for key in self.active_delta_keys:
+            deltas[key] = float(vector[idx])
+            idx += 1
+        layer_assignment = [self.layer for _ in PRIME_KEYS]
+        return SubnetParameters(L=self.layer, f0=float(vector[0]), ratios=ratios, delta=deltas, layer_assignment=layer_assignment)
 
-    def _sample_parameters(self) -> SubnetParameters:
-        L = self._sample_L()
-        f0 = self._sample_f0()
-        ratios = {key: self._sample_ratio() for key in PRIME_KEYS}
-        delta = {key: self.rng.uniform(-0.2, 0.2) for key in DELTA_KEYS}
-        layer_assignment = [self.rng.randint(1, L) for _ in PRIME_KEYS]
-        return SubnetParameters(L=L, f0=f0, ratios=ratios, delta=delta, layer_assignment=layer_assignment)
+    def _evaluate_vector(
+        self, vector: np.ndarray, target: SubnetTarget, target_key: str
+    ) -> Tuple[LossBreakdown, "SimulationResult", SubnetParameters]:
+        params = self._vector_to_params(vector)
+        simulation_result = self.simulator.simulate(params)
+        loss = compute_subnet_loss(
+            target=target,
+            params=params,
+            simulation=simulation_result,
+            weights=self.weights,
+            anchor_value=self.anchor,
+            subnet_name=target_key,
+            huber_delta=self.huber_delta,
+            lambda_reg=self.lambda_reg,
+            active_ratio_keys=self.active_ratio_keys,
+            active_delta_keys=self.active_delta_keys,
+        )
+        return loss, simulation_result, params
 
-    def _perturb(self, params: SubnetParameters) -> SubnetParameters:
-        candidate = params.copy()
-        candidate.L = self._perturb_L(candidate.L)
-        candidate.f0 = self._clamp_f0(candidate.f0 + self.rng.gauss(0.0, 0.05))
-        for key in PRIME_KEYS:
-            candidate.ratios[key] = self._clamp_ratio(candidate.ratios[key] + self.rng.gauss(0.0, 0.02))
-        for key in DELTA_KEYS:
-            candidate.delta[key] = candidate.delta[key] + self.rng.gauss(0.0, 0.02)
-        candidate.layer_assignment = [
-            max(1, min(candidate.L, layer + self.rng.choice([-1, 0, 1]))) for layer in candidate.layer_assignment
-        ]
-        return candidate
-
-    def _derive_allowed_layers(self) -> List[int]:
-        if self.subnet_config and self.subnet_config.l_candidates:
-            allowed = sorted({max(1, min(3, int(value))) for value in self.subnet_config.l_candidates})
-            return allowed or [1, 2, 3]
-        return [1, 2, 3]
-
-    def _clamp_L(self, value: int) -> int:
-        if value in self.allowed_L:
-            return value
-        return self.allowed_L[0]
-
-    def _sample_L(self) -> int:
-        return self.rng.choice(self.allowed_L)
-
-    def _perturb_L(self, current: int) -> int:
-        if current not in self.allowed_L:
-            return self.allowed_L[0]
-        idx = self.allowed_L.index(current)
-        if len(self.allowed_L) == 1:
-            return current
-        shift = self.rng.choice([-1, 0, 1])
-        new_idx = max(0, min(len(self.allowed_L) - 1, idx + shift))
-        return self.allowed_L[new_idx]
-
-    def _sample_f0(self) -> float:
-        if self.subnet_config and self.subnet_config.f0_range is not None:
-            lo, hi = self.subnet_config.f0_range
-            return self.rng.uniform(lo, hi)
-        anchor = self.subnet_config.f0_anchor if self.subnet_config and self.subnet_config.f0_anchor is not None else self.anchor
-        base = anchor if anchor is not None else 1.5
-        return self._clamp_f0(max(0.25, self.rng.gauss(base, 0.4)))
-
-    def _clamp_f0(self, value: float) -> float:
-        if self.subnet_config and self.subnet_config.f0_range is not None:
-            lo, hi = self.subnet_config.f0_range
-            return min(max(value, lo), hi)
-        return max(0.25, value)
-
-    def _sample_ratio(self) -> float:
-        limit = self.subnet_config.ratio_abs_max if self.subnet_config else None
-        if limit is not None:
-            return self.rng.uniform(-limit, limit)
-        return max(0.0, self.rng.uniform(0.0, 1.5))
-
-    def _clamp_ratio(self, value: float) -> float:
-        limit = self.subnet_config.ratio_abs_max if self.subnet_config else None
-        if limit is not None:
-            return max(-limit, min(limit, value))
-        return max(0.0, value)
+    def _finite_difference_gradient(self, vector: np.ndarray, target: SubnetTarget, target_key: str) -> np.ndarray:
+        grad = np.zeros_like(vector)
+        for idx in range(len(vector)):
+            eps = self.fd_epsilon
+            vector[idx] += eps
+            loss_plus = self._evaluate_vector(vector, target, target_key)[0].total
+            vector[idx] -= 2 * eps
+            loss_minus = self._evaluate_vector(vector, target, target_key)[0].total
+            vector[idx] += eps
+            grad[idx] = (loss_plus - loss_minus) / (2 * eps)
+        return grad

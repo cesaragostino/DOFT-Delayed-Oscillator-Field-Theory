@@ -1,0 +1,16 @@
+{
+  "material": "MgB2",
+  "subnetworks": ["sigma","pi"],
+  "anchors": {
+    "sigma": { "f0": 20.82 },
+    "pi":    { "f0": 19.23 }
+  },
+  "primes": [2,3,5,7],
+  "constraints": {
+    "ratios_bounds":  [-0.25, 0.25],
+    "deltas_bounds":  [-0.35, 0.35],
+    "f0_bounds":      [15.0, 30.0]
+  },
+  "freeze_primes": [], 
+  "layers": { "sigma": 1, "pi": 1 }
+}

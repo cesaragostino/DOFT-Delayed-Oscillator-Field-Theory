@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
-from .data import LossWeights, PRIMES, SubnetParameters, SubnetTarget
+from .data import DELTA_KEYS, LossWeights, PRIME_KEYS, SubnetParameters, SubnetTarget
 from .model import SimulationResult
 
 
@@ -18,6 +18,7 @@ class LossBreakdown:
     q_loss: float
     residual_loss: float
     anchor_loss: float
+    regularization_loss: float
 
     def as_dict(self) -> Dict[str, float]:
         return {
@@ -26,13 +27,8 @@ class LossBreakdown:
             "q": self.q_loss,
             "residual": self.residual_loss,
             "anchor": self.anchor_loss,
+            "regularization": self.regularization_loss,
         }
-
-
-def _safe_len(values: Optional[List[Optional[float]]]) -> int:
-    if values is None:
-        return 0
-    return sum(1 for value in values if value is not None)
 
 
 def compute_subnet_loss(
@@ -41,8 +37,16 @@ def compute_subnet_loss(
     simulation: SimulationResult,
     weights: LossWeights,
     anchor_value: Optional[float],
+    subnet_name: str,
+    huber_delta: float = 0.02,
+    lambda_reg: float = 0.0,
+    active_ratio_keys: Optional[Iterable[str]] = None,
+    active_delta_keys: Optional[Iterable[str]] = None,
 ) -> LossBreakdown:
     """Compute the weighted loss for a subnet."""
+
+    ratio_keys = list(active_ratio_keys) if active_ratio_keys is not None else list(PRIME_KEYS)
+    delta_keys = list(active_delta_keys) if active_delta_keys is not None else list(DELTA_KEYS)
 
     e_terms = []
     if target.e_exp is not None:
@@ -50,23 +54,42 @@ def compute_subnet_loss(
             if value is None:
                 continue
             diff = simulation.e_sim[idx] - value
-            e_terms.append(abs(diff))
+            e_terms.append(_huber(diff, huber_delta))
     e_loss = (sum(e_terms) / max(len(e_terms), 1)) * weights.w_e if e_terms else 0.0
 
     q_loss = 0.0
-    if target.use_q and target.q_exp is not None and simulation.q_sim is not None:
+    q_weight = weights.q_weight_for(subnet_name, target.use_q)
+    if q_weight > 0.0 and target.q_exp is not None and simulation.q_sim is not None:
         diff_q = simulation.q_sim - target.q_exp
-        q_loss = abs(diff_q) * weights.w_q
+        q_loss = _huber(diff_q, huber_delta) * q_weight
 
     residual_loss = 0.0
     if target.residual_exp is not None:
         diff_r = simulation.residual_sim - target.residual_exp
-        residual_loss = abs(diff_r) * weights.w_r
+        residual_loss = _huber(diff_r, huber_delta) * weights.w_r
 
     anchor_loss = 0.0
     if anchor_value is not None:
         diff_a = params.f0 - anchor_value
         anchor_loss = (diff_a * diff_a) * weights.w_anchor
 
-    total = e_loss + q_loss + residual_loss + anchor_loss
-    return LossBreakdown(total=total, e_loss=e_loss, q_loss=q_loss, residual_loss=residual_loss, anchor_loss=anchor_loss)
+    reg_terms = [params.ratios.get(key, 0.0) ** 2 for key in ratio_keys]
+    reg_terms += [params.delta.get(key, 0.0) ** 2 for key in delta_keys]
+    regularization_loss = lambda_reg * sum(reg_terms)
+
+    total = e_loss + q_loss + residual_loss + anchor_loss + regularization_loss
+    return LossBreakdown(
+        total=total,
+        e_loss=e_loss,
+        q_loss=q_loss,
+        residual_loss=residual_loss,
+        anchor_loss=anchor_loss,
+        regularization_loss=regularization_loss,
+    )
+
+
+def _huber(value: float, delta: float) -> float:
+    abs_diff = abs(value)
+    if abs_diff <= delta:
+        return 0.5 * abs_diff * abs_diff
+    return delta * (abs_diff - 0.5 * delta)

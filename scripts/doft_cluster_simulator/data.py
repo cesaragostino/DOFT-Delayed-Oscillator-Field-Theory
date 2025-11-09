@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 import json
 import math
 
@@ -12,6 +12,7 @@ import math
 PRIMES: Tuple[int, int, int, int] = (2, 3, 5, 7)
 PRIME_KEYS: Tuple[str, str, str, str] = ("r2", "r3", "r5", "r7")
 DELTA_KEYS: Tuple[str, str, str, str] = ("d2", "d3", "d5", "d7")
+DEFAULT_PRIMES: Tuple[int, ...] = PRIMES
 
 
 @dataclass
@@ -23,11 +24,64 @@ class LossWeights:
     w_r: float = 0.25
     w_c: float = 0.3
     w_anchor: float = 0.05
+    lambda_reg: float = 0.0
+    overrides: Dict[str, Dict[str, float]] = field(default_factory=dict)
 
     @classmethod
     def from_json(cls, data: Dict[str, float]) -> "LossWeights":
-        kwargs = {k: float(v) for k, v in data.items() if hasattr(cls, k)}
-        return cls(**kwargs)
+        kwargs: Dict[str, object] = {}
+        for key, value in data.items():
+            if key == "overrides" and isinstance(value, dict):
+                overrides: Dict[str, Dict[str, float]] = {}
+                for override_key, override_value in value.items():
+                    if not isinstance(override_value, dict):
+                        continue
+                    overrides[override_key] = {str(name): float(weight) for name, weight in override_value.items()}
+                kwargs["overrides"] = overrides
+            elif hasattr(cls, key):
+                kwargs[key] = float(value)
+        return cls(**kwargs)  # type: ignore[arg-type]
+
+    def q_weight_for(self, subnet: str, use_q: bool) -> float:
+        if not use_q:
+            return 0.0
+        override_block = self.overrides.get("q")
+        if override_block and subnet in override_block:
+            return float(override_block[subnet])
+        return self.w_q
+
+
+@dataclass
+class ParameterBounds:
+    """Global bounds applied to simulation parameters."""
+
+    ratios: Tuple[float, float] = (-0.5, 0.5)
+    deltas: Tuple[float, float] = (-0.5, 0.5)
+    f0: Tuple[float, float] = (0.25, 50.0)
+
+    @staticmethod
+    def _clean_pair(values: Optional[Iterable[float]], default: Tuple[float, float]) -> Tuple[float, float]:
+        if values is None:
+            return default
+        items = list(values)
+        if len(items) != 2:
+            return default
+        lo = float(items[0])
+        hi = float(items[1])
+        if hi < lo:
+            lo, hi = hi, lo
+        if lo == hi:
+            hi = lo + 1e-6
+        return (lo, hi)
+
+    @classmethod
+    def from_dict(cls, data: Optional[Dict[str, Iterable[float]]]) -> "ParameterBounds":
+        if not isinstance(data, dict):
+            return cls()
+        ratios = cls._clean_pair(data.get("ratios_bounds"), cls.ratios)
+        deltas = cls._clean_pair(data.get("deltas_bounds"), cls.deltas)
+        f0 = cls._clean_pair(data.get("f0_bounds"), cls.f0)
+        return cls(ratios=ratios, deltas=deltas, f0=f0)
 
 
 @dataclass
@@ -37,6 +91,7 @@ class SubnetConfig:
     name: str
     enabled: bool = True
     l_candidates: List[int] = field(default_factory=lambda: [1, 2, 3])
+    layer: int = 1
     f0_anchor: Optional[float] = None
     f0_range: Optional[Tuple[float, float]] = None
     init_L: Optional[int] = None
@@ -175,7 +230,7 @@ def _parse_subnet_configs(material: str, data: Dict[str, object]) -> Tuple[Dict[
     subnet_configs: Dict[str, SubnetConfig] = {}
     enabled_order: List[str] = []
 
-    raw_networks = data.get("sub_networks")
+    raw_networks = data.get("sub_networks") or data.get("subnetworks")
     if isinstance(raw_networks, dict):
         items = raw_networks.items()
     elif isinstance(raw_networks, list):
@@ -199,7 +254,7 @@ def _parse_subnet_configs(material: str, data: Dict[str, object]) -> Tuple[Dict[
         if subnet_configs[name].enabled:
             enabled_order.append(name)
 
-    raw_subnets = data.get("subnets", [])
+    raw_subnets = data.get("subnets") or data.get("subnetworks") or []
     if isinstance(raw_subnets, list):
         for entry in raw_subnets:
             name = _normalize_subnet_name(str(entry), material)
@@ -218,6 +273,9 @@ def _build_subnet_config(name: str, spec: object) -> SubnetConfig:
     if not isinstance(spec, dict):
         spec = {}
     enabled = bool(spec.get("enabled", True))
+
+    layer_value = spec.get("layer") or spec.get("L") or spec.get("layers")
+    layer = max(1, int(layer_value)) if isinstance(layer_value, (int, float)) else 1
 
     raw_l = spec.get("L_candidates") or spec.get("l_candidates") or spec.get("L_options")
     l_candidates = _clean_l_candidates(raw_l)
@@ -259,6 +317,7 @@ def _build_subnet_config(name: str, spec: object) -> SubnetConfig:
         name=name,
         enabled=enabled,
         l_candidates=l_candidates,
+        layer=layer,
         f0_anchor=f0_anchor,
         f0_range=f0_range,
         init_L=init_L,
@@ -350,6 +409,10 @@ class MaterialConfig:
     material: str
     subnets: List[str]
     anchors: Dict[str, Dict[str, float]]
+    primes: Tuple[int, ...] = DEFAULT_PRIMES
+    constraints: ParameterBounds = field(default_factory=ParameterBounds)
+    freeze_primes: Tuple[int, ...] = field(default_factory=tuple)
+    layers: Dict[str, int] = field(default_factory=dict)
     contrasts: List[ContrastTarget] = field(default_factory=list)
     subnet_configs: Dict[str, SubnetConfig] = field(default_factory=dict)
     optimization: OptimizationSettings = field(default_factory=OptimizationSettings)
@@ -362,15 +425,47 @@ class MaterialConfig:
         if not subnet_order:
             raise ValueError("material_config.json debe incluir al menos una subred habilitada")
 
+        raw_primes = data.get("primes")
+        if isinstance(raw_primes, (list, tuple)) and raw_primes:
+            primes = tuple(int(p) for p in raw_primes)
+        else:
+            primes = DEFAULT_PRIMES
+
+        constraints = ParameterBounds.from_dict(data.get("constraints"))
+
+        raw_freeze = data.get("freeze_primes", [])
+        freeze_primes = tuple(sorted({int(p) for p in raw_freeze if isinstance(p, (int, float))}))
+        freeze_primes = tuple(p for p in freeze_primes if p in primes)
+
         anchors: Dict[str, Dict[str, float]] = {}
         raw_anchors = data.get("anchors")
         if isinstance(raw_anchors, dict):
             for subnet, anchor_data in raw_anchors.items():
                 normalized = _normalize_subnet_name(str(subnet), material)
-                anchors[normalized] = {key: float(value) for key, value in anchor_data.items()}
+                if not isinstance(anchor_data, dict):
+                    continue
+                f0_value = anchor_data.get("f0") or anchor_data.get("X")
+                if f0_value is None:
+                    continue
+                value = float(f0_value)
+                anchors[normalized] = {"f0": value, "X": value}
         for name, subnet_cfg in subnet_configs.items():
-            if subnet_cfg.f0_anchor is not None:
-                anchors.setdefault(name, {"X": float(subnet_cfg.f0_anchor)})
+            if subnet_cfg.f0_anchor is not None and name not in anchors:
+                value = float(subnet_cfg.f0_anchor)
+                anchors[name] = {"f0": value, "X": value}
+
+        layers_input = data.get("layers") if isinstance(data.get("layers"), dict) else {}
+        layers: Dict[str, int] = {}
+        for name in subnet_order:
+            layer_value: Optional[float] = None
+            if isinstance(layers_input, dict) and name in layers_input:
+                layer_value = layers_input[name]
+            elif name in subnet_configs and subnet_configs[name].l_candidates:
+                layer_value = subnet_configs[name].l_candidates[0]
+            layers[name] = max(1, int(layer_value)) if isinstance(layer_value, (int, float)) else 1
+            if name in subnet_configs:
+                subnet_configs[name].layer = layers[name]
+                subnet_configs[name].l_candidates = [layers[name]]
 
         contrasts = _parse_contrasts(material, subnet_order, data.get("contrasts"))
         optimization = OptimizationSettings.from_dict(data.get("optimization"))
@@ -379,6 +474,10 @@ class MaterialConfig:
             material=material,
             subnets=subnet_order,
             anchors=anchors,
+            primes=primes,
+            constraints=constraints,
+            freeze_primes=freeze_primes,
+            layers=layers,
             contrasts=contrasts,
             subnet_configs=subnet_configs,
             optimization=optimization,

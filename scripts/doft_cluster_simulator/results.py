@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Dict, Tuple
 
 from .data import SubnetParameters
 from .loss import LossBreakdown
@@ -17,3 +18,14 @@ class SubnetSimulation:
     loss: LossBreakdown
     simulation_result: SimulationResult
 
+
+@dataclass
+class SimulationRun:
+    """Container for the outcome of a full material run (possibly per seed)."""
+
+    label: str
+    seed: int
+    primes: Tuple[int, ...]
+    freeze_primes: Tuple[int, ...]
+    subnet_results: Dict[str, SubnetSimulation]
+    base_loss: float

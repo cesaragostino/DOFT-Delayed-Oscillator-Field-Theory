@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.doft_cluster_simulator.data import LossWeights, MaterialConfig, SubnetParameters, SubnetTarget, TargetDataset
+from scripts.doft_cluster_simulator.data import LossWeights, MaterialConfig, ParameterBounds, SubnetParameters, SubnetTarget, TargetDataset
 from scripts.doft_cluster_simulator.engine import SimulationEngine
 from scripts.doft_cluster_simulator.loss import compute_subnet_loss
 from scripts.doft_cluster_simulator.model import SimulationResult
@@ -28,19 +28,35 @@ def test_loss_gates_missing_terms() -> None:
     params = SubnetParameters(L=2, f0=1.5, ratios={"r2": 1.0, "r3": 0.5, "r5": 0.2, "r7": 0.1}, delta={"d2": 0.0, "d3": 0.0, "d5": 0.0, "d7": 0.0}, layer_assignment=[1, 1, 2, 2])
     simulation = SimulationResult(e_sim=[1.0, 0.8, 0.2, 0.4], q_sim=None, residual_sim=-0.015, layer_factors=[1.0, 1.0, 1.18, 1.18])
     target = SubnetTarget(e_exp=[1.0, 0.7, None, None], q_exp=None, residual_exp=None, use_q=False)
-    weights = LossWeights(w_e=1.0, w_q=2.0, w_r=3.0)
+    weights = LossWeights(w_e=1.0, w_q=2.0, w_r=3.0, lambda_reg=0.0005)
 
-    breakdown = compute_subnet_loss(target, params, simulation, weights, anchor_value=None)
+    breakdown = compute_subnet_loss(
+        target,
+        params,
+        simulation,
+        weights,
+        anchor_value=None,
+        subnet_name="MgB2_sigma",
+        huber_delta=0.02,
+        lambda_reg=weights.lambda_reg,
+        active_ratio_keys=["r2", "r3"],
+        active_delta_keys=["d2", "d3"],
+    )
     assert breakdown.q_loss == 0.0
     assert breakdown.residual_loss == 0.0
     assert breakdown.e_loss > 0.0
+    assert breakdown.regularization_loss > 0.0
 
 
 def test_engine_runs_end_to_end(tmp_path: Path) -> None:
     config_data = {
         "material": "MgB2",
-        "subnets": ["sigma", "pi"],
-        "anchors": {"sigma": {"X": 1.5}, "pi": {"X": 1.6}},
+        "subnetworks": ["sigma", "pi"],
+        "anchors": {"sigma": {"f0": 1.5}, "pi": {"f0": 1.6}},
+        "primes": [2, 3],
+        "constraints": {"ratios_bounds": [-0.2, 0.2], "deltas_bounds": [-0.3, 0.3], "f0_bounds": [1.0, 2.0]},
+        "freeze_primes": [],
+        "layers": {"sigma": 1, "pi": 1},
         "contrasts": [{"type": "sigma-vs-pi", "A": "sigma", "B": "pi", "C_AB_exp": 1.5}],
     }
     targets = {
@@ -58,16 +74,29 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
     dataset = TargetDataset.from_file(targets_path)
     weights = LossWeights()
 
-    engine = SimulationEngine(config=config, dataset=dataset, weights=weights, max_evals=10, seed=123)
+    engine = SimulationEngine(
+        config=config,
+        dataset=dataset,
+        weights=weights,
+        max_evals=5,
+        seed=123,
+        seed_sweep=1,
+        huber_delta=0.02,
+        bounds_override={
+            "ratios_bounds": (-0.2, 0.2),
+            "deltas_bounds": (-0.3, 0.3),
+            "f0_bounds": (1.0, 2.0),
+        },
+    )
     bundle = engine.run()
     out_dir = tmp_path / "out"
-    bundle.write(out_dir, config_path, targets_path, max_evals=10, seed=123)
+    bundle.write(out_dir, config_path, targets_path, max_evals=5, seed=123)
 
     assert (out_dir / "best_params.json").exists()
     assert (out_dir / "simulation_results.csv").exists()
     assert (out_dir / "report.md").exists()
     assert (out_dir / "manifest.json").exists()
-    assert bundle.contrasts, "Se esperaba al menos un contraste en el bundle"
+    assert bundle.runs[0].contrasts, "Se esperaba al menos un contraste reportado"
 
 
 def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
@@ -88,22 +117,27 @@ def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
                 "f0_anchor": 19.2,
             },
         },
+        "primes": [2, 3, 5, 7],
+        "freeze_primes": [7],
+        "constraints": {"ratios_bounds": [-0.3, 0.3], "deltas_bounds": [-0.4, 0.4], "f0_bounds": [19.0, 22.0]},
+        "layers": {"sigma": 2, "pi": 1},
         "contrasts": {
             "sigma_vs_pi": {"enabled": True, "target": 1.58974, "type": "gap_ratio"}
         },
-        "optimization": {"n_random_starts": 5, "seed": 17},
     }
     path = tmp_path / "config.json"
     path.write_text(json.dumps(config))
 
     parsed = MaterialConfig.from_file(path)
     assert parsed.subnets == ["sigma", "pi"]
-    assert parsed.anchors["sigma"]["X"] == 20.8
-    assert parsed.subnet_configs["sigma"].l_candidates == [1, 2]
+    assert parsed.anchors["sigma"]["f0"] == 20.8
+    assert parsed.subnet_configs["sigma"].layer == 2
     assert parsed.subnet_configs["sigma"].f0_range == (19.5, 21.0)
     assert parsed.subnet_configs["sigma"].init_ratios["r2"] == 0.01
     assert parsed.subnet_configs["sigma"].ratio_abs_max == 0.15
-    assert parsed.optimization.n_random_starts == 5
+    assert parsed.freeze_primes == (7,)
+    assert parsed.primes == (2, 3, 5, 7)
+    assert parsed.layers["sigma"] == 2
     assert parsed.contrasts[0].subnet_a == "MgB2_sigma"
     assert parsed.contrasts[0].label == "gap_ratio"
     assert parsed.contrasts[0].value == 1.58974
