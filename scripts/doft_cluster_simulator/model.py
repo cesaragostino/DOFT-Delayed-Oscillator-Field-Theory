@@ -52,11 +52,12 @@ class ClusterSimulator:
             layer_index = params.layer_assignment[idx] if idx < len(params.layer_assignment) else 1
             layer_index = max(1, min(params.L, layer_index))
             layer_factor = _layer_factor(layer_index)
-            base_value = params.f0 * (1.0 + ratio) * layer_factor + delta
-            raw_levels.append(base_value)
-            e_value = soft_round(base_value, self.softness)
+            base_ratio = ratio * layer_factor + delta
+            e_value = soft_round(base_ratio, self.softness)
             e_sim.append(e_value)
             layer_factors.append(layer_factor)
+            level = params.f0 * (1.0 + 0.1 * base_ratio) + delta
+            raw_levels.append(max(level, 1e-6))
 
         q_sim = self._compute_q(e_sim)
         log_r = self._compute_log_r(raw_levels, params.f0)

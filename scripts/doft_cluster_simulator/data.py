@@ -164,6 +164,8 @@ class SubnetTarget:
                 prime_value *= prime ** exp
 
         q_clean = None if q_value is None else float(q_value)
+        if q_clean is not None:
+            prime_value = q_clean
         return cls(
             e_exp=_clean_e(data.get("e_exp")),
             q_exp=q_clean,

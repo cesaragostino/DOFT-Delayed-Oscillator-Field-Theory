@@ -135,7 +135,8 @@ class SimulationEngine:
             if target is None:
                 raise KeyError(f"Missing target for subnet '{subnet_name}'")
             anchor = self._lookup_anchor(subnet_name)
-            layer = self.config.layers.get(subnet_name, subnet_cfg.layer if subnet_cfg else 1)
+            prime_layers = subnet_cfg.prime_layers if subnet_cfg else self.prime_layers
+            thermal_scale = subnet_cfg.thermal_scale if subnet_cfg else self.config.thermal_scales.get(subnet_name, 0.0)
             run_rng = random.Random(run_seed + idx * 17)
             optimizer = SubnetOptimizer(
                 simulator=self.simulator,
@@ -148,9 +149,9 @@ class SimulationEngine:
                 freeze_primes=freeze_primes,
                 active_primes=active_primes,
                 lambda_reg=self.weights.lambda_reg,
-                prime_layers=self.prime_layers,
+                prime_layers=prime_layers,
                 seed=run_seed + idx * 997,
-                thermal_scale=self.config.thermal_scales.get(subnet_name, 0.0),
+                thermal_scale=thermal_scale,
                 eta=self.eta,
                 prime_value=target.prime_value,
             )
