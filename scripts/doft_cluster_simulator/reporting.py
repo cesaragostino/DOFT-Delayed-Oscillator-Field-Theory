@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import csv
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 import math
 
 from .data import LossWeights, MaterialConfig, SubnetTarget, TargetDataset
@@ -299,7 +299,7 @@ def create_report_bundle(
             if report_a is None or report_b is None or contrast.value is None:
                 continue
             simulated = compute_contrast_value(report_a, report_b)
-            loss = weights.w_c * (simulated - contrast.value) ** 2
+            loss = weights.w_c * abs(simulated - contrast.value)
             contrasts.append(
                 ContrastReport(
                     pair=contrast.label or f"{report_a.name}_vs_{report_b.name}",
@@ -325,7 +325,7 @@ def create_report_bundle(
     aggregates = _compute_aggregate_stats(run_reports)
     ablations = _compute_ablation_stats(run_reports)
     best_run_label = min(run_reports, key=lambda r: r.total_loss).label
-    timestamp = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    timestamp = datetime.now(UTC).replace(microsecond=0).isoformat()
     return ReportBundle(
         material=config.material,
         weights=weights,

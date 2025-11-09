@@ -26,7 +26,7 @@ def test_target_dataset_handles_missing_values(tmp_path: Path) -> None:
 
 def test_loss_gates_missing_terms() -> None:
     params = SubnetParameters(L=2, f0=1.5, ratios={"r2": 1.0, "r3": 0.5, "r5": 0.2, "r7": 0.1}, delta={"d2": 0.0, "d3": 0.0, "d5": 0.0, "d7": 0.0}, layer_assignment=[1, 1, 2, 2])
-    simulation = SimulationResult(e_sim=[1.0, 0.8, 0.2, 0.4], q_sim=None, residual_sim=-0.015, layer_factors=[1.0, 1.0, 1.18, 1.18])
+    simulation = SimulationResult(e_sim=[1.0, 0.8, 0.2, 0.4], q_sim=None, residual_sim=0.0, layer_factors=[1.0, 1.0, 1.18, 1.18], log_r=0.0)
     target = SubnetTarget(e_exp=[1.0, 0.7, None, None], q_exp=None, residual_exp=None, use_q=False)
     weights = LossWeights(w_e=1.0, w_q=2.0, w_r=3.0, lambda_reg=0.0005)
 
@@ -37,7 +37,9 @@ def test_loss_gates_missing_terms() -> None:
         weights,
         anchor_value=None,
         subnet_name="MgB2_sigma",
-        huber_delta=0.02,
+        thermal_scale=0.0,
+        eta=1e-5,
+        prime_value=None,
         lambda_reg=weights.lambda_reg,
         active_ratio_keys=["r2", "r3"],
         active_delta_keys=["d2", "d3"],
@@ -52,16 +54,27 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
     config_data = {
         "material": "MgB2",
         "subnetworks": ["sigma", "pi"],
-        "anchors": {"sigma": {"f0": 1.5}, "pi": {"f0": 1.6}},
-        "primes": [2, 3],
+        "anchors": {"sigma": {"f0": 1.5, "X": 0.2}, "pi": {"f0": 1.6, "X": 0.1}},
+        "primes": {"2": {"layer": 2}, "3": {"layer": 1}},
         "constraints": {"ratios_bounds": [-0.2, 0.2], "deltas_bounds": [-0.3, 0.3], "f0_bounds": [1.0, 2.0]},
         "freeze_primes": [],
-        "layers": {"sigma": 1, "pi": 1},
+        "layers": {"sigma": 2, "pi": 1},
+        "eta": 1e-5,
         "contrasts": [{"type": "sigma-vs-pi", "A": "sigma", "B": "pi", "C_AB_exp": 1.5}],
     }
     targets = {
-        "MgB2_sigma": {"e_exp": [1.0, 0.0, 0.0, 0.0], "q_exp": None, "residual_exp": -0.01},
-        "MgB2_pi": {"e_exp": [1.2, 0.7, 0.2, 0.4], "q_exp": 6.0, "residual_exp": -0.02},
+        "MgB2_sigma": {
+            "e_exp": [1.0, 0.0, 0.0, 0.0],
+            "q_exp": None,
+            "residual_exp": -0.01,
+            "input_exponents": [1, 0, 0, 0],
+        },
+        "MgB2_pi": {
+            "e_exp": [1.2, 0.7, 0.2, 0.4],
+            "q_exp": 6.0,
+            "residual_exp": -0.02,
+            "input_exponents": [3, 1, 0, 0],
+        },
         "MgB2_sigma_vs_pi": {"C_AB_exp": 1.5},
     }
 
@@ -78,10 +91,9 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
         config=config,
         dataset=dataset,
         weights=weights,
-        max_evals=5,
+        max_evals=3,
         seed=123,
         seed_sweep=1,
-        huber_delta=0.02,
         bounds_override={
             "ratios_bounds": (-0.2, 0.2),
             "deltas_bounds": (-0.3, 0.3),
@@ -90,7 +102,7 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
     )
     bundle = engine.run()
     out_dir = tmp_path / "out"
-    bundle.write(out_dir, config_path, targets_path, max_evals=5, seed=123)
+    bundle.write(out_dir, config_path, targets_path, max_evals=3, seed=123)
 
     assert (out_dir / "best_params.json").exists()
     assert (out_dir / "simulation_results.csv").exists()
@@ -117,7 +129,7 @@ def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
                 "f0_anchor": 19.2,
             },
         },
-        "primes": [2, 3, 5, 7],
+        "primes": {"2": {"layer": 2}, "3": {"layer": 1}, "5": {"layer": 1}, "7": {"layer": 1}},
         "freeze_primes": [7],
         "constraints": {"ratios_bounds": [-0.3, 0.3], "deltas_bounds": [-0.4, 0.4], "f0_bounds": [19.0, 22.0]},
         "layers": {"sigma": 2, "pi": 1},
@@ -137,7 +149,9 @@ def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
     assert parsed.subnet_configs["sigma"].ratio_abs_max == 0.15
     assert parsed.freeze_primes == (7,)
     assert parsed.primes == (2, 3, 5, 7)
+    assert parsed.prime_layers[0] == 2
     assert parsed.layers["sigma"] == 2
+    assert parsed.thermal_scales["sigma"] == 0.0
     assert parsed.contrasts[0].subnet_a == "MgB2_sigma"
     assert parsed.contrasts[0].label == "gap_ratio"
     assert parsed.contrasts[0].value == 1.58974

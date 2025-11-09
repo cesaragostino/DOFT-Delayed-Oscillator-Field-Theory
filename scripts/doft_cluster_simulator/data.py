@@ -55,8 +55,8 @@ class LossWeights:
 class ParameterBounds:
     """Global bounds applied to simulation parameters."""
 
-    ratios: Tuple[float, float] = (-0.5, 0.5)
-    deltas: Tuple[float, float] = (-0.5, 0.5)
+    ratios: Tuple[float, float] = (-0.6, 0.6)
+    deltas: Tuple[float, float] = (-0.8, 0.2)
     f0: Tuple[float, float] = (0.25, 50.0)
 
     @staticmethod
@@ -90,13 +90,15 @@ class SubnetConfig:
 
     name: str
     enabled: bool = True
-    l_candidates: List[int] = field(default_factory=lambda: [1, 2, 3])
+    l_candidates: List[int] = field(default_factory=lambda: [1])
     layer: int = 1
+    prime_layers: List[int] = field(default_factory=lambda: [1 for _ in PRIMES])
     f0_anchor: Optional[float] = None
     f0_range: Optional[Tuple[float, float]] = None
     init_L: Optional[int] = None
     init_ratios: Dict[str, float] = field(default_factory=dict)
     ratio_abs_max: Optional[float] = None
+    thermal_scale: float = 0.0
 
 
 @dataclass
@@ -126,6 +128,7 @@ class SubnetTarget:
     q_exp: Optional[float] = None
     residual_exp: Optional[float] = None
     input_exponents: Optional[List[int]] = None
+    prime_value: Optional[float] = None
     use_q: bool = True
 
     @classmethod
@@ -153,8 +156,12 @@ class SubnetTarget:
             residual_value = None
 
         input_exponents = data.get("input_exponents")
+        prime_value = None
         if input_exponents is not None:
             input_exponents = [int(v) for v in input_exponents]
+            prime_value = 1.0
+            for exp, prime in zip(input_exponents, PRIMES):
+                prime_value *= prime ** exp
 
         q_clean = None if q_value is None else float(q_value)
         return cls(
@@ -163,6 +170,7 @@ class SubnetTarget:
             residual_exp=None if residual_value is None else float(residual_value),
             input_exponents=input_exponents,
             use_q=q_clean is not None,
+            prime_value=prime_value,
         )
 
 
@@ -226,7 +234,39 @@ def _normalize_ratio_mapping(values: Optional[Dict[str, object]]) -> Dict[str, f
     return normalized
 
 
-def _parse_subnet_configs(material: str, data: Dict[str, object]) -> Tuple[Dict[str, SubnetConfig], List[str]]:
+def _parse_prime_layers(raw_primes: object) -> Tuple[Tuple[int, ...], Dict[int, int]]:
+    prime_layer_map: Dict[int, int] = {prime: 1 for prime in PRIMES}
+    selected_primes: List[int] = []
+
+    if isinstance(raw_primes, dict):
+        for prime in PRIMES:
+            entry = raw_primes.get(str(prime)) or raw_primes.get(prime)
+            if entry is None:
+                continue
+            selected_primes.append(prime)
+            if isinstance(entry, dict) and "layer" in entry:
+                layer_value = entry.get("layer")
+                if isinstance(layer_value, (int, float)):
+                    prime_layer_map[prime] = max(1, int(layer_value))
+        if not selected_primes:
+            selected_primes = list(PRIMES)
+    elif isinstance(raw_primes, (list, tuple)):
+        normalized = [int(value) for value in raw_primes if isinstance(value, (int, float))]
+        selected_primes = [prime for prime in PRIMES if prime in normalized]
+    else:
+        selected_primes = list(PRIMES)
+
+    if not selected_primes:
+        selected_primes = list(PRIMES)
+
+    return tuple(selected_primes), prime_layer_map
+
+
+def _parse_subnet_configs(
+    material: str,
+    data: Dict[str, object],
+    prime_layer_map: Dict[int, int],
+) -> Tuple[Dict[str, SubnetConfig], List[str]]:
     subnet_configs: Dict[str, SubnetConfig] = {}
     enabled_order: List[str] = []
 
@@ -250,7 +290,7 @@ def _parse_subnet_configs(material: str, data: Dict[str, object]) -> Tuple[Dict[
         if raw_name is None:
             continue
         name = _normalize_subnet_name(str(raw_name), material)
-        subnet_configs[name] = _build_subnet_config(name, spec)
+        subnet_configs[name] = _build_subnet_config(name, spec, prime_layer_map)
         if subnet_configs[name].enabled:
             enabled_order.append(name)
 
@@ -259,17 +299,17 @@ def _parse_subnet_configs(material: str, data: Dict[str, object]) -> Tuple[Dict[
         for entry in raw_subnets:
             name = _normalize_subnet_name(str(entry), material)
             if name not in subnet_configs:
-                subnet_configs[name] = SubnetConfig(name=name)
+                subnet_configs[name] = SubnetConfig(name=name, prime_layers=[prime_layer_map[p] for p in PRIMES])
             if subnet_configs[name].enabled and name not in enabled_order:
                 enabled_order.append(name)
 
     if not subnet_configs and enabled_order:
-        subnet_configs = {name: SubnetConfig(name=name) for name in enabled_order}
+        subnet_configs = {name: SubnetConfig(name=name, prime_layers=[prime_layer_map[p] for p in PRIMES]) for name in enabled_order}
 
     return subnet_configs, enabled_order
 
 
-def _build_subnet_config(name: str, spec: object) -> SubnetConfig:
+def _build_subnet_config(name: str, spec: object, prime_layer_map: Dict[int, int]) -> SubnetConfig:
     if not isinstance(spec, dict):
         spec = {}
     enabled = bool(spec.get("enabled", True))
@@ -313,11 +353,15 @@ def _build_subnet_config(name: str, spec: object) -> SubnetConfig:
         if isinstance(raw_ratio_max, (int, float)) and raw_ratio_max > 0:
             ratio_abs_max = float(raw_ratio_max)
 
+    prime_layers = [prime_layer_map[prime] for prime in PRIMES]
+    layer = max(layer, max(prime_layers, default=1))
+
     return SubnetConfig(
         name=name,
         enabled=enabled,
-        l_candidates=l_candidates,
+        l_candidates=l_candidates or [layer],
         layer=layer,
+        prime_layers=prime_layers,
         f0_anchor=f0_anchor,
         f0_range=f0_range,
         init_L=init_L,
@@ -332,7 +376,7 @@ def _clean_l_candidates(values: object) -> List[int]:
     cleaned = []
     for value in values:
         if isinstance(value, (int, float)):
-            cleaned.append(max(1, min(3, int(value))))
+            cleaned.append(max(1, int(value)))
     deduped = sorted(set(cleaned))
     return deduped
 
@@ -410,9 +454,12 @@ class MaterialConfig:
     subnets: List[str]
     anchors: Dict[str, Dict[str, float]]
     primes: Tuple[int, ...] = DEFAULT_PRIMES
+    prime_layers: List[int] = field(default_factory=lambda: [1 for _ in PRIMES])
     constraints: ParameterBounds = field(default_factory=ParameterBounds)
     freeze_primes: Tuple[int, ...] = field(default_factory=tuple)
     layers: Dict[str, int] = field(default_factory=dict)
+    eta: float = 1.8e-5
+    thermal_scales: Dict[str, float] = field(default_factory=dict)
     contrasts: List[ContrastTarget] = field(default_factory=list)
     subnet_configs: Dict[str, SubnetConfig] = field(default_factory=dict)
     optimization: OptimizationSettings = field(default_factory=OptimizationSettings)
@@ -421,15 +468,10 @@ class MaterialConfig:
     def from_file(cls, path: Path) -> "MaterialConfig":
         data = json.loads(Path(path).read_text())
         material = str(data["material"])
-        subnet_configs, subnet_order = _parse_subnet_configs(material, data)
+        primes, prime_layer_map = _parse_prime_layers(data.get("primes"))
+        subnet_configs, subnet_order = _parse_subnet_configs(material, data, prime_layer_map)
         if not subnet_order:
             raise ValueError("material_config.json debe incluir al menos una subred habilitada")
-
-        raw_primes = data.get("primes")
-        if isinstance(raw_primes, (list, tuple)) and raw_primes:
-            primes = tuple(int(p) for p in raw_primes)
-        else:
-            primes = DEFAULT_PRIMES
 
         constraints = ParameterBounds.from_dict(data.get("constraints"))
 
@@ -444,15 +486,19 @@ class MaterialConfig:
                 normalized = _normalize_subnet_name(str(subnet), material)
                 if not isinstance(anchor_data, dict):
                     continue
-                f0_value = anchor_data.get("f0") or anchor_data.get("X")
-                if f0_value is None:
-                    continue
-                value = float(f0_value)
-                anchors[normalized] = {"f0": value, "X": value}
+                entry: Dict[str, float] = {}
+                f0_value = anchor_data.get("f0") or anchor_data.get("X_anchor") or anchor_data.get("X")
+                x_value = anchor_data.get("X") or anchor_data.get("thermal_X")
+                if f0_value is not None:
+                    entry["f0"] = float(f0_value)
+                if x_value is not None:
+                    entry["X"] = float(x_value)
+                if entry:
+                    anchors[normalized] = entry
         for name, subnet_cfg in subnet_configs.items():
             if subnet_cfg.f0_anchor is not None and name not in anchors:
                 value = float(subnet_cfg.f0_anchor)
-                anchors[name] = {"f0": value, "X": value}
+                anchors[name] = {"f0": value}
 
         layers_input = data.get("layers") if isinstance(data.get("layers"), dict) else {}
         layers: Dict[str, int] = {}
@@ -467,6 +513,18 @@ class MaterialConfig:
                 subnet_configs[name].layer = layers[name]
                 subnet_configs[name].l_candidates = [layers[name]]
 
+        thermal_scales: Dict[str, float] = {}
+        for name in subnet_order:
+            x_value = anchors.get(name, {}).get("X") if name in anchors else None
+            thermal_scales[name] = float(x_value) if isinstance(x_value, (int, float)) else 0.0
+            if name in subnet_configs:
+                subnet_configs[name].thermal_scale = thermal_scales[name]
+
+        eta_value = data.get("eta")
+        if eta_value is None and isinstance(data.get("global_params"), dict):
+            eta_value = data.get("global_params").get("eta")
+        eta = float(eta_value) if isinstance(eta_value, (int, float)) else 1.8e-5
+
         contrasts = _parse_contrasts(material, subnet_order, data.get("contrasts"))
         optimization = OptimizationSettings.from_dict(data.get("optimization"))
 
@@ -475,9 +533,12 @@ class MaterialConfig:
             subnets=subnet_order,
             anchors=anchors,
             primes=primes,
+            prime_layers=[prime_layer_map[prime] for prime in PRIMES],
             constraints=constraints,
             freeze_primes=freeze_primes,
             layers=layers,
+            eta=eta,
+            thermal_scales=thermal_scales,
             contrasts=contrasts,
             subnet_configs=subnet_configs,
             optimization=optimization,

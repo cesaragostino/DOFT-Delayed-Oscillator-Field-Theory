@@ -49,10 +49,12 @@ class SubnetOptimizer:
         subnet_config: Optional[SubnetConfig],
         freeze_primes: Iterable[int],
         active_primes: Sequence[int],
-        huber_delta: float,
         lambda_reg: float,
-        layer: int,
+        prime_layers: Sequence[int],
         seed: int,
+        thermal_scale: float,
+        eta: float,
+        prime_value: Optional[float],
     ) -> None:
         self.simulator = simulator
         self.weights = weights
@@ -62,11 +64,14 @@ class SubnetOptimizer:
         self.subnet_config = subnet_config
         self.freeze_primes = tuple(sorted({int(p) for p in freeze_primes}))
         self.active_primes = tuple(sorted({int(p) for p in active_primes}))
-        self.huber_delta = huber_delta
         self.lambda_reg = lambda_reg
-        self.layer = max(1, layer)
+        self.prime_layers = list(prime_layers) if prime_layers else [1 for _ in PRIMES]
+        self.layer = max(1, max(self.prime_layers))
         self.seed_rng = random.Random(seed)
         self.rng = rng
+        self.thermal_scale = thermal_scale
+        self.eta = eta
+        self.prime_value = prime_value
 
         self.beta1 = 0.9
         self.beta2 = 0.999
@@ -193,7 +198,7 @@ class SubnetOptimizer:
         for key in self.active_delta_keys:
             deltas[key] = float(vector[idx])
             idx += 1
-        layer_assignment = [self.layer for _ in PRIME_KEYS]
+        layer_assignment = list(self.prime_layers)
         return SubnetParameters(L=self.layer, f0=float(vector[0]), ratios=ratios, delta=deltas, layer_assignment=layer_assignment)
 
     def _evaluate_vector(
@@ -208,7 +213,9 @@ class SubnetOptimizer:
             weights=self.weights,
             anchor_value=self.anchor,
             subnet_name=target_key,
-            huber_delta=self.huber_delta,
+            thermal_scale=self.thermal_scale,
+            eta=self.eta,
+            prime_value=self.prime_value,
             lambda_reg=self.lambda_reg,
             active_ratio_keys=self.active_ratio_keys,
             active_delta_keys=self.active_delta_keys,

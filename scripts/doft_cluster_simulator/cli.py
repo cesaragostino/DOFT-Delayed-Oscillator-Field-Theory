@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from .data import MaterialConfig, TargetDataset, load_loss_weights
 from .engine import SimulationEngine
@@ -19,7 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-evals", type=int, default=500, help="Iteraciones máximas del optimizador por subred")
     parser.add_argument("--seed", type=int, default=42, help="Semilla base de RNG")
     parser.add_argument("--freeze-primes", type=int, nargs="*", help="Lista de primos a congelar (r_p=d_p=0)")
-    parser.add_argument("--seed-sweep", type=int, default=1, help="Cantidad de semillas a evaluar")
+    parser.add_argument("--seed-sweep", type=int, default=10, help="Cantidad de semillas a evaluar")
     parser.add_argument(
         "--ablation",
         type=str,

@@ -42,6 +42,8 @@ class SimulationEngine:
         self.global_freeze_primes = set(config.freeze_primes)
         if freeze_primes is not None:
             self.global_freeze_primes.update(int(p) for p in freeze_primes)
+        self.prime_layers = config.prime_layers
+        self.eta = config.eta
 
         if ablation_sets:
             self.ablation_sets = [tuple(int(p) for p in subset) for subset in ablation_sets if subset]
@@ -145,10 +147,12 @@ class SimulationEngine:
                 subnet_config=subnet_cfg,
                 freeze_primes=freeze_primes,
                 active_primes=active_primes,
-                huber_delta=self.huber_delta,
                 lambda_reg=self.weights.lambda_reg,
-                layer=layer,
+                prime_layers=self.prime_layers,
                 seed=run_seed + idx * 997,
+                thermal_scale=self.config.thermal_scales.get(subnet_name, 0.0),
+                eta=self.eta,
+                prime_value=target.prime_value,
             )
             result = optimizer.optimise(target, target_key)
             subnet_results[subnet_name] = SubnetSimulation(

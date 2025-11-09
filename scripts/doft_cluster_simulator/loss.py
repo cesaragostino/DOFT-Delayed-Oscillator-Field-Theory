@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Optional
+import math
 
 from .data import DELTA_KEYS, LossWeights, PRIME_KEYS, SubnetParameters, SubnetTarget
 from .model import SimulationResult
@@ -38,7 +39,9 @@ def compute_subnet_loss(
     weights: LossWeights,
     anchor_value: Optional[float],
     subnet_name: str,
-    huber_delta: float = 0.02,
+    thermal_scale: float = 0.0,
+    eta: float = 0.0,
+    prime_value: Optional[float] = None,
     lambda_reg: float = 0.0,
     active_ratio_keys: Optional[Iterable[str]] = None,
     active_delta_keys: Optional[Iterable[str]] = None,
@@ -53,20 +56,24 @@ def compute_subnet_loss(
         for idx, value in enumerate(target.e_exp):
             if value is None:
                 continue
-            diff = simulation.e_sim[idx] - value
-            e_terms.append(_huber(diff, huber_delta))
-    e_loss = (sum(e_terms) / max(len(e_terms), 1)) * weights.w_e if e_terms else 0.0
+            diff = abs(simulation.e_sim[idx] - value)
+            e_terms.append(diff)
+    e_loss = (sum(e_terms) / len(e_terms)) * weights.w_e if e_terms else 0.0
 
     q_loss = 0.0
     q_weight = weights.q_weight_for(subnet_name, target.use_q)
     if q_weight > 0.0 and target.q_exp is not None and simulation.q_sim is not None:
-        diff_q = simulation.q_sim - target.q_exp
-        q_loss = _huber(diff_q, huber_delta) * q_weight
+        diff_q = abs(simulation.q_sim - target.q_exp)
+        q_loss = diff_q * q_weight
 
     residual_loss = 0.0
-    if target.residual_exp is not None:
-        diff_r = simulation.residual_sim - target.residual_exp
-        residual_loss = _huber(diff_r, huber_delta) * weights.w_r
+    residual_value = simulation.residual_sim
+    if prime_value is not None:
+        residual_value = _compute_residual(simulation.log_r, thermal_scale, eta, prime_value)
+        simulation.residual_sim = residual_value
+    if target.residual_exp is not None and prime_value is not None:
+        diff_r = abs(residual_value - target.residual_exp)
+        residual_loss = diff_r * weights.w_r
 
     anchor_loss = 0.0
     if anchor_value is not None:
@@ -88,8 +95,7 @@ def compute_subnet_loss(
     )
 
 
-def _huber(value: float, delta: float) -> float:
-    abs_diff = abs(value)
-    if abs_diff <= delta:
-        return 0.5 * abs_diff * abs_diff
-    return delta * (abs_diff - 0.5 * delta)
+def _compute_residual(log_r: float, thermal_scale: float, eta: float, prime_value: float) -> float:
+    eps = 1e-12
+    log_corr = log_r - eta * thermal_scale
+    return log_corr - math.log(max(prime_value, eps))
