@@ -148,6 +148,7 @@ class SimulationEngine:
             anchor = self._lookup_anchor(subnet_name)
             prime_layers = subnet_cfg.prime_layers if subnet_cfg else self.prime_layers
             thermal_scale = subnet_cfg.thermal_scale if subnet_cfg else self.config.thermal_scales.get(subnet_name, 0.0)
+            ratio_bounds, delta_bounds, ratio_map, delta_map = self._build_bound_maps(subnet_cfg)
             run_rng = random.Random(run_seed + idx * 17)
             optimizer = SubnetOptimizer(
                 simulator=self.simulator,
@@ -165,6 +166,10 @@ class SimulationEngine:
                 thermal_scale=thermal_scale,
                 eta=self.eta,
                 prime_value=target.prime_value,
+                ratio_bounds=ratio_bounds,
+                delta_bounds=delta_bounds,
+                ratio_bounds_by_key=ratio_map,
+                delta_bounds_by_key=delta_map,
             )
             result = optimizer.optimise(target, target_key)
             subnet_results[subnet_name] = SubnetSimulation(
@@ -178,6 +183,25 @@ class SimulationEngine:
     def _build_run_label(self, seed: int, primes: Sequence[int]) -> str:
         primes_label = ",".join(str(p) for p in primes)
         return f"seed={seed}|primes={primes_label}"
+
+    def _build_bound_maps(self, subnet_cfg: Optional['SubnetConfig']) -> Tuple[Tuple[float, float], Tuple[float, float], Dict[str, Tuple[float, float]], Dict[str, Tuple[float, float]]]:
+        ratio_bounds = self.bounds.ratios
+        delta_bounds = self.bounds.deltas
+        ratio_map: Dict[str, Tuple[float, float]] = {key: ratio_bounds for key in ('r2','r3','r5','r7')}
+        delta_map: Dict[str, Tuple[float, float]] = {key: delta_bounds for key in ('d2','d3','d5','d7')}
+        if subnet_cfg is not None:
+            if subnet_cfg.ratio_bounds is not None:
+                ratio_bounds = subnet_cfg.ratio_bounds
+            if subnet_cfg.delta_bounds is not None:
+                delta_bounds = subnet_cfg.delta_bounds
+            for key, bounds in subnet_cfg.ratio_bounds_by_prime.items():
+                ratio_map[key] = bounds
+            for key, bounds in subnet_cfg.delta_bounds_by_prime.items():
+                delta_map[key] = bounds
+        else:
+            ratio_map = {key: ratio_bounds for key in ('r2','r3','r5','r7')}
+            delta_map = {key: delta_bounds for key in ('d2','d3','d5','d7')}
+        return ratio_bounds, delta_bounds, ratio_map, delta_map
 
     def _resolve_bounds(self, override: Optional[Dict[str, Tuple[float, float]]]) -> ParameterBounds:
         if not override:

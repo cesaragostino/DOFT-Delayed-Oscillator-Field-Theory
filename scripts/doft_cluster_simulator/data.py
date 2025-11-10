@@ -99,6 +99,10 @@ class SubnetConfig:
     init_ratios: Dict[str, float] = field(default_factory=dict)
     ratio_abs_max: Optional[float] = None
     thermal_scale: float = 0.0
+    ratio_bounds: Optional[Tuple[float, float]] = None
+    delta_bounds: Optional[Tuple[float, float]] = None
+    ratio_bounds_by_prime: Dict[str, Tuple[float, float]] = field(default_factory=dict)
+    delta_bounds_by_prime: Dict[str, Tuple[float, float]] = field(default_factory=dict)
 
 
 @dataclass
@@ -350,10 +354,36 @@ def _build_subnet_config(name: str, spec: object, prime_layer_map: Dict[int, int
 
     bounds = spec.get("bounds") if isinstance(spec.get("bounds"), dict) else None
     ratio_abs_max = None
-    if bounds and "ratio_abs_max" in bounds:
-        raw_ratio_max = bounds["ratio_abs_max"]
+    ratio_bounds = None
+    delta_bounds = None
+    ratio_bounds_by_prime: Dict[str, Tuple[float, float]] = {}
+    delta_bounds_by_prime: Dict[str, Tuple[float, float]] = {}
+    if bounds:
+        raw_ratio_max = bounds.get("ratio_abs_max")
         if isinstance(raw_ratio_max, (int, float)) and raw_ratio_max > 0:
             ratio_abs_max = float(raw_ratio_max)
+        raw_ratio_bounds = bounds.get("ratio_bounds") or bounds.get("ratios_bounds")
+        if isinstance(raw_ratio_bounds, (list, tuple)):
+            ratio_bounds = ParameterBounds._clean_pair(raw_ratio_bounds, ParameterBounds.ratios)
+        raw_delta_bounds = bounds.get("delta_bounds") or bounds.get("deltas_bounds")
+        if isinstance(raw_delta_bounds, (list, tuple)):
+            delta_bounds = ParameterBounds._clean_pair(raw_delta_bounds, ParameterBounds.deltas)
+        raw_ratio_map = bounds.get("ratio_bounds_by_prime")
+        if isinstance(raw_ratio_map, dict):
+            for prime_key, value in raw_ratio_map.items():
+                normalized = _normalize_ratio_key(f"r{prime_key}") or _normalize_ratio_key(str(prime_key))
+                if normalized is None:
+                    continue
+                if isinstance(value, (list, tuple)):
+                    ratio_bounds_by_prime[normalized] = ParameterBounds._clean_pair(value, ParameterBounds.ratios)
+        raw_delta_map = bounds.get("delta_bounds_by_prime")
+        if isinstance(raw_delta_map, dict):
+            for prime_key, value in raw_delta_map.items():
+                normalized = _normalize_ratio_key(f"d{prime_key}") or _normalize_ratio_key(f"d{prime_key}")
+                if normalized is None:
+                    continue
+                if isinstance(value, (list, tuple)):
+                    delta_bounds_by_prime[normalized] = ParameterBounds._clean_pair(value, ParameterBounds.deltas)
 
     prime_layers = [prime_layer_map[prime] for prime in PRIMES]
     layer = max(layer, max(prime_layers, default=1))
@@ -369,6 +399,11 @@ def _build_subnet_config(name: str, spec: object, prime_layer_map: Dict[int, int
         init_L=init_L,
         init_ratios=init_ratios,
         ratio_abs_max=ratio_abs_max,
+        thermal_scale=0.0,
+        ratio_bounds=ratio_bounds,
+        delta_bounds=delta_bounds,
+        ratio_bounds_by_prime=ratio_bounds_by_prime,
+        delta_bounds_by_prime=delta_bounds_by_prime,
     )
 
 

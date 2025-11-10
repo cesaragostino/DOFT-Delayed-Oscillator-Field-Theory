@@ -230,6 +230,10 @@ def test_optimizer_clips_bounds() -> None:
         thermal_scale=0.0,
         eta=0.0,
         prime_value=2.0,
+        ratio_bounds=bounds.ratios,
+        delta_bounds=bounds.deltas,
+        ratio_bounds_by_key={key: bounds.ratios for key in ("r2", "r3", "r5", "r7")},
+        delta_bounds_by_key={key: bounds.deltas for key in ("d2", "d3", "d5", "d7")},
     )
     vector = np.array([2.0, 0.7, -0.6, 0.9, -0.9, 0.9, -0.9, 0.9, -0.9])
     clamped = optimizer._clamp_vector(vector)

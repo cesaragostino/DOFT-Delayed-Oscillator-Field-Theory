@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import random
 
 import numpy as np
@@ -55,6 +55,10 @@ class SubnetOptimizer:
         thermal_scale: float,
         eta: float,
         prime_value: Optional[float],
+        ratio_bounds: Tuple[float, float],
+        delta_bounds: Tuple[float, float],
+        ratio_bounds_by_key: Dict[str, Tuple[float, float]],
+        delta_bounds_by_key: Dict[str, Tuple[float, float]],
     ) -> None:
         self.simulator = simulator
         self.weights = weights
@@ -72,6 +76,10 @@ class SubnetOptimizer:
         self.thermal_scale = thermal_scale
         self.eta = eta
         self.prime_value = prime_value
+        self.ratio_bounds = ratio_bounds
+        self.delta_bounds = delta_bounds
+        self.ratio_bounds_by_key = ratio_bounds_by_key
+        self.delta_bounds_by_key = delta_bounds_by_key
 
         self.beta1 = 0.9
         self.beta2 = 0.999
@@ -180,11 +188,13 @@ class SubnetOptimizer:
         vector = vector.copy()
         vector[0] = self._clamp(float(vector[0]), self.bounds.f0)
         idx = 1
-        for _ in self.active_ratio_keys:
-            vector[idx] = self._clamp(float(vector[idx]), self.bounds.ratios)
+        for key in self.active_ratio_keys:
+            bounds = self.ratio_bounds_by_key.get(key, self.ratio_bounds)
+            vector[idx] = self._clamp(float(vector[idx]), bounds)
             idx += 1
-        for _ in self.active_delta_keys:
-            vector[idx] = self._clamp(float(vector[idx]), self.bounds.deltas)
+        for key in self.active_delta_keys:
+            bounds = self.delta_bounds_by_key.get(key, self.delta_bounds)
+            vector[idx] = self._clamp(float(vector[idx]), bounds)
             idx += 1
         return vector
 

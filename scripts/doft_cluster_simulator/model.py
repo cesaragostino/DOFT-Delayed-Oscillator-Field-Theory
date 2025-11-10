@@ -43,7 +43,6 @@ class ClusterSimulator:
     def simulate(self, params: SubnetParameters) -> SimulationResult:
         e_sim: List[float] = []
         layer_factors: List[float] = []
-        raw_levels: List[float] = []
         for idx, prime in enumerate(PRIMES):
             key = PRIME_KEYS[idx]
             delta_key = DELTA_KEYS[idx]
@@ -56,11 +55,9 @@ class ClusterSimulator:
             e_value = soft_round(base_ratio, self.softness)
             e_sim.append(e_value)
             layer_factors.append(layer_factor)
-            level = params.f0 * (1.0 + 0.1 * base_ratio) + delta
-            raw_levels.append(max(level, 1e-6))
+        log_r = self._compute_log_r(e_sim)
 
         q_sim = self._compute_q(e_sim)
-        log_r = self._compute_log_r(raw_levels, params.f0)
         return SimulationResult(
             e_sim=e_sim,
             q_sim=q_sim,
@@ -77,9 +74,6 @@ class ClusterSimulator:
         numerator = sum(weight * prime for weight, prime in zip(weights, PRIMES))
         return numerator / total
 
-    def _compute_log_r(self, raw_levels: Iterable[float], f0: float) -> float:
-        values = [value for value in raw_levels if math.isfinite(value)]
-        if not values:
-            values = [f0]
-        avg_value = sum(values) / len(values)
-        return math.log(max(avg_value, 1e-12))
+    def _compute_log_r(self, e_sim: Iterable[float]) -> float:
+        weighted = [value * math.log(prime) for value, prime in zip(e_sim, PRIMES)]
+        return sum(weighted)
