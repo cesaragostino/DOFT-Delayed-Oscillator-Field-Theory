@@ -575,6 +575,9 @@ class TargetDataset:
                 if not isinstance(value, dict):
                     raise TypeError(f"Expected object for subnet target '{key}'")
                 subnets[key] = SubnetTarget.from_dict(value)
+        for name, target in subnets.items():
+            if target.prime_value is None:
+                raise ValueError(f"Target '{name}' is missing 'input_exponents' or valid prime_value")
         return cls(subnets=subnets, contrasts=contrasts)
 
 

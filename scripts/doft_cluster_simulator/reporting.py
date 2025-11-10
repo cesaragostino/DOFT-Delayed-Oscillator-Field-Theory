@@ -9,8 +9,10 @@ import csv
 import json
 from datetime import UTC, datetime
 import math
+import subprocess
+import uuid
 
-from .data import LossWeights, MaterialConfig, SubnetTarget, TargetDataset
+from .data import LossWeights, MaterialConfig, ParameterBounds, SubnetTarget, TargetDataset
 from .loss import LossBreakdown
 from .results import SimulationRun, SubnetSimulation
 
@@ -28,6 +30,8 @@ class SubnetReport:
     q_error: Optional[float]
     residual_error: Optional[float]
     f0_anchor_error: Optional[float]
+    q_gated: bool
+    q_gated: bool
 
     def to_dict(self) -> Dict[str, object]:
         return {
@@ -45,6 +49,7 @@ class SubnetReport:
             "q_error": self.q_error,
             "residual_error": self.residual_error,
             "f0_anchor_error": self.f0_anchor_error,
+            "q_gated": self.q_gated,
         }
 
 
@@ -69,6 +74,8 @@ class RunReport:
     subnets: Dict[str, SubnetReport]
     contrasts: List[ContrastReport]
     total_loss: float
+    loss_components: Dict[str, float]
+    metric_summary: Dict[str, float]
 
 
 @dataclass
@@ -96,6 +103,17 @@ class ReportBundle:
     ablations: List[AblationStats]
     best_run_label: str
     timestamp: str
+    run_id: str
+    schema_version: str
+    seed_list: List[int]
+    seed_sweep: int
+    bounds: ParameterBounds
+    targets: Dict[str, SubnetTarget]
+    run_id: str
+    schema_version: str
+    seed_list: List[int]
+    seed_sweep: int
+    bounds: ParameterBounds
 
     def write(
         self,
@@ -191,16 +209,32 @@ class ReportBundle:
         lines.append("")
         lines.append(f"Fecha de ejecución: {self.timestamp}")
         lines.append("")
+        lines.append(f"Schema version: {self.schema_version} · Run ID: {self.run_id}")
+        lines.append("")
+        lines.append(f"Seeds ({self.seed_sweep}): {', '.join(str(seed) for seed in self.seed_list)}")
+        lines.append("")
+        lines.append(
+            f"Bounds → ratios {self.bounds.ratios}, deltas {self.bounds.deltas}, f0 {self.bounds.f0}"
+        )
+        lines.append("")
+        lines.append(
+            f"Pesos → w_e={self.weights.w_e}, w_q={self.weights.w_q}, w_r={self.weights.w_r}, "
+            f"w_c={self.weights.w_c}, w_anchor={self.weights.w_anchor}, λ={self.weights.lambda_reg}"
+        )
+        lines.append("")
         lines.append(f"**Mejor corrida:** `{best_run.label}` con pérdida total {best_run.total_loss:.6f}")
         lines.append("")
         lines.append("## Runs")
         lines.append("")
-        lines.append("| Run | Seed | Primes | Freeze | Total Loss |")
-        lines.append("| --- | --- | --- | --- | --- |")
+        lines.append("| Run | Seed | Primes | Freeze | L_total | L_e | L_q | L_r | L_c | L_anchor | L_reg |")
+        lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
         for run in self.runs:
+            components = run.loss_components
             lines.append(
                 f"| `{run.label}` | {run.seed} | {','.join(str(p) for p in run.primes)} | "
-                f"{','.join(str(p) for p in run.freeze_primes) or '—'} | {run.total_loss:.6f} |"
+                f"{','.join(str(p) for p in run.freeze_primes) or '—'} | {run.total_loss:.6f} | "
+                f"{components['e']:.6f} | {components['q']:.6f} | {components['r']:.6f} | "
+                f"{components['contrast']:.6f} | {components['anchor']:.6f} | {components['regularization']:.6f} |"
             )
         lines.append("")
 
@@ -238,6 +272,23 @@ class ReportBundle:
                 )
             lines.append("")
 
+        lines.append("## Mejor corrida — detalle por subred")
+        lines.append("")
+        lines.append("| Subred | e_sim | e_exp | q_sim | q_exp | residual_sim | residual_exp | q_gated |")
+        lines.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
+        for subnet, report in best_run.subnets.items():
+            target_key = f"{self.material}_{subnet}"
+            target = self.targets.get(target_key)
+            e_exp = target.e_exp if target else None
+            q_exp = target.q_exp if target else None
+            residual_exp = target.residual_exp if target else None
+            lines.append(
+                f"| {subnet} | { _format_list(report.e_sim) } | { _format_list(e_exp) } | "
+                f"{_format_optional(report.q_sim)} | {_format_optional(q_exp)} | "
+                f"{_format_optional(report.residual_sim)} | {_format_optional(residual_exp)} | {report.q_gated} |"
+            )
+        lines.append("")
+
         (out_dir / "report.md").write_text("\n".join(lines))
 
     def _write_manifest(
@@ -248,14 +299,18 @@ class ReportBundle:
         max_evals: int,
         seed: int,
     ) -> None:
+        best_run = self._find_best_run()
         manifest = {
-            "version": "0.2",
+            "schema_version": self.schema_version,
+            "run_id": self.run_id,
             "generated_at": self.timestamp,
             "material": self.material,
             "config_path": str(config_path) if config_path else None,
             "targets_path": str(targets_path) if targets_path else None,
             "max_evals": max_evals,
             "seed": seed,
+            "seed_sweep": self.seed_sweep,
+            "seeds": self.seed_list,
             "run_count": len(self.runs),
             "best_run": self.best_run_label,
             "weights": {
@@ -266,6 +321,14 @@ class ReportBundle:
                 "w_anchor": self.weights.w_anchor,
                 "lambda_reg": self.weights.lambda_reg,
             },
+            "bounds": {
+                "ratios": list(self.bounds.ratios),
+                "deltas": list(self.bounds.deltas),
+                "f0": list(self.bounds.f0),
+            },
+            "loss_components": best_run.loss_components,
+            "metric_summary": best_run.metric_summary,
+            "commit": _get_commit_sha(),
         }
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
 
@@ -276,10 +339,13 @@ def create_report_bundle(
     runs: List[SimulationRun],
     contrast_targets: List[ContrastTarget],
     dataset: TargetDataset,
+    seed_list: List[int],
+    seed_sweep: int,
+    run_id: str,
+    schema_version: str,
+    bounds: ParameterBounds,
 ) -> ReportBundle:
     run_reports: List[RunReport] = []
-    contrast_map = {(c.subnet_a, c.subnet_b): c for c in contrast_targets}
-
     for run in runs:
         sub_reports: Dict[str, SubnetReport] = {}
         for subnet, result in run.subnet_results.items():
@@ -292,12 +358,22 @@ def create_report_bundle(
             sub_reports[subnet] = _build_subnet_report(subnet, result, target, anchor_value)
 
         contrasts: List[ContrastReport] = []
+        loss_components = _initial_loss_components()
+        for report in sub_reports.values():
+            loss_components["e"] += report.loss.e_loss
+            loss_components["q"] += report.loss.q_loss
+            loss_components["r"] += report.loss.residual_loss
+            loss_components["anchor"] += report.loss.anchor_loss
+            loss_components["regularization"] += report.loss.regularization_loss
         total_loss = run.base_loss
         for contrast in contrast_targets:
             report_a = sub_reports.get(_strip_material_prefix(contrast.subnet_a, config.material))
             report_b = sub_reports.get(_strip_material_prefix(contrast.subnet_b, config.material))
             if report_a is None or report_b is None or contrast.value is None:
-                continue
+                if report_a is None or report_b is None:
+                    raise ValueError(
+                        f"Contrast '{contrast.label or contrast.subnet_a}' references missing subnets"
+                    )
             simulated = compute_contrast_value(report_a, report_b)
             loss = weights.w_c * abs(simulated - contrast.value)
             contrasts.append(
@@ -309,6 +385,14 @@ def create_report_bundle(
                 )
             )
             total_loss += loss
+            loss_components["contrast"] += loss
+
+        metric_summary = {
+            "e_abs_mean": _mean_or_zero(report.e_abs_mean for report in sub_reports.values()),
+            "q_abs_mean": _mean_or_zero(report.q_error for report in sub_reports.values()),
+            "residual_abs_mean": _mean_or_zero(report.residual_error for report in sub_reports.values()),
+            "contrast_abs_mean": _mean_or_zero(contrast.error for contrast in contrasts),
+        }
 
         run_reports.append(
             RunReport(
@@ -319,6 +403,8 @@ def create_report_bundle(
                 subnets=sub_reports,
                 contrasts=contrasts,
                 total_loss=total_loss,
+                loss_components=loss_components,
+                metric_summary=metric_summary,
             )
         )
 
@@ -334,6 +420,12 @@ def create_report_bundle(
         ablations=ablations,
         best_run_label=best_run_label,
         timestamp=timestamp,
+        run_id=run_id,
+        schema_version=schema_version,
+        seed_list=seed_list,
+        seed_sweep=seed_sweep,
+        bounds=bounds,
+        targets=dict(dataset.subnets),
     )
 
 
@@ -367,7 +459,8 @@ def _build_subnet_report(
     else:
         e_abs_errors = [None, None, None, None]
 
-    if target and target.q_exp is not None and simulation.simulation_result.q_sim is not None:
+    q_gated = bool(target and not target.use_q)
+    if target and target.use_q and target.q_exp is not None and simulation.simulation_result.q_sim is not None:
         q_error = abs(simulation.simulation_result.q_sim - target.q_exp)
 
     if target and target.residual_exp is not None:
@@ -388,6 +481,7 @@ def _build_subnet_report(
         q_error=q_error,
         residual_error=residual_error,
         f0_anchor_error=f0_anchor_error,
+        q_gated=q_gated,
     )
 
 
@@ -460,3 +554,37 @@ def _mean_std(values: Iterable[float]) -> Tuple[float, float]:
         return (mean, 0.0)
     variance = sum((value - mean) ** 2 for value in data) / (len(data) - 1)
     return (mean, math.sqrt(max(variance, 0.0)))
+
+
+def _mean_or_zero(values: Iterable[Optional[float]]) -> float:
+    data = [value for value in values if value is not None]
+    return sum(data) / len(data) if data else 0.0
+
+
+def _initial_loss_components() -> Dict[str, float]:
+    return {"e": 0.0, "q": 0.0, "r": 0.0, "anchor": 0.0, "regularization": 0.0, "contrast": 0.0}
+
+
+def _format_list(values: Optional[List[Optional[float]]]) -> str:
+    if not values:
+        return "—"
+    return ", ".join("—" if value is None else f"{value:.3f}" for value in values)
+
+
+def _format_optional(value: Optional[float]) -> str:
+    if value is None:
+        return "—"
+    return f"{value:.5f}" if abs(value) < 1 else f"{value:.3f}"
+
+
+def _get_commit_sha() -> Optional[str]:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip()
+    except Exception:
+        return None

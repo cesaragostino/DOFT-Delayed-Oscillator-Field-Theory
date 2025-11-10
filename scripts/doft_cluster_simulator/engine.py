@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import random
+import uuid
 
 from .data import ContrastTarget, LossWeights, MaterialConfig, ParameterBounds, TargetDataset
 from .model import ClusterSimulator
 from .optimizer import SubnetOptimizer
 from .reporting import ReportBundle, create_report_bundle
 from .results import SimulationRun, SubnetSimulation
+
+SCHEMA_VERSION = "0.2"
 
 
 class SimulationEngine:
@@ -56,6 +59,8 @@ class SimulationEngine:
         runs: List[SimulationRun] = []
         contrast_targets = self._collect_contrasts()
         run_counter = 0
+        seed_history: List[int] = []
+        run_identifier = uuid.uuid4().hex
 
         for prime_subset in self.ablation_sets:
             active_primes = tuple(int(p) for p in prime_subset if p in self.config.primes)
@@ -64,6 +69,7 @@ class SimulationEngine:
             freeze_set = self._derive_freeze_set(active_primes)
             for sweep_idx in range(self.seed_sweep):
                 run_seed = self.base_seed + run_counter * 997 + sweep_idx
+                seed_history.append(run_seed)
                 run_label = self._build_run_label(run_seed, active_primes)
                 subnet_results, base_loss = self._optimise_subnets(
                     active_primes=active_primes,
@@ -88,6 +94,11 @@ class SimulationEngine:
             runs=runs,
             contrast_targets=contrast_targets,
             dataset=self.dataset,
+            seed_list=seed_history,
+            seed_sweep=self.seed_sweep,
+            run_id=run_identifier,
+            schema_version=SCHEMA_VERSION,
+            bounds=self.bounds,
         )
         return bundle
 

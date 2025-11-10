@@ -1,18 +1,33 @@
 from __future__ import annotations
 
 import json
+import math
+import random
 from pathlib import Path
+
+import numpy as np
 
 from scripts.doft_cluster_simulator.data import LossWeights, MaterialConfig, ParameterBounds, SubnetParameters, SubnetTarget, TargetDataset
 from scripts.doft_cluster_simulator.engine import SimulationEngine
 from scripts.doft_cluster_simulator.loss import compute_subnet_loss
-from scripts.doft_cluster_simulator.model import SimulationResult
+from scripts.doft_cluster_simulator.model import ClusterSimulator, SimulationResult
+from scripts.doft_cluster_simulator.optimizer import SubnetOptimizer
 
 
 def test_target_dataset_handles_missing_values(tmp_path: Path) -> None:
     targets = {
-        "MgB2_sigma": {"e_exp": [1.0, 0.0, 0.0, 0.0], "q_exp": None, "residual_exp": -0.01},
-        "MgB2_pi": {"e_exp": [1.2, 0.7, 0.2, 0.4], "q_exp": 6.0, "residual_exp": -0.02},
+        "MgB2_sigma": {
+            "e_exp": [1.0, 0.0, 0.0, 0.0],
+            "q_exp": None,
+            "residual_exp": -0.01,
+            "input_exponents": [1, 0, 0, 0],
+        },
+        "MgB2_pi": {
+            "e_exp": [1.2, 0.7, 0.2, 0.4],
+            "q_exp": 6.0,
+            "residual_exp": -0.02,
+            "input_exponents": [3, 1, 0, 0],
+        },
         "MgB2_sigma_vs_pi": {"C_AB_exp": 1.5},
     }
     path = tmp_path / "targets.json"
@@ -109,6 +124,8 @@ def test_engine_runs_end_to_end(tmp_path: Path) -> None:
     assert (out_dir / "report.md").exists()
     assert (out_dir / "manifest.json").exists()
     assert bundle.runs[0].contrasts, "Se esperaba al menos un contraste reportado"
+    sigma_layers = bundle.runs[0].subnets["sigma"].parameters.parameters.layer_assignment
+    assert sigma_layers == [2, 1, 1, 1]
 
 
 def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
@@ -155,3 +172,67 @@ def test_material_config_parses_extended_structure(tmp_path: Path) -> None:
     assert parsed.contrasts[0].subnet_a == "MgB2_sigma"
     assert parsed.contrasts[0].label == "gap_ratio"
     assert parsed.contrasts[0].value == 1.58974
+
+
+def test_residual_matches_spec() -> None:
+    params = SubnetParameters(L=1, f0=2.0, ratios={"r2": 0.1}, delta={"d2": 0.0}, layer_assignment=[1, 1, 1, 1])
+    log_r = math.log(2.5)
+    simulation = SimulationResult(
+        e_sim=[0.1, 0.0, 0.0, 0.0],
+        q_sim=None,
+        residual_sim=0.0,
+        layer_factors=[1.0, 1.0, 1.0, 1.0],
+        log_r=log_r,
+    )
+    target = SubnetTarget(
+        e_exp=[0.0, 0.0, 0.0, 0.0],
+        q_exp=None,
+        residual_exp=0.0,
+        input_exponents=[1, 0, 0, 0],
+        prime_value=2.0,
+        use_q=False,
+    )
+    weights = LossWeights(w_e=0.0, w_q=0.0, w_r=1.0)
+    breakdown = compute_subnet_loss(
+        target,
+        params,
+        simulation,
+        weights,
+        anchor_value=None,
+        subnet_name="MgB2_sigma",
+        thermal_scale=3.5,
+        eta=1e-5,
+        prime_value=2.0,
+        lambda_reg=0.0,
+    )
+    expected = log_r - 1e-5 * 3.5 - math.log(2.0)
+    assert math.isclose(simulation.residual_sim, expected, rel_tol=0.0, abs_tol=1e-9)
+    assert math.isclose(breakdown.residual_loss, abs(expected), rel_tol=0.0, abs_tol=1e-9)
+
+
+def test_optimizer_clips_bounds() -> None:
+    simulator = ClusterSimulator()
+    weights = LossWeights()
+    bounds = ParameterBounds(ratios=(-0.1, 0.1), deltas=(-0.2, 0.2), f0=(0.5, 1.5))
+    optimizer = SubnetOptimizer(
+        simulator=simulator,
+        weights=weights,
+        bounds=bounds,
+        max_steps=1,
+        rng=random.Random(0),
+        anchor=None,
+        subnet_config=None,
+        freeze_primes=(),
+        active_primes=(2, 3, 5, 7),
+        lambda_reg=0.0,
+        prime_layers=[1, 1, 1, 1],
+        seed=0,
+        thermal_scale=0.0,
+        eta=0.0,
+        prime_value=2.0,
+    )
+    vector = np.array([2.0, 0.7, -0.6, 0.9, -0.9, 0.9, -0.9, 0.9, -0.9])
+    clamped = optimizer._clamp_vector(vector)
+    assert bounds.f0[0] <= clamped[0] <= bounds.f0[1]
+    assert np.all((clamped[1:5] >= bounds.ratios[0]) & (clamped[1:5] <= bounds.ratios[1]))
+    assert np.all((clamped[5:] >= bounds.deltas[0]) & (clamped[5:] <= bounds.deltas[1]))
