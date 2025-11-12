@@ -145,9 +145,11 @@ def build_ground_truth_entry(
     int_exponents = [int(round(value)) for value in exponents]
     category = str(row.get("category", ""))
     subnet = str(row.get("sub_network", ""))
-    residual = residual_lookup.get((category, subnet))
-    if residual is None:
-        residual = float(row.get("log_residual_eta", 0.0) or 0.0)
+    residual_value = row.get("log_residual_eta")
+    if residual_value is not None and not pd.isna(residual_value):
+        residual = float(residual_value)
+    else:
+        residual = residual_lookup.get((category, subnet), 0.0)
     return {
         "e_exp": exponents,
         "q_exp": q_value,
