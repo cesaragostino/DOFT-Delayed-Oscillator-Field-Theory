@@ -1,0 +1,34 @@
+{
+  "MgB2_pi": {
+    "e_exp": [
+      3.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "q_exp": null,
+    "residual_exp": -0.007194,
+    "input_exponents": [
+      3,
+      1,
+      0,
+      0
+    ]
+  },
+  "MgB2_sigma": {
+    "e_exp": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "q_exp": null,
+    "residual_exp": -0.009391,
+    "input_exponents": [
+      1,
+      0,
+      0,
+      0
+    ]
+  }
+}

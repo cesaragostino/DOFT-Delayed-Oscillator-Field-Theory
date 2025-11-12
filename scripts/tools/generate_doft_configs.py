@@ -42,6 +42,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 import pandas as pd
@@ -155,6 +156,15 @@ def build_ground_truth_entry(
     }
 
 
+def split_contrast_label(label: str) -> Optional[Tuple[str, str]]:
+    """Split strings like 'sigma-vs-pi' or 'sigma_vs_pi'."""
+    parts = re.split(r"(?i)[_-]vs[_-]", label, maxsplit=1)
+    if len(parts) == 2:
+        left, right = parts
+        return left.strip(), right.strip()
+    return None
+
+
 def main() -> None:
     args = parse_args()
     fingerprint_dir = args.results_root / "fingerprint"
@@ -225,12 +235,23 @@ def main() -> None:
             anchors[subnet] = {"f0": x_value, "X": x_value}
 
         # contrasts
-        material_contrasts = {}
+        material_contrasts: List[Dict[str, object]] = []
         mat_cluster = cluster_rows[cluster_rows["name"] == material]
         for row in mat_cluster.itertuples():
             label = str(row.sub_network)
-            entry_key = f"{material}_{label}"
-            material_contrasts[entry_key] = {"C_AB_exp": float(row.R_obs)}
+            split = split_contrast_label(label)
+            if not split:
+                print(f"[WARN] Could not parse contrast label '{label}' for {material}; skipping")
+                continue
+            A, B = split
+            material_contrasts.append(
+                {
+                    "type": label,
+                    "A": A,
+                    "B": B,
+                    "C_AB_exp": float(row.R_obs),
+                }
+            )
 
         material_config = {
             "material": material,
@@ -243,15 +264,7 @@ def main() -> None:
             "eta": eta_value,
         }
         if material_contrasts:
-            material_config["contrasts"] = [
-                {
-                    "type": label,
-                    "A": label.split("_vs_")[0],
-                    "B": label.split("_vs_")[1],
-                    "C_AB_exp": value["C_AB_exp"],
-                }
-                for label, value in material_contrasts.items()
-            ]
+            material_config["contrasts"] = material_contrasts
 
         wt = dict(weight_template)
         overrides = {}
@@ -271,4 +284,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
