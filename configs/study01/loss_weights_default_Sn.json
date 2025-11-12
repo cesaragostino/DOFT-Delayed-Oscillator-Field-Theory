@@ -4,5 +4,10 @@
   "w_r": 0.25,
   "w_c": 0.0,
   "w_anchor": 0.05,
-  "lambda_reg": 0.0005
+  "lambda_reg": 0.0,
+  "overrides": {
+    "q": {
+      "single": 0.0
+    }
+  }
 }

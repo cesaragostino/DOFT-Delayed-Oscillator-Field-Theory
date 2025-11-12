@@ -1,22 +1,27 @@
 {
   "material": "Sn",
-  "subnetworks": ["single"],
-  "primes": [2, 3, 5, 7],
+  "category": "SC_TypeI",
+  "eta": 3.192515656495014e-05,
+  "primes": {
+    "2": { "enabled": true, "layer": 1 },
+    "3": { "enabled": true, "layer": 1 },
+    "5": { "enabled": true, "layer": 1 },
+    "7": { "enabled": true, "layer": 1 }
+  },
+  "subnetworks": {
+    "single": {
+      "enabled": true,
+      "f0_range": [ 15.0, 30.0 ]
+    }
+  },
   "anchors": {
-    "single": null
+     "single": {
+        "f0": null
+     }
   },
   "constraints": {
-    "ratios_bounds": [-2.0, 2.0],
-    "deltas_bounds": [-2.0, 2.0],
-    "f0_bounds": [0.1, 5.0]
-  },
-  "layers": {
-    "single": 1
-  },
-  "thermal_scale": {
-    "single": 52.41935483870968
-  },
-  "eta": {
-    "single": 3.98e-05
+    "ratios_bounds": [-0.6, 0.6],
+    "deltas_bounds": [-0.8, 0.2],
+    "f0_bounds": [0.25, 50.0]
   }
 }
