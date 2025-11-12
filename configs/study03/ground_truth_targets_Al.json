@@ -1,0 +1,18 @@
+{
+  "Al_single": {
+    "e_exp": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "q_exp": null,
+    "residual_exp": -0.199854,
+    "input_exponents": [
+      1,
+      0,
+      0,
+      0
+    ]
+  }
+}
