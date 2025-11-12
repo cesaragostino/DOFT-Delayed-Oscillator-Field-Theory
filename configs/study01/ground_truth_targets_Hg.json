@@ -1,0 +1,8 @@
+{
+  "Hg_single": {
+    "e_exp": [1.55, 0.82, 0.52, 0.41],
+    "q_exp": null,
+    "residual_exp": -0.018,
+    "input_exponents": [1, 0, 0, 0]
+  }
+}

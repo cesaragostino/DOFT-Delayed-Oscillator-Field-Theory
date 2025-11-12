@@ -1,0 +1,6 @@
+{
+  "global": { "w_e": 1.0, "w_q": 0.5, "w_r": 0.25, "w_c": 0.3, "w_anchor": 0.05 },
+  "per_subnet_overrides": {
+    "single": { "w_q": 0.0 }
+  }
+}

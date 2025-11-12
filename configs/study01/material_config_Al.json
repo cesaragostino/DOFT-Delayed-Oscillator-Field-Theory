@@ -1,0 +1,22 @@
+{
+  "material": "Al",
+  "subnetworks": ["single"],
+  "primes": [2, 3, 5, 7],
+  "anchors": {
+    "single": null
+  },
+  "constraints": {
+    "ratios_bounds": [-2.0, 2.0],
+    "deltas_bounds": [-2.0, 2.0],
+    "f0_bounds": [0.1, 5.0]
+  },
+  "layers": {
+    "single": 1
+  },
+  "thermal_scale": {
+    "single": 356.6666666666667
+  },
+  "eta": {
+    "single": 3.98e-05
+  }
+}

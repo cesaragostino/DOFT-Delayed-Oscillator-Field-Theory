@@ -1,0 +1,8 @@
+{
+  "Pb_single": {
+    "e_exp": [0.65, 1.2, 0.42, 0.71],
+    "q_exp": null,
+    "residual_exp": -0.018,
+    "input_exponents": [1, 0, 0, 0]
+  }
+}
