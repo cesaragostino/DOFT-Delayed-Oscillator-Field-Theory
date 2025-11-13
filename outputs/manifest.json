@@ -1,0 +1,62 @@
+{
+  "schema_version": "0.2",
+  "run_id": "c408d4675bdb437b9373c3f26e0a34d7",
+  "generated_at": "2025-11-12T22:20:26+00:00",
+  "material": "Sn",
+  "config_path": "configs/study03/material_config_Sn.json",
+  "targets_path": "configs/study03/ground_truth_targets_Sn.json",
+  "max_evals": 500,
+  "seed": 42,
+  "seed_sweep": 10,
+  "seeds": [
+    42,
+    1040,
+    2038,
+    3036,
+    4034,
+    5032,
+    6030,
+    7028,
+    8026,
+    9024
+  ],
+  "run_count": 10,
+  "best_run": "seed=7028|primes=2,3,5,7",
+  "weights": {
+    "w_e": 1.25,
+    "w_q": 0.5,
+    "w_r": 0.25,
+    "w_c": 0.3,
+    "w_anchor": 0.05,
+    "lambda_reg": 0.0002
+  },
+  "bounds": {
+    "ratios": [
+      -0.1,
+      0.1
+    ],
+    "deltas": [
+      -0.15,
+      0.15
+    ],
+    "f0": [
+      60.0,
+      800.0
+    ]
+  },
+  "loss_components": {
+    "e": 0.3442743776105247,
+    "q": 0.0,
+    "r": 4.2659637812525464e-07,
+    "anchor": 1.944758978000002,
+    "regularization": 1.713207323190592e-05,
+    "contrast": 0.0
+  },
+  "metric_summary": {
+    "e_abs_mean": 0.27541950208841975,
+    "q_abs_mean": 0.0,
+    "residual_abs_mean": 1.7063855125010186e-06,
+    "contrast_abs_mean": 0.0
+  },
+  "commit": "323bf73"
+}
