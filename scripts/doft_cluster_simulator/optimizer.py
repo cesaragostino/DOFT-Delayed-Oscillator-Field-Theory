@@ -1,8 +1,13 @@
+<<<<<<< ours
 """Adaptive optimizer for DOFT cluster simulation parameters."""
+=======
+"""Random + local search optimizer for DOFT cluster simulation."""
+>>>>>>> theirs
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+<<<<<<< ours
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import random
 
@@ -18,14 +23,23 @@ from .data import (
     SubnetParameters,
     SubnetTarget,
 )
+=======
+from typing import Optional, Tuple
+import random
+
+from .data import DELTA_KEYS, PRIME_KEYS, LossWeights, SubnetParameters, SubnetTarget
+>>>>>>> theirs
 from .loss import LossBreakdown, compute_subnet_loss
 from .model import ClusterSimulator
 
 
+<<<<<<< ours
 RATIO_KEY_BY_PRIME = {prime: key for prime, key in zip(PRIMES, PRIME_KEYS)}
 DELTA_KEY_BY_PRIME = {prime: key for prime, key in zip(PRIMES, DELTA_KEYS)}
 
 
+=======
+>>>>>>> theirs
 @dataclass
 class OptimizationResult:
     """Optimization outcome for a subnet."""
@@ -36,12 +50,17 @@ class OptimizationResult:
 
 
 class SubnetOptimizer:
+<<<<<<< ours
     """Gradient-based search (finite-difference Adam) for subnet parameters."""
+=======
+    """Search for parameters that minimise the loss for a subnet."""
+>>>>>>> theirs
 
     def __init__(
         self,
         simulator: ClusterSimulator,
         weights: LossWeights,
+<<<<<<< ours
         bounds: ParameterBounds,
         max_steps: int,
         rng: random.Random,
@@ -243,3 +262,69 @@ class SubnetOptimizer:
             vector[idx] += eps
             grad[idx] = (loss_plus - loss_minus) / (2 * eps)
         return grad
+=======
+        max_evals: int,
+        rng: random.Random,
+        anchor: Optional[float],
+    ) -> None:
+        self.simulator = simulator
+        self.weights = weights
+        self.max_evals = max_evals
+        self.rng = rng
+        self.anchor = anchor
+
+    def optimise(self, target: SubnetTarget) -> OptimizationResult:
+        best_params: Optional[SubnetParameters] = None
+        best_loss: Optional[LossBreakdown] = None
+        best_result = None
+
+        for _ in range(self.max_evals):
+            candidate = self._sample_parameters()
+            loss, simulation_result = self._evaluate(target, candidate)
+            if best_loss is None or loss.total < best_loss.total:
+                best_params = candidate
+                best_loss = loss
+                best_result = simulation_result
+
+        # Local refinement around the best candidate
+        if best_params is None or best_loss is None or best_result is None:
+            raise RuntimeError("No candidate evaluated during optimisation")
+
+        for _ in range(min(64, self.max_evals // 2 + 1)):
+            candidate = self._perturb(best_params)
+            loss, simulation_result = self._evaluate(target, candidate)
+            if loss.total < best_loss.total:
+                best_params = candidate
+                best_loss = loss
+                best_result = simulation_result
+
+        return OptimizationResult(params=best_params, simulation_loss=best_loss, simulation_result=best_result)
+
+    def _evaluate(self, target: SubnetTarget, params: SubnetParameters) -> Tuple[LossBreakdown, "SimulationResult"]:
+        simulation_result = self.simulator.simulate(params)
+        loss = compute_subnet_loss(target, params, simulation_result, self.weights, self.anchor)
+        return loss, simulation_result
+
+    def _sample_parameters(self) -> SubnetParameters:
+        L = self.rng.randint(1, 3)
+        anchor = self.anchor if self.anchor is not None else 1.5
+        f0 = max(0.25, self.rng.gauss(anchor, 0.4))
+        ratios = {key: max(0.0, self.rng.uniform(0.0, 1.5)) for key in PRIME_KEYS}
+        delta = {key: self.rng.uniform(-0.2, 0.2) for key in DELTA_KEYS}
+        layer_assignment = [self.rng.randint(1, L) for _ in PRIME_KEYS]
+        return SubnetParameters(L=L, f0=f0, ratios=ratios, delta=delta, layer_assignment=layer_assignment)
+
+    def _perturb(self, params: SubnetParameters) -> SubnetParameters:
+        candidate = params.copy()
+        candidate.L = max(1, min(3, candidate.L + self.rng.choice([-1, 0, 1])))
+        candidate.f0 = max(0.2, candidate.f0 + self.rng.gauss(0.0, 0.05))
+        for key in PRIME_KEYS:
+            candidate.ratios[key] = max(0.0, candidate.ratios[key] + self.rng.gauss(0.0, 0.05))
+        for key in DELTA_KEYS:
+            candidate.delta[key] = candidate.delta[key] + self.rng.gauss(0.0, 0.02)
+        candidate.layer_assignment = [
+            max(1, min(candidate.L, layer + self.rng.choice([-1, 0, 1]))) for layer in candidate.layer_assignment
+        ]
+        return candidate
+
+>>>>>>> theirs

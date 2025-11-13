@@ -1,0 +1,13 @@
+{
+  "w_e": 1.25,
+  "w_q": 0.5,
+  "w_r": 0.25,
+  "w_c": 0.3,
+  "w_anchor": 0.05,
+  "lambda_reg": 2e-4,
+  "overrides": {
+    "q": {
+      "Zn_single": 0.0
+    }
+  }
+}

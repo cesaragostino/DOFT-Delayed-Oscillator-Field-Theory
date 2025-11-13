@@ -1,0 +1,18 @@
+{
+  "Nb_single": {
+    "e_exp": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "q_exp": null,
+    "residual_exp": -0.0330657,
+    "input_exponents": [
+      1,
+      0,
+      0,
+      0
+    ]
+  }
+}

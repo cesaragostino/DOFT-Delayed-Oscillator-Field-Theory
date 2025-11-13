@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+<<<<<<< ours
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import random
 import uuid
@@ -13,6 +14,16 @@ from .reporting import ReportBundle, create_report_bundle
 from .results import SimulationRun, SubnetSimulation
 
 SCHEMA_VERSION = "0.2"
+=======
+from typing import Dict, Optional
+import random
+
+from .data import LossWeights, MaterialConfig, TargetDataset
+from .model import ClusterSimulator
+from .optimizer import SubnetOptimizer
+from .reporting import ReportBundle, create_report_bundle
+from .results import SubnetSimulation
+>>>>>>> theirs
 
 
 class SimulationEngine:
@@ -25,16 +36,20 @@ class SimulationEngine:
         weights: LossWeights,
         max_evals: int = 250,
         seed: int = 42,
+<<<<<<< ours
         freeze_primes: Optional[Iterable[int]] = None,
         ablation_sets: Optional[List[Sequence[int]]] = None,
         seed_sweep: int = 1,
         bounds_override: Optional[Dict[str, Tuple[float, float]]] = None,
         huber_delta: float = 0.02,
+=======
+>>>>>>> theirs
     ) -> None:
         self.config = config
         self.dataset = dataset
         self.weights = weights
         self.max_evals = max_evals
+<<<<<<< ours
         self.base_seed = seed
         self.seed_sweep = max(1, seed_sweep)
         self.huber_delta = huber_delta
@@ -172,11 +187,32 @@ class SimulationEngine:
                 delta_bounds_by_key=delta_map,
             )
             result = optimizer.optimise(target, target_key)
+=======
+        self.rng = random.Random(seed)
+        self.simulator = ClusterSimulator()
+
+    def run(self) -> ReportBundle:
+        subnet_results: Dict[str, SubnetSimulation] = {}
+        for subnet_name in self.config.subnets:
+            target = self.dataset.subnets.get(f"{self.config.material}_{subnet_name}")
+            if target is None:
+                raise KeyError(f"Missing target for subnet '{subnet_name}'")
+            anchor = self._lookup_anchor(subnet_name)
+            optimizer = SubnetOptimizer(
+                simulator=self.simulator,
+                weights=self.weights,
+                max_evals=self.max_evals,
+                rng=self.rng,
+                anchor=anchor,
+            )
+            result = optimizer.optimise(target)
+>>>>>>> theirs
             subnet_results[subnet_name] = SubnetSimulation(
                 parameters=result.params,
                 loss=result.simulation_loss,
                 simulation_result=result.simulation_result,
             )
+<<<<<<< ours
             base_loss += result.simulation_loss.total
         return subnet_results, base_loss
 
@@ -216,3 +252,20 @@ class SimulationEngine:
                 "f0_bounds": f0,
             }
         )
+=======
+
+        bundle = create_report_bundle(
+            config=self.config,
+            dataset=self.dataset,
+            weights=self.weights,
+            subnet_results=subnet_results,
+        )
+        return bundle
+
+    def _lookup_anchor(self, subnet_name: str) -> Optional[float]:
+        anchor_data = self.config.anchors.get(subnet_name)
+        if anchor_data is None:
+            return None
+        return anchor_data.get("X")
+
+>>>>>>> theirs
