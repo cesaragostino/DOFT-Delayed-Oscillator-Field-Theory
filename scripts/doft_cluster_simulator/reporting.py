@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 <<<<<<< ours
+<<<<<<< ours
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import csv
 import json
@@ -17,6 +18,8 @@ from .data import LossWeights, MaterialConfig, ParameterBounds, SubnetTarget, Ta
 from .loss import LossBreakdown
 from .results import SimulationRun, SubnetSimulation
 =======
+=======
+>>>>>>> theirs
 from typing import Dict, List, Optional
 import csv
 import json
@@ -25,6 +28,9 @@ from datetime import datetime
 from .data import LossWeights, MaterialConfig, SubnetParameters, TargetDataset
 from .loss import LossBreakdown
 from .results import SubnetSimulation
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
 
@@ -32,7 +38,11 @@ from .results import SubnetSimulation
 class SubnetReport:
     name: str
 <<<<<<< ours
+<<<<<<< ours
     parameters: SubnetSimulation
+=======
+    parameters: SubnetParameters
+>>>>>>> theirs
 =======
     parameters: SubnetParameters
 >>>>>>> theirs
@@ -40,6 +50,7 @@ class SubnetReport:
     e_sim: List[float]
     q_sim: Optional[float]
     residual_sim: float
+<<<<<<< ours
 <<<<<<< ours
     e_abs_errors: List[Optional[float]]
     e_abs_mean: Optional[float]
@@ -57,6 +68,8 @@ class SubnetReport:
             "delta": self.parameters.parameters.delta,
             "layer_assignment": self.parameters.parameters.layer_assignment,
 =======
+=======
+>>>>>>> theirs
 
     def to_dict(self) -> Dict[str, object]:
         return {
@@ -65,11 +78,15 @@ class SubnetReport:
             "ratios": self.parameters.ratios,
             "delta": self.parameters.delta,
             "layer_assignment": self.parameters.layer_assignment,
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
             "loss": self.loss.as_dict(),
             "e_sim": self.e_sim,
             "q_sim": self.q_sim,
             "residual_sim": self.residual_sim,
+<<<<<<< ours
 <<<<<<< ours
             "e_abs_errors": self.e_abs_errors,
             "e_abs_mean": self.e_abs_mean,
@@ -77,6 +94,8 @@ class SubnetReport:
             "residual_error": self.residual_error,
             "f0_anchor_error": self.f0_anchor_error,
             "q_gated": self.q_gated,
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
         }
@@ -89,6 +108,7 @@ class ContrastReport:
     simulated: float
     loss: float
 
+<<<<<<< ours
 <<<<<<< ours
     @property
     def error(self) -> float:
@@ -125,11 +145,14 @@ class AblationStats:
 
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
 
 @dataclass
 class ReportBundle:
     material: str
     weights: LossWeights
+<<<<<<< ours
 <<<<<<< ours
     runs: List[RunReport]
     aggregates: AggregateStats
@@ -174,6 +197,8 @@ class ReportBundle:
                 subnet: report.to_dict()
                 for subnet, report in run.subnets.items()
 =======
+=======
+>>>>>>> theirs
     subnets: Dict[str, SubnetReport]
     contrasts: List[ContrastReport]
     total_loss: float
@@ -198,6 +223,9 @@ class ReportBundle:
                     "layer_assignment": report.parameters.layer_assignment,
                 }
                 for subnet, report in self.subnets.items()
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
             },
         }
@@ -207,10 +235,14 @@ class ReportBundle:
         csv_path = out_dir / "simulation_results.csv"
         fieldnames = [
 <<<<<<< ours
+<<<<<<< ours
             "run_label",
             "seed",
             "primes",
             "freeze_primes",
+=======
+            "material",
+>>>>>>> theirs
 =======
             "material",
 >>>>>>> theirs
@@ -222,6 +254,7 @@ class ReportBundle:
             "e5",
             "e7",
 <<<<<<< ours
+<<<<<<< ours
             "e_mean_abs_error",
             "q_sim",
             "q_error",
@@ -232,19 +265,27 @@ class ReportBundle:
             "q_sim",
             "residual_sim",
 >>>>>>> theirs
+=======
+            "q_sim",
+            "residual_sim",
+>>>>>>> theirs
             "loss_total",
             "loss_e",
             "loss_q",
             "loss_residual",
             "loss_anchor",
 <<<<<<< ours
+<<<<<<< ours
             "loss_regularization",
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
         ]
         with csv_path.open("w", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=fieldnames)
             writer.writeheader()
+<<<<<<< ours
 <<<<<<< ours
             for run in self.runs:
                 for subnet, report in run.subnets.items():
@@ -362,6 +403,8 @@ class ReportBundle:
         lines.append("")
 
 =======
+=======
+>>>>>>> theirs
             for subnet, report in self.subnets.items():
                 row = {
                     "material": self.material,
@@ -409,6 +452,9 @@ class ReportBundle:
                 )
             lines.append("")
         lines.append(f"**Pérdida total:** {self.total_loss:.6f}")
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
         (out_dir / "report.md").write_text("\n".join(lines))
 
@@ -421,10 +467,15 @@ class ReportBundle:
         seed: int,
     ) -> None:
 <<<<<<< ours
+<<<<<<< ours
         best_run = self._find_best_run()
         manifest = {
             "schema_version": self.schema_version,
             "run_id": self.run_id,
+=======
+        manifest = {
+            "version": "0.9",
+>>>>>>> theirs
 =======
         manifest = {
             "version": "0.9",
@@ -436,10 +487,13 @@ class ReportBundle:
             "max_evals": max_evals,
             "seed": seed,
 <<<<<<< ours
+<<<<<<< ours
             "seed_sweep": self.seed_sweep,
             "seeds": self.seed_list,
             "run_count": len(self.runs),
             "best_run": self.best_run_label,
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
             "weights": {
@@ -448,6 +502,7 @@ class ReportBundle:
                 "w_r": self.weights.w_r,
                 "w_c": self.weights.w_c,
                 "w_anchor": self.weights.w_anchor,
+<<<<<<< ours
 <<<<<<< ours
                 "lambda_reg": self.weights.lambda_reg,
             },
@@ -463,10 +518,15 @@ class ReportBundle:
             },
             "total_loss": self.total_loss,
 >>>>>>> theirs
+=======
+            },
+            "total_loss": self.total_loss,
+>>>>>>> theirs
         }
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
 
 
+<<<<<<< ours
 <<<<<<< ours
 def create_report_bundle(
     config: MaterialConfig,
@@ -724,6 +784,8 @@ def _get_commit_sha() -> Optional[str]:
     except Exception:
         return None
 =======
+=======
+>>>>>>> theirs
 def compute_contrast_value(a: SubnetReport, b: SubnetReport) -> float:
     scale_a = a.parameters.f0 + sum(a.e_sim) / max(len(a.e_sim), 1)
     scale_b = b.parameters.f0 + sum(b.e_sim) / max(len(b.e_sim), 1)
@@ -773,4 +835,7 @@ def create_report_bundle(
         timestamp=timestamp,
     )
 
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs

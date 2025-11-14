@@ -4,10 +4,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 <<<<<<< ours
+<<<<<<< ours
 from typing import Dict, Iterable, List, Optional
 import math
 
 from .data import DELTA_KEYS, LossWeights, PRIME_KEYS, SubnetParameters, SubnetTarget
+=======
+from typing import Dict, List, Optional
+
+from .data import LossWeights, PRIMES, SubnetParameters, SubnetTarget
+>>>>>>> theirs
 =======
 from typing import Dict, List, Optional
 
@@ -26,7 +32,10 @@ class LossBreakdown:
     residual_loss: float
     anchor_loss: float
 <<<<<<< ours
+<<<<<<< ours
     regularization_loss: float
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 
@@ -38,11 +47,14 @@ class LossBreakdown:
             "residual": self.residual_loss,
             "anchor": self.anchor_loss,
 <<<<<<< ours
+<<<<<<< ours
             "regularization": self.regularization_loss,
         }
 
 
 =======
+=======
+>>>>>>> theirs
         }
 
 
@@ -52,6 +64,9 @@ def _safe_len(values: Optional[List[Optional[float]]]) -> int:
     return sum(1 for value in values if value is not None)
 
 
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 def compute_subnet_loss(
     target: SubnetTarget,
@@ -59,6 +74,7 @@ def compute_subnet_loss(
     simulation: SimulationResult,
     weights: LossWeights,
     anchor_value: Optional[float],
+<<<<<<< ours
 <<<<<<< ours
     subnet_name: str,
     thermal_scale: float = 0.0,
@@ -78,11 +94,17 @@ def compute_subnet_loss(
     """Compute the weighted loss for a subnet."""
 
 >>>>>>> theirs
+=======
+) -> LossBreakdown:
+    """Compute the weighted loss for a subnet."""
+
+>>>>>>> theirs
     e_terms = []
     if target.e_exp is not None:
         for idx, value in enumerate(target.e_exp):
             if value is None:
                 continue
+<<<<<<< ours
 <<<<<<< ours
             diff = abs(simulation.e_sim[idx] - value)
             e_terms.append(diff)
@@ -103,6 +125,8 @@ def compute_subnet_loss(
         diff_r = abs(residual_value - target.residual_exp)
         residual_loss = diff_r * weights.w_r
 =======
+=======
+>>>>>>> theirs
             diff = simulation.e_sim[idx] - value
             e_terms.append(diff * diff)
     e_loss = (sum(e_terms) / max(len(e_terms), 1)) * weights.w_e if e_terms else 0.0
@@ -116,6 +140,9 @@ def compute_subnet_loss(
     if target.residual_exp is not None:
         diff_r = simulation.residual_sim - target.residual_exp
         residual_loss = (diff_r * diff_r) * weights.w_r
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
     anchor_loss = 0.0
@@ -123,6 +150,7 @@ def compute_subnet_loss(
         diff_a = params.f0 - anchor_value
         anchor_loss = (diff_a * diff_a) * weights.w_anchor
 
+<<<<<<< ours
 <<<<<<< ours
     reg_terms = [params.ratios.get(key, 0.0) ** 2 for key in ratio_keys]
     reg_terms += [params.delta.get(key, 0.0) ** 2 for key in delta_keys]
@@ -143,6 +171,11 @@ def _compute_residual(log_r: float, thermal_scale: float, eta: float, prime_valu
     eps = 1e-12
     log_corr = log_r - eta * thermal_scale
     return log_corr - math.log(max(prime_value, eps))
+=======
+    total = e_loss + q_loss + residual_loss + anchor_loss
+    return LossBreakdown(total=total, e_loss=e_loss, q_loss=q_loss, residual_loss=residual_loss, anchor_loss=anchor_loss)
+
+>>>>>>> theirs
 =======
     total = e_loss + q_loss + residual_loss + anchor_loss
     return LossBreakdown(total=total, e_loss=e_loss, q_loss=q_loss, residual_loss=residual_loss, anchor_loss=anchor_loss)

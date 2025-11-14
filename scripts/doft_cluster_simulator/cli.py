@@ -5,7 +5,11 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 <<<<<<< ours
+<<<<<<< ours
 from typing import Dict, List, Optional, Sequence, Tuple
+=======
+from typing import Optional
+>>>>>>> theirs
 =======
 from typing import Optional
 >>>>>>> theirs
@@ -20,6 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--targets", type=Path, required=True, help="Ruta al archivo de targets ground-truth")
     parser.add_argument("--weights", type=Path, help="Archivo JSON opcional con pesos de pérdida")
     parser.add_argument("--outdir", type=Path, default=Path("outputs"), help="Directorio de salida")
+<<<<<<< ours
 <<<<<<< ours
     parser.add_argument("--max-evals", type=int, default=500, help="Iteraciones máximas del optimizador por subred")
     parser.add_argument("--seed", type=int, default=42, help="Semilla base de RNG")
@@ -41,6 +46,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-evals", type=int, default=500, help="Evaluaciones máximas por subred")
     parser.add_argument("--seed", type=int, default=42, help="Semilla de RNG")
 >>>>>>> theirs
+=======
+    parser.add_argument("--max-evals", type=int, default=500, help="Evaluaciones máximas por subred")
+    parser.add_argument("--seed", type=int, default=42, help="Semilla de RNG")
+>>>>>>> theirs
     return parser
 
 
@@ -53,6 +62,7 @@ def run_from_args(argv: Optional[list[str]] = None) -> None:
     weights = load_loss_weights(args.weights)
 
 <<<<<<< ours
+<<<<<<< ours
     bounds_override = _parse_bounds_override(args.bounds)
     ablations = _parse_ablation_sets(args.ablation)
     freeze_primes = args.freeze_primes or None
@@ -62,6 +72,8 @@ def run_from_args(argv: Optional[list[str]] = None) -> None:
 
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
     engine = SimulationEngine(
         config=config,
         dataset=dataset,
@@ -69,11 +81,14 @@ def run_from_args(argv: Optional[list[str]] = None) -> None:
         max_evals=args.max_evals,
         seed=args.seed,
 <<<<<<< ours
+<<<<<<< ours
         freeze_primes=freeze_primes,
         ablation_sets=ablations,
         seed_sweep=args.seed_sweep,
         bounds_override=bounds_override,
         huber_delta=args.huber_delta,
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
     )
@@ -85,6 +100,7 @@ def main() -> None:
     run_from_args()
 
 
+<<<<<<< ours
 <<<<<<< ours
 def _parse_bounds_override(entries: Optional[list[str]]) -> Optional[dict[str, Tuple[float, float]]]:
     if not entries:
@@ -128,6 +144,11 @@ def _parse_ablation_sets(spec: Optional[str]) -> Optional[List[Sequence[int]]]:
 
 if __name__ == "__main__":
     main()
+=======
+if __name__ == "__main__":
+    main()
+
+>>>>>>> theirs
 =======
 if __name__ == "__main__":
     main()

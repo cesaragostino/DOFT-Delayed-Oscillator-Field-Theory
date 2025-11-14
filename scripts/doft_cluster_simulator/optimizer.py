@@ -1,5 +1,9 @@
 <<<<<<< ours
+<<<<<<< ours
 """Adaptive optimizer for DOFT cluster simulation parameters."""
+=======
+"""Random + local search optimizer for DOFT cluster simulation."""
+>>>>>>> theirs
 =======
 """Random + local search optimizer for DOFT cluster simulation."""
 >>>>>>> theirs
@@ -7,6 +11,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+<<<<<<< ours
 <<<<<<< ours
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import random
@@ -24,20 +29,28 @@ from .data import (
     SubnetTarget,
 )
 =======
+=======
+>>>>>>> theirs
 from typing import Optional, Tuple
 import random
 
 from .data import DELTA_KEYS, PRIME_KEYS, LossWeights, SubnetParameters, SubnetTarget
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 from .loss import LossBreakdown, compute_subnet_loss
 from .model import ClusterSimulator
 
 
 <<<<<<< ours
+<<<<<<< ours
 RATIO_KEY_BY_PRIME = {prime: key for prime, key in zip(PRIMES, PRIME_KEYS)}
 DELTA_KEY_BY_PRIME = {prime: key for prime, key in zip(PRIMES, DELTA_KEYS)}
 
 
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 @dataclass
@@ -51,7 +64,11 @@ class OptimizationResult:
 
 class SubnetOptimizer:
 <<<<<<< ours
+<<<<<<< ours
     """Gradient-based search (finite-difference Adam) for subnet parameters."""
+=======
+    """Search for parameters that minimise the loss for a subnet."""
+>>>>>>> theirs
 =======
     """Search for parameters that minimise the loss for a subnet."""
 >>>>>>> theirs
@@ -60,6 +77,7 @@ class SubnetOptimizer:
         self,
         simulator: ClusterSimulator,
         weights: LossWeights,
+<<<<<<< ours
 <<<<<<< ours
         bounds: ParameterBounds,
         max_steps: int,
@@ -263,6 +281,8 @@ class SubnetOptimizer:
             grad[idx] = (loss_plus - loss_minus) / (2 * eps)
         return grad
 =======
+=======
+>>>>>>> theirs
         max_evals: int,
         rng: random.Random,
         anchor: Optional[float],
@@ -327,4 +347,7 @@ class SubnetOptimizer:
         ]
         return candidate
 
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs

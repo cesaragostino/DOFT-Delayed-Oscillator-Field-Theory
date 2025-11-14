@@ -5,7 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 <<<<<<< ours
+<<<<<<< ours
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+=======
+from typing import Dict, Iterable, List, Optional, Tuple
+>>>>>>> theirs
 =======
 from typing import Dict, Iterable, List, Optional, Tuple
 >>>>>>> theirs
@@ -17,7 +21,10 @@ PRIMES: Tuple[int, int, int, int] = (2, 3, 5, 7)
 PRIME_KEYS: Tuple[str, str, str, str] = ("r2", "r3", "r5", "r7")
 DELTA_KEYS: Tuple[str, str, str, str] = ("d2", "d3", "d5", "d7")
 <<<<<<< ours
+<<<<<<< ours
 DEFAULT_PRIMES: Tuple[int, ...] = PRIMES
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 
@@ -31,6 +38,7 @@ class LossWeights:
     w_r: float = 0.25
     w_c: float = 0.3
     w_anchor: float = 0.05
+<<<<<<< ours
 <<<<<<< ours
     lambda_reg: float = 0.0
     overrides: Dict[str, Dict[str, float]] = field(default_factory=dict)
@@ -131,11 +139,16 @@ class OptimizationSettings:
             seed=int(seed) if isinstance(seed, (int, float)) else None,
         )
 =======
+=======
+>>>>>>> theirs
 
     @classmethod
     def from_json(cls, data: Dict[str, float]) -> "LossWeights":
         kwargs = {k: float(v) for k, v in data.items() if hasattr(cls, k)}
         return cls(**kwargs)
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
 
@@ -148,8 +161,11 @@ class SubnetTarget:
     residual_exp: Optional[float] = None
     input_exponents: Optional[List[int]] = None
 <<<<<<< ours
+<<<<<<< ours
     prime_value: Optional[float] = None
     use_q: bool = True
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 
@@ -179,6 +195,7 @@ class SubnetTarget:
 
         input_exponents = data.get("input_exponents")
 <<<<<<< ours
+<<<<<<< ours
         prime_value = None
         if input_exponents is not None:
             input_exponents = [int(v) for v in input_exponents]
@@ -197,6 +214,8 @@ class SubnetTarget:
             use_q=q_clean is not None,
             prime_value=prime_value,
 =======
+=======
+>>>>>>> theirs
         if input_exponents is not None:
             input_exponents = [int(v) for v in input_exponents]
 
@@ -205,6 +224,9 @@ class SubnetTarget:
             q_exp=None if q_value is None else float(q_value),
             residual_exp=None if residual_value is None else float(residual_value),
             input_exponents=input_exponents,
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
         )
 
@@ -216,8 +238,12 @@ class ContrastTarget:
     subnet_a: str
     subnet_b: str
 <<<<<<< ours
+<<<<<<< ours
     value: Optional[float]
     label: Optional[str] = None
+=======
+    value: float
+>>>>>>> theirs
 =======
     value: float
 >>>>>>> theirs
@@ -243,6 +269,7 @@ class SubnetParameters:
         )
 
 
+<<<<<<< ours
 <<<<<<< ours
 def _normalize_subnet_name(name: str, material: str) -> str:
     prefix = f"{material}_"
@@ -525,10 +552,16 @@ class MaterialConfig:
 class MaterialConfig:
     """Description of the material and available subnets."""
 >>>>>>> theirs
+=======
+@dataclass
+class MaterialConfig:
+    """Description of the material and available subnets."""
+>>>>>>> theirs
 
     material: str
     subnets: List[str]
     anchors: Dict[str, Dict[str, float]]
+<<<<<<< ours
 <<<<<<< ours
     primes: Tuple[int, ...] = DEFAULT_PRIMES
     prime_layers: List[int] = field(default_factory=lambda: [1 for _ in PRIMES])
@@ -542,11 +575,14 @@ class MaterialConfig:
     optimization: OptimizationSettings = field(default_factory=OptimizationSettings)
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
 
     @classmethod
     def from_file(cls, path: Path) -> "MaterialConfig":
         data = json.loads(Path(path).read_text())
         material = str(data["material"])
+<<<<<<< ours
 <<<<<<< ours
         primes, prime_layer_map = _parse_prime_layers(data.get("primes"))
         subnet_configs, subnet_order = _parse_subnet_configs(material, data, prime_layer_map)
@@ -624,12 +660,17 @@ class MaterialConfig:
             optimization=optimization,
         )
 =======
+=======
+>>>>>>> theirs
         subnets = [str(name) for name in data["subnets"]]
         anchors: Dict[str, Dict[str, float]] = {}
         raw_anchors = data.get("anchors", {})
         for subnet, anchor_data in raw_anchors.items():
             anchors[subnet] = {key: float(value) for key, value in anchor_data.items()}
         return cls(material=material, subnets=subnets, anchors=anchors)
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
 
@@ -662,9 +703,12 @@ class TargetDataset:
                     raise TypeError(f"Expected object for subnet target '{key}'")
                 subnets[key] = SubnetTarget.from_dict(value)
 <<<<<<< ours
+<<<<<<< ours
         for name, target in subnets.items():
             if target.prime_value is None:
                 raise ValueError(f"Target '{name}' is missing 'input_exponents' or valid prime_value")
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
         return cls(subnets=subnets, contrasts=contrasts)
@@ -680,6 +724,10 @@ def load_loss_weights(path: Optional[Path]) -> LossWeights:
         raise TypeError("Loss weight file must contain a JSON object")
     return LossWeights.from_json(data)  # type: ignore[arg-type]
 <<<<<<< ours
+<<<<<<< ours
+=======
+
+>>>>>>> theirs
 =======
 
 >>>>>>> theirs

@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 <<<<<<< ours
+<<<<<<< ours
 from typing import Dict, Tuple
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 
@@ -22,6 +25,7 @@ class SubnetSimulation:
     simulation_result: SimulationResult
 
 <<<<<<< ours
+<<<<<<< ours
 
 @dataclass
 class SimulationRun:
@@ -33,5 +37,7 @@ class SimulationRun:
     freeze_primes: Tuple[int, ...]
     subnet_results: Dict[str, SubnetSimulation]
     base_loss: float
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs

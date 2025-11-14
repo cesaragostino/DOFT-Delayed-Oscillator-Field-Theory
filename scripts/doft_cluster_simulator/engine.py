@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 <<<<<<< ours
+<<<<<<< ours
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 import random
 import uuid
@@ -15,6 +16,8 @@ from .results import SimulationRun, SubnetSimulation
 
 SCHEMA_VERSION = "0.2"
 =======
+=======
+>>>>>>> theirs
 from typing import Dict, Optional
 import random
 
@@ -23,6 +26,9 @@ from .model import ClusterSimulator
 from .optimizer import SubnetOptimizer
 from .reporting import ReportBundle, create_report_bundle
 from .results import SubnetSimulation
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
 
@@ -37,6 +43,7 @@ class SimulationEngine:
         max_evals: int = 250,
         seed: int = 42,
 <<<<<<< ours
+<<<<<<< ours
         freeze_primes: Optional[Iterable[int]] = None,
         ablation_sets: Optional[List[Sequence[int]]] = None,
         seed_sweep: int = 1,
@@ -44,11 +51,14 @@ class SimulationEngine:
         huber_delta: float = 0.02,
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
     ) -> None:
         self.config = config
         self.dataset = dataset
         self.weights = weights
         self.max_evals = max_evals
+<<<<<<< ours
 <<<<<<< ours
         self.base_seed = seed
         self.seed_sweep = max(1, seed_sweep)
@@ -188,6 +198,8 @@ class SimulationEngine:
             )
             result = optimizer.optimise(target, target_key)
 =======
+=======
+>>>>>>> theirs
         self.rng = random.Random(seed)
         self.simulator = ClusterSimulator()
 
@@ -206,12 +218,16 @@ class SimulationEngine:
                 anchor=anchor,
             )
             result = optimizer.optimise(target)
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
             subnet_results[subnet_name] = SubnetSimulation(
                 parameters=result.params,
                 loss=result.simulation_loss,
                 simulation_result=result.simulation_result,
             )
+<<<<<<< ours
 <<<<<<< ours
             base_loss += result.simulation_loss.total
         return subnet_results, base_loss
@@ -253,6 +269,8 @@ class SimulationEngine:
             }
         )
 =======
+=======
+>>>>>>> theirs
 
         bundle = create_report_bundle(
             config=self.config,
@@ -268,4 +286,7 @@ class SimulationEngine:
             return None
         return anchor_data.get("X")
 
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs

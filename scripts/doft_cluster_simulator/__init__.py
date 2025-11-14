@@ -1,6 +1,7 @@
 """DOFT Cluster Simulator package."""
 
 <<<<<<< ours
+<<<<<<< ours
 from __future__ import annotations
 
 from typing import Iterable, Optional
@@ -18,6 +19,11 @@ def run_from_args(argv: Optional[Iterable[str]] = None) -> None:
     from .cli import run_from_args as _run_from_args
 
     _run_from_args(list(argv) if argv is not None else None)
+=======
+from .cli import run_from_args
+
+__all__ = ["run_from_args"]
+>>>>>>> theirs
 =======
 from .cli import run_from_args
 

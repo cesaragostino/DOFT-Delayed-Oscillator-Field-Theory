@@ -18,7 +18,10 @@ class SimulationResult:
     residual_sim: float
     layer_factors: List[float]
 <<<<<<< ours
+<<<<<<< ours
     log_r: float
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 
@@ -55,6 +58,7 @@ class ClusterSimulator:
             layer_index = max(1, min(params.L, layer_index))
             layer_factor = _layer_factor(layer_index)
 <<<<<<< ours
+<<<<<<< ours
             base_ratio = ratio * layer_factor + delta
             e_value = soft_round(base_ratio, self.softness)
             e_sim.append(e_value)
@@ -70,6 +74,8 @@ class ClusterSimulator:
             log_r=log_r,
         )
 =======
+=======
+>>>>>>> theirs
             base_value = params.f0 * (1.0 + ratio) * layer_factor + delta
             e_value = soft_round(base_value, self.softness)
             e_sim.append(e_value)
@@ -78,6 +84,9 @@ class ClusterSimulator:
         q_sim = self._compute_q(e_sim)
         residual_sim = self._compute_residual(params.f0, e_sim, params.delta.values())
         return SimulationResult(e_sim=e_sim, q_sim=q_sim, residual_sim=residual_sim, layer_factors=layer_factors)
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 
     def _compute_q(self, e_sim: Sequence[float]) -> float | None:
@@ -89,10 +98,13 @@ class ClusterSimulator:
         return numerator / total
 
 <<<<<<< ours
+<<<<<<< ours
     def _compute_log_r(self, e_sim: Iterable[float]) -> float:
         weighted = [value * math.log(prime) for value, prime in zip(e_sim, PRIMES)]
         return sum(weighted)
 =======
+=======
+>>>>>>> theirs
     def _compute_residual(self, f0: float, e_sim: Iterable[float], deltas: Iterable[float]) -> float:
         e_list = list(e_sim)
         avg_e = sum(e_list) / max(len(e_list), 1)
@@ -101,4 +113,7 @@ class ClusterSimulator:
         log_prime = sum(e * math.log(p) for e, p in zip(e_list, PRIMES)) / max(sum(e_list) + 1e-6, 1e-6)
         return math.log(max(f0, 1e-6)) - log_prime - 0.05 * avg_delta + 0.01 * avg_e
 
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
