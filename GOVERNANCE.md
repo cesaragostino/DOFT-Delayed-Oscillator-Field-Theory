@@ -1,75 +1,119 @@
 # Governance
 
-This document describes how the repository is maintained and how decisions are made.  
-Repository: https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory/
+This document describes how the central DOFT repository is maintained and how
+its research record is changed.
 
-## 1) Roles
+Repository:
+<https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory>
 
-**Maintainers**
-- **Cesar Agostino** (GitHub: [@cesaragostino](https://github.com/cesaragostino)) — Repo Owner
+## Repository role
 
-> Contact: open an Issue for general matters. For sensitive topics (e.g., security), use GitHub “Private vulnerability reporting” (Security tab) to contact the owner privately.
+This repository is the central index for DOFT theory, evidence-reviewed study
+summaries, references, and the future public website. It is not the active
+computational repository for any current study. Deprecated software is
+preserved under `legacy/`.
 
-## 2) Decision-making
+Study-specific source code, datasets, and generated artifacts remain in their
+source repositories and published archives. The central repository records
+their provenance, findings, limitations, and relationships.
 
-- **Default**: *lazy consensus*. If a change receives ≥1 maintainer approval, CI is green, and no reasoned objections are raised within **72 hours**, it may be merged.
-- **Major changes** (public API, license, repo transfer, long-term roadmap): require **2 approvals** if there are ≥2 maintainers, or explicit sign-off by the Repo Owner.
-- **Tie-breaker**: Repo Owner decides.
+## Maintainer
 
-## 3) Branching model
+The repository owner and current maintainer is
+[Cesar Agostino](https://github.com/cesaragostino).
 
-- Active development occurs on **`development`**. When a milestone is complete and tests are green, changes are merged into **`main`**.  
-- Feature work should use topic branches: `feat/<short-name>` or `fix/<short-name>`.  
-- `main` must remain releasable.
+The maintainer has final responsibility for:
 
-## 4) Releases & versioning
+- the scope and direction of DOFT;
+- the status assigned to each study;
+- acceptance of changes to theory and research synthesis;
+- releases, licensing, and repository transfer;
+- security and conduct decisions.
 
-- **SemVer**: `MAJOR.MINOR.PATCH`.
-- Release steps:
-  1. Update `CHANGELOG.md`.
-  2. Bump version.
-  3. Tag `vX.Y.Z` and create a GitHub Release (attach artifacts if any).
-- Backports only for critical fixes; no formal LTS unless later announced.
+Additional maintainers may be appointed through a public governance change.
 
-## 5) Reviews, CI, and quality
+## Decision-making
 
-- Every PR must pass CI and, when practical, include tests or validation notebooks/plots.  
-- Small, focused PRs are preferred. Maintainers may request changes or push “suggested edits” to contributor branches (when allowed by GitHub).
+Routine corrections, link updates, and evidence-preserving reorganizations may
+be accepted by the maintainer directly.
 
-## 6) AI-assisted workflow (OpenAI & Gemini)
+Changes that materially alter theory, scientific conclusions, study status,
+licensing, or repository ownership require explicit maintainer approval and a
+written rationale in the commit, pull request, or accompanying research log.
 
-This project uses AI agents to accelerate research and development. Human review is **mandatory** before merge.
+When evidence conflicts with an existing claim, the repository should preserve
+the provenance of the claim while clearly recording the conflict. Historical
+documents are archived rather than silently rewritten as current evidence.
 
-- **Agents and roles**
-  - **OpenAI GPT-5 Thinking**: physics/mathematics discussions; QA of implementations.
-  - **Gemini Pro**: simulation design/evaluation; development assistance.
-  - **OpenAI GPT-5 Thinking** (additional): development QA.
+## Content policy
 
-- **Provenance requirement**
-  - If AI assistance influenced a PR, include a brief note in the PR description:
-    - *“AI assistance: Gemini Pro (design), GPT-5 Thinking (QA). Prompts and key diffs attached in the PR description or linked artifact.”*
-  - Cite model names/versions and summarize what was generated vs. what was human-written.
+- Repository-maintained content is written in English.
+- An explicitly identified Spanish manifesto edition may be maintained as a
+  translation.
+- Study summaries distinguish direct artifact evidence, independent
+  reanalysis, interpretation, and unresolved claims.
+- A published artifact is not silently replaced by a later source revision.
+- Source repositories are linked, not nested or copied into this repository.
+- Active code does not belong at the repository root. Historical code belongs
+  under `legacy/` and must be marked deprecated.
+- Large generated artifacts should remain in their source archive unless they
+  are essential to the central record.
 
-- **Safety & licensing**
-  - Do **not** paste secrets or private data into external tools.
-  - Ensure third-party code suggested by AI respects the project license and attribution.
-  - All AI-generated code/text is reviewed and edited by a maintainer before merge.
+## Branches and review
 
-## 7) Security
+`main` is the public repository state. Topic branches are recommended for
+substantial work. The maintainer may also make direct, reviewed commits for
+repository administration or focused corrections.
 
-- Report vulnerabilities via GitHub **Private vulnerability reporting** (Security → “Report a vulnerability”).  
-- Coordinated disclosure: fixes are prepared privately; public disclosure after a patched release unless risk dictates otherwise.
+Pull requests should be narrow enough to review and should describe:
 
-## 8) Maintainer changes
+- what changed and why;
+- which evidence or source record supports the change;
+- whether scientific interpretation changed;
+- what validation was performed;
+- any use of automated or AI-assisted generation that materially affected the
+  result.
 
-- **Adding**: after ~3 meaningful contributions over ~6 months (guideline), propose via PR updating this file; requires Repo Owner approval (or 2 approvals if ≥2 maintainers).
-- **Emeritus/Removal**: inactivity ~6 months, request by the maintainer, or for cause (owner decision).
+The contribution process is described in
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-## 9) Amending this document
+## Releases and citation
 
-- Propose changes via PR. Minor edits (typos/links) may be merged by the Repo Owner.  
-- Substantive changes follow the same rule as “Major changes” in §2.
+Repository releases are created when a stable central snapshot is ready to be
+cited or archived. A release should:
 
----
+1. identify the exact Git commit;
+2. summarize incorporated studies and status changes;
+3. update citation metadata;
+4. create a GitHub release and, when appropriate, a Zenodo version;
+5. distinguish the version DOI from the concept DOI.
 
-_Last updated: 2025-08-26_
+The human-readable citation policy is maintained in
+[`references/citation.md`](./references/citation.md).
+
+## AI-assisted work
+
+AI tools may assist with research review, code inspection, editing, or
+analysis. The maintainer remains accountable for every merged result.
+
+Material AI assistance should be disclosed in a commit or pull-request note
+when it affects scientific reasoning, nontrivial analysis, or substantial
+generated text. The disclosure should identify the task performed and the
+human validation applied; it need not preserve private prompts or expose
+sensitive information.
+
+Secrets, private data, unpublished third-party material, and restricted data
+must not be submitted to external tools without authorization.
+
+## Security and conduct
+
+Security reporting is described in [`SECURITY.md`](./SECURITY.md). Community
+expectations are described in [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+## Amendments
+
+Governance changes are proposed through a commit or pull request that explains
+their effect. Material changes require explicit approval by the repository
+owner.
+
+Last updated: 2026-07-24.

@@ -17,6 +17,8 @@ consolidate findings from every study.
   presented as current methodology.
 - The public website has not been implemented yet; its workspace is
   [`website/`](./website/).
+- Study-specific source code and data remain in their own repositories and
+  published archives; they are linked rather than copied here.
 
 ## Index
 
@@ -38,6 +40,7 @@ consolidate findings from every study.
 - [Study 01–06 index](./docs/studies/)
 - [Bibliographic references](./references/)
 - [DOFT repository map](./references/repositories.md)
+- [Citation guide](./references/citation.md)
 
 ## Next stage
 
@@ -49,4 +52,18 @@ remains outside the current extraction scope.
 
 ## License and citation
 
-See [`LICENSE`](./LICENSE) and [`CITATION.cff`](./CITATION.cff).
+The repository is distributed under the [MIT License](./LICENSE) unless an
+individual file states otherwise. Deprecated code is provided without
+maintenance or security support.
+
+For repository and study-specific citation guidance, see:
+
+- [`references/citation.md`](./references/citation.md)
+- [`CITATION.cff`](./CITATION.cff)
+
+## Contributing and governance
+
+- [Contributing guide](./CONTRIBUTING.md)
+- [Governance](./GOVERNANCE.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Security policy](./SECURITY.md)

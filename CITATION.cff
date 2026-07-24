@@ -1,25 +1,48 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this repository, cite the repository and each study whose findings you rely on. See references/citation.md."
 title: "DOFT — Delayed Oscillator Field Theory"
 type: software
+abstract: "The central research index for Delayed Oscillator Field Theory, containing evidence-reviewed study summaries, theory documents, references, and deprecated historical software."
 authors:
   - family-names: Agostino
     given-names: Cesar
+    orcid: "https://orcid.org/0009-0008-9316-2952"
 repository-code: "https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory"
-version: "v0.1.0"
-date-released: 2025-08-26
-doi: https://doi.org/10.5281/zenodo.16965708      
+url: "https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory"
+license: MIT
+doi: "10.5281/zenodo.16965707"
 identifiers:
-  - type: doi
-    value: 10.5281
-  - type: doi
-    value: zenodo.16965708
-preferred-citation:
-  type: software
-  title: "DOFT — Delayed Oscillator Field Theory"
-  authors:
-    - family-names: Agostino
-      given-names: Cesar
-  year: 2025
-  doi: https://doi.org/10.5281/zenodo.16965708
-  url: "https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory"
+  - description: "Concept DOI for the archived DOFT central-repository release series"
+    type: doi
+    value: "10.5281/zenodo.16965707"
+keywords:
+  - delayed oscillators
+  - hierarchical oscillator networks
+  - memory
+  - superconductivity
+  - research synthesis
+references:
+  - type: report
+    title: "Prime-space fingerprints of superconductors and superfluid helium from a delayed-oscillator locking grammar"
+    authors:
+      - family-names: Agostino
+        given-names: Cesar
+        orcid: "https://orcid.org/0009-0008-9316-2952"
+    doi: "10.5281/zenodo.17620713"
+    year: 2025
+  - type: report
+    title: "Integer participation and structural noise in superconducting clusters"
+    authors:
+      - family-names: Agostino
+        given-names: Cesar
+        orcid: "https://orcid.org/0009-0008-9316-2952"
+    doi: "10.5281/zenodo.17784477"
+    year: 2025
+  - type: report
+    title: "Coherence Scaling in Hierarchical Oscillator Networks: Power-Law Decay, Memory Overhead, and Topological Constraints with Parallels to Disordered Condensed Matter"
+    authors:
+      - family-names: Agostino
+        given-names: Cesar
+        orcid: "https://orcid.org/0009-0008-9316-2952"
+    doi: "10.5281/zenodo.18200973"
+    year: 2026

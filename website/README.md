@@ -14,3 +14,5 @@ a dependency.
 - A timeline and status for each study.
 - Links to related repositories.
 - Bibliography, license, and citation guidance.
+
+The website must not execute or import anything from `legacy/`.

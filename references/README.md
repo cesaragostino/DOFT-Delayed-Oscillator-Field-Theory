@@ -4,6 +4,9 @@ _This bibliography collects the core sources we draw on for the DOFT program: de
 
 > **Repository note:** this bibliography is preserved for review. It now lives
 > in `references/README.md` and is linked from the repository index.
+>
+> For citation of the central repository and individual DOFT studies, see the
+> [`citation guide`](./citation.md).
 
 ---
 
