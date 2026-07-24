@@ -41,18 +41,18 @@ def main():
 
     big = pd.concat(dfs, ignore_index=True)
 
-    # Asegura tipos numéricos en lo que nos importa
+    # Coerce the relevant columns to numeric types
     num_cols = ["gamma","xi","ceff_bar","beta_dyn","lpcV","samples","step","K","z0"]
     big = coerce_numeric(big, num_cols)
 
-    # Derivados opcionales
+    # Optional derived values
     if "lpcV" in big.columns:
         big["lpc_ok"] = (big["lpcV"].fillna(0) == 0).astype(float)
 
     os.makedirs(args.out, exist_ok=True)
     big.to_csv(os.path.join(args.out, "merged.csv"), index=False)
 
-    # Armado de agregados flexibles
+    # Build flexible aggregates
     group = big.groupby(["gamma","xi"], as_index=False)
     agg_dict = {
         "ceff_bar": ["mean","std"],
@@ -63,13 +63,13 @@ def main():
         agg_dict["lpc_ok"] = ["mean"]
 
     summary = group.agg(agg_dict)
-    # Aplana columnas MultiIndex
+    # Flatten MultiIndex columns
     summary.columns = [
         "_".join([c for c in col if c]).rstrip("_")
         if isinstance(col, tuple) else col
         for col in summary.columns
     ]
-    # Renombres amigables
+    # Friendly column names
     summary = summary.rename(columns={
         "ceff_bar_mean":"ceff_bar_mean",
         "ceff_bar_std":"ceff_bar_std",
@@ -78,7 +78,7 @@ def main():
         "lpc_ok_mean":"lpc_ok_frac"
     })
 
-    # SEMs cuando hay std
+    # Compute SEM values when standard deviations are available
     if "ceff_bar_std" in summary.columns:
         counts = group.size().reset_index(name="n")["n"]
         summary["n"] = counts

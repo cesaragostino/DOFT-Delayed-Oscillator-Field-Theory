@@ -1,6 +1,6 @@
 # Iteration 2 — **Phase 2** Protocol: Dynamic, State‑Dependent Delays in DOFT
 
-**Status:** Draft for implementation · **Owner:** Equipo DOFT · **Target branch:** `feature/phase2-dynamic-delays`
+**Status:** Draft for implementation · **Owner:** DOFT Team · **Target branch:** `feature/phase2-dynamic-delays`
 
 > This document specifies the Phase‑2 protocol for DOFT, extending Phase‑1 to **dynamic, state‑dependent delays** (τ) consistent with Axioms A1–A6 (v1.2). It mirrors the structure of Phase‑1 (objectives → data contract → experiments → exit criteria → deliverables → QA checklist) and must be treated as the single source of truth for this phase.
 
@@ -12,7 +12,7 @@
 
 - Demonstrate that \(c_{\mathrm{eff}} \approx a/\langle\tau\rangle\) still holds when \(\tau_{ij}(t)=\tau^{(0)}_{ij}+\delta\tau_{ij}[q,\dot q]\) (weak, smooth dependence), and quantify isotropy.
 - Show passive **LPC** compliance (no creation of chaos) with dynamic delays.
-- Provide an operational path to **retardos variables en el tiempo** without exploding memory or violating passivity.
+- Provide an operational path to **time-varying delays** without exploding memory or violating passivity.
 
 **Out of scope.** Full Planck‑scale (\(\hbar\)) derivations; non‑abelian holonomies; active gain (γ<0) beyond dedicated QA; long‑range memory other than Prony.
 
@@ -78,29 +78,29 @@ The legacy key `prony_memory` is accepted as an alias for backward compatibility
 
 ## 4) Experiments (Phase‑2)
 
-### Exp‑A — c emergente con τ dinámica
+### Exp‑A — Emergent c with dynamic τ
 - **Setup:** 2D grid, nearest‑neighbors, \(\tau_{ij}(t)=\tau_0\big[1+\alpha\,(\rho_i+\rho_j)/(2\rho_0)\big]\) with \(\rho_k=\tfrac12(q_k^2+p_k^2)\), weak \(\alpha\in\{0,0.05,0.1,0.2\}\).
-- **Protocol:** estado basal estable → **pulso gaussiano** centrado → medir frente en 1σ/3σ/5σ, ángulos x/y/diag.
+- **Protocol:** stable basal state → centered **Gaussian pulse** → measure the front at 1σ/3σ/5σ along x/y/diagonal directions.
 - **KPI:** regression of \(c_{\mathrm{eff}}\) vs \(a/\langle\tau\rangle\) → **slope = 1.0±0.05**, intercept 95% CI contains 0; **anisotropy** < 2%.
 
-### Exp‑B — Gradiente dinámico (gravedad análoga mínima)
-- **Setup:** inducir banda de mayor \(\rho\) ⇒ mayor \(\tau(x)\) (vía \(\alpha>0\) o campo lento \(z_{ij}\)).
-- **Protocol:** lanzar pulso desde \(\tau\) baja hacia alta; reconstruir \(c_{\mathrm{eff}}(x)=a/\tau(x)\) y \(n_{\mathrm{eff}}(x)=c/c_{\mathrm{eff}}(x)\).
-- **KPI:** curvatura/deflexión del frente consistente con gradiente de \(n_{\mathrm{eff}}(x)\) (error dentro del IC del método de frente/interpolador).
+### Exp‑B — Dynamic gradient (minimal analogue gravity)
+- **Setup:** induce a band with higher \(\rho\) ⇒ higher \(\tau(x)\) (through \(\alpha>0\) or a slow field \(z_{ij}\)).
+- **Protocol:** launch a pulse from low to high \(\tau\); reconstruct \(c_{\mathrm{eff}}(x)=a/\tau(x)\) and \(n_{\mathrm{eff}}(x)=c/c_{\mathrm{eff}}(x)\).
+- **KPI:** front curvature/deflection consistent with the \(n_{\mathrm{eff}}(x)\) gradient (error within the confidence interval of the front/interpolation method).
 
-### Exp‑S (sanity, previos a producción)
-- **S‑0:** \(\alpha=0\) (τ constante) → reproducir Phase‑1 dentro de ±1%.
-- **S‑1:** τ(t)=τ₀(1+ε sin Ωt) global, ε=0.1, Ω≪τ₀⁻¹ → error de amplitud <1%, sin creación de energía; \(|\Delta d|<0.25\).
-- **S‑2:** gradiente suave \(\tau(x)\) inducido por \(\rho\) → curvatura del frente consistente con \(n_{\mathrm{eff}}(x)\).
+### Exp‑S (pre-production sanity checks)
+- **S‑0:** \(\alpha=0\) (constant τ) → reproduce Phase‑1 within ±1%.
+- **S‑1:** global τ(t)=τ₀(1+ε sin Ωt), ε=0.1, Ω≪τ₀⁻¹ → amplitude error <1%, no energy creation; \(|\Delta d|<0.25\).
+- **S‑2:** smooth \(\tau(x)\) gradient induced by \(\rho\) → front curvature consistent with \(n_{\mathrm{eff}}(x)\).
 
 ---
 
 ## 5) Exit Gate — Success Criteria (Go/No‑Go)
 
-- **(DD‑1) c emergente con τ dinámica:** slope \(c_{\mathrm{eff}}\) vs \(a/\langle\tau\rangle\) = **1.0±0.05**; intercept 95% CI contains 0 (Exp‑A).
-- **(DD‑2) Isotropía:** **max Δc/c < 2%** entre ejes (x, y, diag) (Exp‑A).
-- **(DD‑3) LPC pasiva:** **lpc_ok_frac ≥ 0.95** y **lpc_vcount = 0** en modo pasivo (Exp‑A/B).
-- **(DD‑4) Numérica (τ dinámica):** tasa de rechazo por \(|\Delta d|>0.25\) < 1%; S‑1 error de amplitud <1%.
+- **(DD‑1) Emergent c with dynamic τ:** slope \(c_{\mathrm{eff}}\) vs \(a/\langle\tau\rangle\) = **1.0±0.05**; intercept 95% CI contains 0 (Exp‑A).
+- **(DD‑2) Isotropy:** **max Δc/c < 2%** across axes (x, y, diagonal) (Exp‑A).
+- **(DD‑3) Passive LPC:** **lpc_ok_frac ≥ 0.95** and **lpc_vcount = 0** in passive mode (Exp‑A/B).
+- **(DD‑4) Numerical behavior (dynamic τ):** rejection rate due to \(|\Delta d|>0.25\) < 1%; S‑1 amplitude error <1%.
 
 > Failing any DD‑criteria → **No‑Go**; adjust (α, λ, dt policy, interp order) and rerun.
 
@@ -167,4 +167,3 @@ Field notes:
 ---
 
 **End of Protocol — Phase 2**
-

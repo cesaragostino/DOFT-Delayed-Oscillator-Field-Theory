@@ -1,5 +1,10 @@
 # STUDY 01 — Mother Frequency and Thermal–Memory Shift
 
+> **Archived historical document.** This report predates the evidence review
+> of the published Study 01 package and makes claims that are not established
+> by that study. It is preserved for traceability, not as the current findings
+> summary. See the [active Study 01 extraction](../../studies/study-01/).
+
 *(Technical Scientific Report, DOFT Framework)*
 
 ---

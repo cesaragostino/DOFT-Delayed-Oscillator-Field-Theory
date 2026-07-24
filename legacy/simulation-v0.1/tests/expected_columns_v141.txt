@@ -1,0 +1,9 @@
+# Additional columns required in runs.csv for v1.4.1
+lpc_mean
+lpc_drift
+skin_duty
+phi_offharm
+ret_eff_peak
+rstar_est
+pulses_per_period
+# (retain all previous v1.4 columns)

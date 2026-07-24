@@ -16,14 +16,14 @@ The project's goals are:
 - **Theory-to-data:** Derive falsifiable predictions (scalings, collapse laws, stability bounds) from DOFT’s axioms.
 - **Data-to-theory:** Test those predictions with numerics and public datasets, and report success/failure with code-audited, reproducible runs.
 
-[This is the DOFT Manifesto](./MANIFESTO.md)  
+[This is the DOFT Manifesto](../../theory/MANIFESTO_v1.8.md)
 *(This repository should use the `DOFT_MANIFESTO_v1.6-Consolidated.md` content for this file)*
 
-[This is the DOFT Manifesto uses plain language and analogies](./MANIFESTO_EXPLAINED.md)  
+[This is the DOFT Manifesto uses plain language and analogies](../../theory/MANIFESTO_EXPLAINED.md)
 *. This text uses plain language and analogies to make DOFT accessible to non-specialists. It does not replace the technical formulation or aim to provoke; any simplification is intentional to aid understanding.*
 
-[This is the DOFT Manifesto en lenguaje coloquial y analogías](./MANIFESTO_EXPLICADO.md)  
-*. Este texto usa lenguaje coloquial y analogías para acercar DOFT a lectores no especialistas. No sustituye la formulación técnica ni busca polemizar; cualquier simplificación es intencional para facilitar la comprensión.*
+[This is the DOFT Manifesto in Spanish, using plain language and analogies](../../theory/MANIFESTO_EXPLICADO.md)
+*This intentionally Spanish text uses informal language and analogies to make DOFT accessible to non-specialists. It does not replace the technical formulation or seek controversy; any simplification is intended to aid understanding.*
 
 ---
 
@@ -248,7 +248,7 @@ This simulation suite is designed to test these consolidated predictions:
 DOFT can be seen as an emergent framework where the known fields and forces are effective layers of a deeper multi-resonant substrate.  
 Bricks (mode + kernel) replace point particles; Memory (order parameters, gaps, topology) replaces static constants.  
 Each layer iterates with memory, reproducing the known gauge structures as stable resonant envelopes.  
-[Read “Emergence from Resonance” →](./EMERGENCE_FROM_RESONANCE.md)
+[Read “Emergence from Resonance” →](./EMERGENCE_FROM_RESONANCE_v1.7.md)
 
 ### Oscillators with Delays (RE) & Loop Closure (RCB)
 
@@ -495,4 +495,3 @@ This project follows a strict, multi-party workflow to ensure correctness and re
 This repository aims to **earn** credibility by making failure modes obvious, documented, and repeatable. If a prediction breaks under a better test, that’s progress.
 
 Happy falsifying.
-

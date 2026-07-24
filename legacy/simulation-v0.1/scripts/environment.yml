@@ -1,4 +1,4 @@
-# environment.yml para el simulador DOFT
+# environment.yml for the DOFT simulator
 name: doft_v12
 
 channels:

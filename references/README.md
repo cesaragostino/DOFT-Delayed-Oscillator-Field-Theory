@@ -2,7 +2,8 @@
 
 _This bibliography collects the core sources we draw on for the DOFT program: delay–differential dynamics and memory kernels, emergence and analogue gravity, Rydberg/QDT phenomenology, self-averaging/criticality, and supporting methods. Additions welcome via PRs._
 
-> **Where this file lives:** place it at the repository root as `REFERENCES.md`, and link to it from `README.md` and `MANIFESTO.md`.
+> **Repository note:** this bibliography is preserved for review. It now lives
+> in `references/README.md` and is linked from the repository index.
 
 ---
 
@@ -98,7 +99,7 @@ Each tag maps to an entry below. If a work spans multiple themes, it is listed o
 
 ## Suggested cross-linking from project docs
 
-- In `README.md` add a TOC entry: **[References](./REFERENCES.md)**  
+- In the central documentation, keep a visible link to this bibliography.
 - In `MANIFESTO.md` cite by tags, e.g., “delayed dynamics [DDE-1], memory kernels [MEM-1], analogue horizons [AG-1–AG-4], Rydberg/QDT [QDT-1, QDT-2], polarizability [POL-1], self-averaging near criticality [NAV-1].”
 
 ---
@@ -108,4 +109,3 @@ Each tag maps to an entry below. If a work spans multiple themes, it is listed o
 - Citations here provide **context and prior art**; inclusion does not imply endorsement of DOFT.  
 - When using NIST ASD data **[NIST-1]**, cite the database _and_ the specific retrieval date/version in your analysis notebooks.  
 - If you contribute new analysis relying on additional sources (e.g., specific alkali-metal datasets, analogue-gravity experiments), please append them in the appropriate section and reference them in your PR description.
-
