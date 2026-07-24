@@ -396,7 +396,21 @@ export default function DynamicsPage() {
             <p>Dynamics in depth · Study 06</p>
           </div>
           <Link href="/">Return to the overview</Link>
-          <span>Artifact reviewed 24 July 2026</span>
+          <div className={styles.footerMeta}>
+            <p>Artifact reviewed 24 July 2026</p>
+            <p>
+              <span>Contact</span>
+              <a href="mailto:cesar.agostino@gmail.com">
+                cesar.agostino@gmail.com
+              </a>
+            </p>
+            <p>
+              <span>AI collaborators</span>
+              <a href="https://openai.com">OpenAI</a>
+              {" · "}
+              <a href="https://www.anthropic.com">Anthropic</a>
+            </p>
+          </div>
         </div>
       </footer>
     </main>

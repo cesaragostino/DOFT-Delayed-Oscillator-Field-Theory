@@ -372,8 +372,7 @@
   letter-spacing: 0.08em;
 }
 
-.footer p,
-.footer > span {
+.footer p {
   margin: 4px 0 0;
   color: rgba(255, 255, 255, 0.46);
   font-family: var(--mono);
@@ -386,8 +385,34 @@
   font-size: 0.72rem;
 }
 
-.footer > span {
+.footerMeta {
   justify-self: end;
+  text-align: right;
+}
+
+.footerMeta p + p {
+  margin-top: 11px;
+}
+
+.footerMeta span {
+  display: block;
+  margin-bottom: 2px;
+  color: rgba(255, 255, 255, 0.36);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footerMeta a {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: var(--sans);
+  font-size: 0.67rem;
+}
+
+.footerMeta a:hover,
+.footerMeta a:focus-visible {
+  color: var(--orange-soft);
 }
 
 @media (max-width: 960px) {
@@ -494,7 +519,8 @@
     width: fit-content;
   }
 
-  .footer > span {
+  .footerMeta {
     justify-self: start;
+    text-align: left;
   }
 }

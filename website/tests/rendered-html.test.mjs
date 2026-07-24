@@ -36,6 +36,10 @@ test("server-renders the DOFT research overview", async () => {
   assert.match(html, /doft-social-card\.jpg/);
   assert.match(html, /DOFT conceptual field/);
   assert.match(html, /href="\/dynamics"/);
+  assert.match(html, /mailto:cesar\.agostino@gmail\.com/);
+  assert.match(html, /AI collaborators/);
+  assert.match(html, /OpenAI/);
+  assert.match(html, /Anthropic/);
   assert.doesNotMatch(html, /codex-preview|Building your site|SkeletonPreview/i);
 });
 
@@ -54,6 +58,8 @@ test("server-renders the Study 06 dynamics page", async () => {
   assert.match(html, /causal-splitting\.png/);
   assert.match(html, /Interesting dynamics are not yet a particle theory/);
   assert.match(html, /5e2889b/);
+  assert.match(html, /mailto:cesar\.agostino@gmail\.com/);
+  assert.match(html, /AI collaborators/);
 });
 
 test("ships the project social preview and no disposable starter assets", async () => {

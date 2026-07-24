@@ -633,11 +633,25 @@ export default function Home() {
               MIT License
             </a>
           </div>
-          <p className="footer-meta">
-            Research status: active
-            <br />
-            Last evidence review: 24 July 2026
-          </p>
+          <div className="footer-meta">
+            <p>
+              Research status: active
+              <br />
+              Last evidence review: 24 July 2026
+            </p>
+            <p>
+              <span>Contact</span>
+              <a href="mailto:cesar.agostino@gmail.com">
+                cesar.agostino@gmail.com
+              </a>
+            </p>
+            <p>
+              <span>AI collaborators</span>
+              <a href="https://openai.com">OpenAI</a>
+              {" · "}
+              <a href="https://www.anthropic.com">Anthropic</a>
+            </p>
+          </div>
         </div>
       </footer>
     </main>
