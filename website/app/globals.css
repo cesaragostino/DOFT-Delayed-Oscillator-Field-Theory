@@ -223,10 +223,42 @@ a {
   line-height: 1.58;
 }
 
+.generative-rule {
+  max-width: 640px;
+  margin-top: 25px;
+  padding: 14px 0;
+  border-block: 1px solid var(--line);
+}
+
+.generative-rule strong {
+  display: block;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.generative-rule p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.generative-rule span {
+  display: block;
+  margin-top: 8px;
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
 .hero-actions {
   display: flex;
   align-items: center;
-  margin-top: 34px;
+  margin-top: 28px;
   gap: 26px;
 }
 

@@ -200,6 +200,21 @@ export default function Home() {
             aim is to understand how coherent structures form, acquire an
             internal history, interact, and fail.
           </p>
+          <div
+            className="generative-rule"
+            aria-label="DOFT iterative generative protocol"
+          >
+            <strong>Randomness proposes. Dynamics selects.</strong>
+            <p>
+              Initial onions are drawn from a declared ensemble and evolved
+              deterministically—not selected for matching a target number.
+              Survivors are connected and become the next initial condition.
+            </p>
+            <span>
+              Wave 1 · onions → dynamical selection → waves 2–N · connected
+              structures
+            </span>
+          </div>
           <div className="hero-actions">
             <a className="button button-primary" href="#evidence">
               See the current evidence <span aria-hidden="true">↓</span>

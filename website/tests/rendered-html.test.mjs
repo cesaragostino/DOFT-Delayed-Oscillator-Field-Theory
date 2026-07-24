@@ -28,6 +28,10 @@ test("server-renders the DOFT research overview", async () => {
     /<title>DOFT — Delayed Oscillator Field Theory<\/title>/i,
   );
   assert.match(html, /What if persistence is a/);
+  assert.match(html, /Randomness proposes\. Dynamics selects\./);
+  assert.match(html, /not selected for matching a target number/);
+  assert.match(html, /Wave 1 · onions/);
+  assert.match(html, /waves 2–N · connected/);
   assert.match(html, /What the program can defend today/);
   assert.match(html, /The link is not neutral/);
   assert.match(html, /Progress includes the results that did not survive/);
