@@ -223,11 +223,6 @@ export default function Home() {
               See the dynamics in depth <Arrow />
             </Link>
           </div>
-          <p className="scope-note">
-            Working theory, not established fundamental physics. The website
-            distinguishes measurements, model-dependent interpretation, and
-            open conjecture.
-          </p>
         </div>
 
         <figure className="hero-system" aria-labelledby="hero-system-caption">
@@ -247,6 +242,11 @@ export default function Home() {
             Delay, memory, and retained relation. Visual identity—not measured
             data.
           </figcaption>
+          <p className="scope-note">
+            Working theory, not established fundamental physics. The website
+            distinguishes measurements, model-dependent interpretation, and
+            open conjecture.
+          </p>
         </figure>
       </section>
 
