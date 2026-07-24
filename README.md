@@ -53,13 +53,12 @@ Study 03 or Study 04, following the author's direction. The first website
 version now combines those audited records with a dated synthesis of the
 active Study 06 evidence. A full Study 06 central extraction remains pending.
 
-The website is prepared for deployment through GitHub Actions at the expected
-project URL:
+The website is prepared for deployment through GitHub Actions at:
 
-<https://cesaragostino.github.io/DOFT-Delayed-Oscillator-Field-Theory/>
+<https://doft.space/>
 
-The workflow derives the repository name automatically. A root account site
-would instead require the repository to be named `cesaragostino.github.io`.
+The workflow builds the website as a static export and publishes it from the
+root of the custom domain.
 
 ## License and citation
 

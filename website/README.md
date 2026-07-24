@@ -65,17 +65,17 @@ The deployment workflow is
 `.github/workflows/deploy-website-pages.yml`. It builds the static website from
 `website/` and publishes `website/out/`.
 
-For the current repository name, the expected project-site URL is:
+The production URL is:
 
-<https://cesaragostino.github.io/DOFT-Delayed-Oscillator-Field-Theory/>
+<https://doft.space/>
 
-The workflow derives the repository base path automatically. If the repository
-is later renamed to `cesaragostino.github.io`, it automatically switches to the
-root URL <https://cesaragostino.github.io/>.
+The static build is configured for the root of that domain. It intentionally
+does not add the repository name as a URL prefix.
 
 In the GitHub repository settings, select **Settings → Pages → Source: GitHub
-Actions**. A custom domain can be added later; its build base path should then
-be reviewed before the first custom-domain deployment.
+Actions**, set the custom domain to `doft.space`, and enable HTTPS after GitHub
+finishes provisioning the certificate. GitHub ignores `CNAME` files when Pages
+is published with a custom Actions workflow, so no such file is required here.
 
 ## Evidence date
 
