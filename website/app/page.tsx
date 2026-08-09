@@ -141,8 +141,13 @@ const repositories = [
   },
   {
     name: "Study 06",
-    detail: "Fundamental lock dynamics · active",
+    detail: "Fundamental lock dynamics · sealed oracle",
     href: "https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics",
+  },
+  {
+    name: "Study 07",
+    detail: "Worldline · τ-fundamental caldo · active",
+    href: "https://github.com/cesaragostino/doft-study07-worldline",
   },
 ];
 
@@ -157,8 +162,8 @@ export default function Home() {
         <div className="page-shell status-strip-inner">
           <span>Independent research program</span>
           <span className="status-strip-divider" aria-hidden="true" />
-          <span>Current through Study 06</span>
-          <span className="status-strip-date">Reviewed 24 July 2026</span>
+          <span>Current through Study 07</span>
+          <span className="status-strip-date">Reviewed 9 August 2026</span>
         </div>
       </div>
 
@@ -182,9 +187,9 @@ export default function Home() {
         </nav>
         <a
           className="header-link"
-          href="https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics"
+          href="https://github.com/cesaragostino/doft-study07-worldline"
         >
-          Study 06 <Arrow />
+          Study 07 <Arrow />
         </a>
       </header>
 
@@ -642,8 +647,11 @@ export default function Home() {
             <a href="https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory">
               GitHub
             </a>
-            <a href="https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics">
-              Active study
+            <a href="https://github.com/cesaragostino/doft-study07-worldline">
+              Active study (07)
+            </a>
+            <a href="/lab/caldo3d/">
+              τ-Lab explorer
             </a>
             <a href="https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory/blob/main/LICENSE">
               MIT License
@@ -653,7 +661,7 @@ export default function Home() {
             <p>
               Research status: active
               <br />
-              Last evidence review: 24 July 2026
+              Last evidence review: 9 August 2026
             </p>
             <p>
               <span>Contact</span>

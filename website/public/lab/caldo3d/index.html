@@ -128,7 +128,16 @@ async function arrancar(){
   await setRun();
 }
 combo.onchange = setRun;
-arrancar();
+arrancar().then(async () => {           // prefetch de fondo: al cargar la página
+  if (!LAZY) return;                    // del visualizador, no del sitio principal
+  for (const o of combo.options) {
+    const k = o.value;
+    if (!datos[k]) {
+      try { datos[k] = await (await fetch("data/" + k + ".json")).json(); }
+      catch (e) { break; }
+    }
+  }
+});
 slider.oninput = () => { fr = +slider.value; };
 document.getElementById("play").onclick = e => { playa = !playa;
   e.target.textContent = playa ? "❚❚" : "▶"; };
@@ -310,7 +319,7 @@ function dibujar(){
     }
     dom[mejor]++;
   }
-  const hx = 16, hy = H - 120, hw = 24, hmax = 66;
+  const hx = 16, hy = H - 185, hw = 24, hmax = 62;
   cx.font = "10px sans-serif";
   for (let k = 0; k < 9; k++) {
     const enTerna3 = modo === 0 || TERNAS[modo].includes(k);
