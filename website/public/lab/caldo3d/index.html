@@ -99,6 +99,7 @@ const GENOS = {"lote1":["e0426f91","e0426f91","d06da976","d06da976","f46e6246","
 const cv = document.getElementById("lienzo"), cx = cv.getContext("2d");
 let W, H; function medir(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
 medir(); addEventListener("resize", medir);
+let genoSel = null, genoDe = null, genoCol = {};
 let rot = {a: 0.6, b: 0.35}, zoom = 1.0, fr = 0, playa = false, colorB = false,
     verAristas = true, modo = 0, verXYZ = false, verCuerpos = false;   // 0=todas (proyecta 1-3, alpha) · 1/2/3=terna con FILTRO
 const TERNAS = [[0,1,2],[0,1,2],[3,4,5],[6,7,8]];
@@ -166,7 +167,6 @@ document.getElementById("ejesbtn").onclick = e => { modo = (modo + 1) % 4;
   e.target.textContent = "ejes: " + ETIQ[modo];
   document.getElementById("ejes_v").textContent = ETIQ[modo]; run._rmax = 0; };
 
-let genoSel = null, genoDe = null, genoCol = {};
 function genosDe(k, N){
   return N === 150 ? GENOS.lote1 : (k.startsWith("caldo") ? Array(N).fill(GENOS.m1)
     : GENOS.lote1.slice(0, N));
