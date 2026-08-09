@@ -176,6 +176,7 @@ export default function Home() {
           <a href="#proposition">Theory</a>
           <a href="#evidence">Evidence</a>
           <Link href="/dynamics">Dynamics</Link>
+          <a href="/lab/caldo3d/">τ-Lab</a>
           <a href="#program">Program</a>
           <a href="#method">Method</a>
         </nav>

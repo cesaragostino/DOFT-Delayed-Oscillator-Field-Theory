@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>DOFT · caldo τ en 3D</title>
+<style>
+  :root { --tinta:#e8e4da; --fondo:#0b0e14; --panel:#141a26; --acento:#e8a33d; }
+  * { margin:0; box-sizing:border-box; }
+  body { background:var(--fondo); color:var(--tinta); font:14px/1.45 "Avenir Next",
+         "Helvetica Neue", sans-serif; overflow:hidden; }
+  #lienzo { display:block; cursor:grab; }
+  #panel { position:fixed; top:0; left:0; right:0; display:flex; gap:12px;
+           align-items:center; padding:10px 16px; background:linear-gradient(
+           to bottom, rgba(11,14,20,.92), rgba(11,14,20,0)); flex-wrap:wrap; }
+  h1 { font-size:15px; font-weight:600; letter-spacing:.04em; }
+  h1 b { color:var(--acento); font-weight:700; }
+  select,button { background:var(--panel); color:var(--tinta); border:1px solid #2a3550;
+           border-radius:6px; padding:5px 10px; font:inherit; cursor:pointer; }
+  button:disabled { opacity:.45; cursor:wait; }
+  #tiempo { flex:1; min-width:160px; accent-color:var(--acento); }
+  #hud { position:fixed; bottom:0; left:0; right:0; padding:10px 16px; display:flex;
+         gap:22px; align-items:baseline; background:linear-gradient(to top,
+         rgba(11,14,20,.92), rgba(11,14,20,0)); font-variant-numeric:tabular-nums;
+         flex-wrap:wrap; }
+  .dato { color:#8fa1c7; font-size:12px; }
+  .dato b { color:var(--tinta); font-size:15px; }
+  #fidbar { width:120px; height:7px; background:#232c42; border-radius:4px;
+            overflow:hidden; display:inline-block; vertical-align:middle; }
+  #fidfill { height:100%; background:var(--acento); width:0%; }
+  #nota { position:fixed; right:14px; bottom:48px; max-width:280px; font-size:11px;
+          color:#6b7a99; text-align:right; }
+  #girando { display:none; color:var(--acento); font-size:12px; }
+  @keyframes gira { to { transform: rotate(1turn); } }
+  #girando::before { content:"◠"; display:inline-block; margin-right:5px;
+                     animation: gira 0.8s linear infinite; }
+</style>
+</head>
+<body>
+<canvas id="lienzo"></canvas>
+<div id="panel">
+  <h1>DOFT · <b>mapa τ</b> — el espacio como lectura</h1>
+  <select id="corrida"></select>
+  <button id="play">▶</button>
+  <input id="tiempo" type="range" min="0" max="0" value="0">
+  <button id="ejesbtn" title="todas: transparencia por pertenencia · terna: SOLO los residentes (≥50% de su norma ahí)">ejes: todas (1-3)</button>
+  <button id="colorbtn">color: e_Q</button>
+  <button id="aristasbtn">Δω: ON</button>
+  <button id="xyzbtn">XYZ: OFF</button>
+  <button id="cuerposbtn">cuerpos: OFF</button>
+  <button id="regen" style="display:none">↻ regenerar</button>
+  <span id="girando">regenerando…</span>
+</div>
+<div id="hud">
+  <span class="dato">t = <b id="t_v">–</b> u.t.</span>
+  <span class="dato">fidelidad <span id="ejes_v">1-3</span>
+        <span id="fidbar"><span id="fidfill"></span></span> <b id="fid_v">–</b></span>
+  <span class="dato">O_T térmico <b id="ot_v">–</b></span>
+  <span class="dato">afinidad Δω <b id="lk_v">–</b> <em style="font-size:10px">(pico FFT/u.t. — NO es lock de fase)</em></span>
+  <span class="dato" id="leyenda">tamaño = actividad · color = temperatura (log e_Q) ·
+        radio = log(τ) · <em>transparencia = cuánto vive el onion FUERA de estos 3
+        ejes</em></span>
+</div>
+<div id="nota">fidelidad = fracción de la varianza del mapa τ capturada por la terna
+de ejes visible. Un onion transparente vive en las dimensiones que NO estás mirando —
+cambiá de terna con «ejes» y se vuelve sólido. Arrastrá para orbitar, rueda para
+zoom.</div>
+<script>
+const DATOS = {};  // lazy: se cargan de data/*.json
+const cv = document.getElementById("lienzo"), cx = cv.getContext("2d");
+let W, H; function medir(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+medir(); addEventListener("resize", medir);
+let rot = {a: 0.6, b: 0.35}, zoom = 1.0, fr = 0, playa = false, colorB = false,
+    verAristas = true, modo = 0, verXYZ = false, verCuerpos = false;   // 0=todas (proyecta 1-3, alpha) · 1/2/3=terna con FILTRO
+const TERNAS = [[0,1,2],[0,1,2],[3,4,5],[6,7,8]];
+const ETIQ = ["todas (1-3)", "solo 1-3", "solo 4-6", "solo 7-9"];
+let datos = DATOS;
+const combo = document.getElementById("corrida");
+const LAZY = Object.keys(DATOS).length === 0;
+function poblarCombo(sel){
+  combo.innerHTML = "";
+  for (const k of Object.keys(datos)) {
+    if (!datos[k].frames || !datos[k].frames.length) continue;   // sin frames, fuera
+    const o = document.createElement("option"); o.value = k;
+    o.textContent = k + " (" + datos[k].frames.length + " fr)"; combo.appendChild(o);
+  }
+  if (sel && datos[sel]) combo.value = sel;
+}
+let run = null;
+const slider = document.getElementById("tiempo");
+async function setRun(){
+  const k = combo.value;
+  if (LAZY && !datos[k]) {
+    document.getElementById("t_v").textContent = "cargando…";
+    datos[k] = await (await fetch("data/" + k + ".json")).json();
+  }
+  run = datos[k]; fr = 0; run._rmax = 0; run._esc = null;
+  slider.max = run.frames.length - 1; slider.value = 0;
+}
+async function arrancar(){
+  if (LAZY) {
+    const idx = await (await fetch("data/index.json")).json();
+    for (const e of idx) {
+      const o = document.createElement("option"); o.value = e.id;
+      o.textContent = e.id + " (" + e.frames + " fr)"; combo.appendChild(o);
+    }
+  } else { poblarCombo(); }
+  await setRun();
+}
+combo.onchange = setRun;
+arrancar();
+slider.oninput = () => { fr = +slider.value; };
+document.getElementById("play").onclick = e => { playa = !playa;
+  e.target.textContent = playa ? "❚❚" : "▶"; };
+document.getElementById("colorbtn").onclick = e => { colorB = !colorB;
+  e.target.textContent = "color: " + (colorB ? "b_Q" : "e_Q");
+  document.getElementById("leyenda").firstChild.textContent =
+    "tamaño = actividad · color = " + (colorB ? "memoria b_Q" :
+    "temperatura (log e_Q)") + " · radio = log(τ) · "; };
+document.getElementById("aristasbtn").onclick = e => { verAristas = !verAristas;
+  e.target.textContent = "Δω: " + (verAristas ? "ON" : "OFF"); };
+document.getElementById("cuerposbtn").onclick = e => { verCuerpos = !verCuerpos;
+  e.target.textContent = "cuerpos: " + (verCuerpos ? "ON" : "OFF"); };
+document.getElementById("xyzbtn").onclick = e => { verXYZ = !verXYZ;
+  e.target.textContent = "XYZ: " + (verXYZ ? "ON" : "OFF"); };
+document.getElementById("ejesbtn").onclick = e => { modo = (modo + 1) % 4;
+  e.target.textContent = "ejes: " + ETIQ[modo];
+  document.getElementById("ejes_v").textContent = ETIQ[modo]; run._rmax = 0; };
+let drag = null;
+cv.onmousedown = e => drag = [e.clientX, e.clientY];
+addEventListener("mouseup", () => drag = null);
+addEventListener("mousemove", e => { if (!drag) return;
+  rot.a += (e.clientX - drag[0]) * 0.006; rot.b += (e.clientY - drag[1]) * 0.006;
+  rot.b = Math.max(-1.4, Math.min(1.4, rot.b)); drag = [e.clientX, e.clientY]; });
+cv.addEventListener("wheel", e => { zoom *= e.deltaY < 0 ? 1.1 : 0.9;
+  e.preventDefault(); }, {passive: false});
+
+function fuego(u){
+  u = Math.max(0, Math.min(1, u));
+  const r = Math.round(40 + 215 * Math.min(1, u * 1.7));
+  const g = Math.round(52 + 60 * u + 140 * Math.max(0, u - 0.6) / 0.4);
+  const b = Math.round(80 + 40 * (1 - u) + 130 * Math.max(0, u - 0.85) / 0.15);
+  return [r, g, b];
+}
+function proyectar(x, y, z, escala){
+  const ca = Math.cos(rot.a), sa = Math.sin(rot.a),
+        cb = Math.cos(rot.b), sb = Math.sin(rot.b);
+  const x1 = x * ca + z * sa, z1 = -x * sa + z * ca;
+  const y1 = y * cb - z1 * sb, z2 = y * sb + z1 * cb;
+  const pers = 900 / Math.max(60, 900 + z2 * escala);   // clamp: jamás negativo
+  return [W / 2 + x1 * escala * pers, H / 2 + y1 * escala * pers, pers, z2];
+}
+function dibujar(){
+  if (!run) return;
+  const F = run.frames[Math.min(fr, run.frames.length - 1)];
+  const [d0, d1, d2] = TERNAS[modo];
+  // visibilidad: modo 0 = todos (alpha continuo) · modo terna = SOLO residentes
+  const visible = F.pos9.map((p, i) => {
+    if (modo === 0) return true;
+    const enT = Math.hypot(p[d0], p[d1], p[d2]);
+    return enT / (F.ntot[i] + 1e-9) >= 0.5;
+  });
+  cx.fillStyle = "#0b0e14"; cx.fillRect(0, 0, W, H);
+  if (!run._rmax) { run._rmax = 1e-9;
+    for (const G of run.frames) for (const p of G.pos9)
+      run._rmax = Math.max(run._rmax,
+        Math.hypot(p[d0], p[d1], p[d2])); }
+  const esc = zoom * Math.min(W, H) * 0.42 / run._rmax;
+  const pr = F.pos9.map(p => proyectar(p[d0], p[d1], p[d2], esc));
+  if (verXYZ) {                        // ejes cartesianos de la terna visible
+    const L = run._rmax * 0.95;
+    const nombres = [d0 + 1, d1 + 1, d2 + 1];
+    const dirs = [[L,0,0],[0,L,0],[0,0,L]];
+    cx.setLineDash([4, 5]); cx.lineWidth = 1;
+    for (let a = 0; a < 3; a++) {
+      const p1 = proyectar(-dirs[a][0], -dirs[a][1], -dirs[a][2], esc);
+      const p2 = proyectar(dirs[a][0], dirs[a][1], dirs[a][2], esc);
+      cx.strokeStyle = "rgba(232,163,61,0.35)";
+      cx.beginPath(); cx.moveTo(p1[0], p1[1]); cx.lineTo(p2[0], p2[1]); cx.stroke();
+      cx.fillStyle = "rgba(232,163,61,0.8)"; cx.font = "11px sans-serif";
+      cx.fillText("dim " + nombres[a], p2[0] + 4, p2[1] - 4);
+    }
+    cx.setLineDash([]);
+  }
+  const arObj = (run.aristas_ut && run.aristas_ut[String(F.ut)]) || {n: 0, l: []};
+  const aristas = arObj.l || arObj;            // compat datos viejos
+  const nLocksReal = arObj.n !== undefined ? arObj.n : aristas.length;
+  if (verCuerpos && aristas.length) {          // §50/§56: cascos del grafo COMPLETO
+    let et, cid;
+    if (arObj.comp) {                            // etiquetas pre-calculadas (grafo entero)
+      et = arObj.comp; cid = Math.max(...et) + 1;
+    } else {                                     // datos viejos: subgrafo dibujado (sesgo declarado)
+      et = new Array(F.pos9.length).fill(-1);
+      cid = 0;
+      const ady = new Map();
+      for (const [i, j] of aristas) {
+        if (!ady.has(i)) ady.set(i, []); if (!ady.has(j)) ady.set(j, []);
+        ady.get(i).push(j); ady.get(j).push(i);
+      }
+      for (const s0 of ady.keys()) {
+        if (et[s0] >= 0) continue;
+        const cola = [s0]; et[s0] = cid;
+        while (cola.length) {
+          const u = cola.pop();
+          for (const v of ady.get(u) || []) if (et[v] < 0) { et[v] = cid; cola.push(v); }
+        }
+        cid++;
+      }
+    }
+    for (let c = 0; c < cid; c++) {
+      const pts = [];
+      for (let i = 0; i < et.length; i++)
+        if (et[i] === c && visible[i]) pts.push([pr[i][0], pr[i][1]]);
+      if (pts.length < 4) continue;
+      pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);      // casco convexo (monotone)
+      const cruz = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+      const abajo = [];
+      for (const p of pts) { while (abajo.length >= 2 &&
+        cruz(abajo[abajo.length-2], abajo[abajo.length-1], p) <= 0) abajo.pop();
+        abajo.push(p); }
+      const arriba = [];
+      for (let k = pts.length - 1; k >= 0; k--) { const p = pts[k];
+        while (arriba.length >= 2 &&
+          cruz(arriba[arriba.length-2], arriba[arriba.length-1], p) <= 0) arriba.pop();
+        arriba.push(p); }
+      const casco = abajo.slice(0, -1).concat(arriba.slice(0, -1));
+      cx.beginPath(); cx.moveTo(casco[0][0], casco[0][1]);
+      for (const p of casco.slice(1)) cx.lineTo(p[0], p[1]);
+      cx.closePath();
+      cx.fillStyle = `hsla(${(c * 67) % 360}, 60%, 55%, 0.07)`;
+      cx.strokeStyle = `hsla(${(c * 67) % 360}, 60%, 65%, 0.30)`;
+      cx.lineWidth = 1;
+      cx.fill(); cx.stroke();
+    }
+  }
+  if (verAristas) {
+    cx.lineWidth = 0.6;
+    cx.strokeStyle = "rgba(120,150,220,0.10)";
+    for (const [i, j] of aristas) {
+      if (!visible[i] || !visible[j]) continue;
+      cx.beginPath(); cx.moveTo(pr[i][0], pr[i][1]);
+      cx.lineTo(pr[j][0], pr[j][1]); cx.stroke();
+    }
+  }
+  // fidelidad por onion en la terna visible: ‖pos_terna‖/‖pos_total‖
+  const orden = pr.map((p, i) => [p[3], i]).sort((a, b) => b[0] - a[0]);
+  // ESCALAS ABSOLUTAS POR CORRIDA (no por frame): lo que crece se ve crecer —
+  // sin el apagon relativo que la normalizacion instantanea fabricaba
+  if (!run._esc) {
+    let eMin = 1e9, eMax = -1e9, bMin = 1e9, bMax = -1e9, rmsMax = 1e-9;
+    for (const G of run.frames) {
+      for (const v of G.e) { eMin = Math.min(eMin, v); eMax = Math.max(eMax, v); }
+      for (const v of G.b) { bMin = Math.min(bMin, v); bMax = Math.max(bMax, v); }
+      for (const v of G.rms) rmsMax = Math.max(rmsMax, v);
+    }
+    run._esc = {eMin, eMax, bMin, bMax, rmsMax};
+  }
+  const {eMin, eMax, bMin, bMax, rmsMax} = run._esc;
+  let fidTerna = 0, fidTot = 0;
+  for (let i = 0; i < F.pos9.length; i++) {          // fidelidad: TODA la población
+    const p = F.pos9[i];
+    const eT = Math.hypot(p[d0], p[d1], p[d2]);
+    fidTerna += eT * eT; fidTot += F.ntot[i] * F.ntot[i];
+  }
+  let nVis = 0;
+  for (const [, i] of orden) {
+    if (!visible[i]) continue;
+    nVis++;
+    const p = F.pos9[i];
+    const enTerna = Math.hypot(p[d0], p[d1], p[d2]);
+    const alfa = modo === 0
+      ? Math.max(0.12, Math.min(1, enTerna / (F.ntot[i] + 1e-9)))
+      : 1.0;
+    const u = colorB ? (F.b[i] - bMin) / (bMax - bMin + 1e-9)
+                     : (F.e[i] - eMin) / (eMax - eMin + 1e-9);
+    const [r, g, b] = fuego(u);
+    const rad = (1.5 + 9 * Math.sqrt(F.rms[i] / rmsMax)) * pr[i][2] * Math.sqrt(zoom);
+    cx.fillStyle = `rgba(${r},${g},${b},${alfa.toFixed(2)})`;
+    cx.beginPath(); cx.arc(pr[i][0], pr[i][1], Math.max(0.3, rad), 0, 7); cx.fill();
+  }
+  // ── histograma de ocupación por dimensión (9 barras, abajo-izquierda) ──
+  const occ = new Array(9).fill(0); const dom = new Array(9).fill(0);
+  let occTot = 0;
+  for (const i in F.pos9) {
+    const p = F.pos9[i];
+    let mejor = 0, mv = -1;
+    for (let k = 0; k < 9; k++) {
+      const c = p[k] * p[k]; occ[k] += c; occTot += c;
+      if (c > mv) { mv = c; mejor = k; }
+    }
+    dom[mejor]++;
+  }
+  const hx = 16, hy = H - 120, hw = 24, hmax = 66;
+  cx.font = "10px sans-serif";
+  for (let k = 0; k < 9; k++) {
+    const enTerna3 = modo === 0 || TERNAS[modo].includes(k);
+    const h = hmax * (occ[k] / (occTot + 1e-12));
+    cx.fillStyle = enTerna3 ? "rgba(232,163,61,0.9)" : "rgba(90,110,160,0.55)";
+    cx.fillRect(hx + k * (hw + 5), hy + hmax - h, hw, h);
+    cx.fillStyle = "#8fa1c7";
+    cx.fillText(String(k + 1), hx + k * (hw + 5) + 8, hy + hmax + 12);
+    if (dom[k] > 0)
+      cx.fillText(String(dom[k]), hx + k * (hw + 5) + 4, hy + hmax - h - 4);
+  }
+  cx.fillStyle = "#6b7a99";
+  cx.fillText("ocupación por dimensión (nº = onions con esa dim dominante)", hx, hy - 6);
+  const fidV = modo <= 1 ? F.fid : (fidTot > 0 ? fidTerna / fidTot : 0);
+  if (F._ot === undefined) {                  // §57: orden térmico del mapa (cacheado)
+    let sd = 0, se = 0, sdd = 0, see = 0, sde = 0, m = 0;
+    const n = F.pos9.length;
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+      const p = F.pos9[i], q = F.pos9[j];
+      let dd = 0;
+      for (let k = 0; k < 9; k++) dd += (p[k] - q[k]) * (p[k] - q[k]);
+      const dv = Math.sqrt(dd), ev = Math.abs(F.e[i] - F.e[j]);
+      sd += dv; se += ev; sdd += dv * dv; see += ev * ev; sde += dv * ev; m++;
+    }
+    const cov = sde / m - (sd / m) * (se / m);
+    const va = Math.sqrt((sdd / m - (sd / m) ** 2) * (see / m - (se / m) ** 2));
+    F._ot = va > 0 ? cov / va : 0;
+  }
+  document.getElementById("ot_v").textContent = F._ot.toFixed(2);
+  document.getElementById("t_v").textContent = F.t.toFixed(1);
+  document.getElementById("fid_v").textContent = (fidV * 100).toFixed(0) + "%";
+  document.getElementById("fidfill").style.width = (fidV * 100) + "%";
+  document.getElementById("lk_v").textContent = nLocksReal +
+    (nLocksReal > aristas.length ? " (dibujo " + aristas.length + ")" : "") +
+    (modo > 0 ? " · visibles " + nVis + "/" + F.pos9.length : "");
+}
+let tPrev = 0;
+function ciclo(ts){
+  if (playa && ts - tPrev > 60) { fr = (fr + 1) % run.frames.length;
+    slider.value = fr; tPrev = ts; }
+  try { dibujar(); } catch (err) { console.error("dibujar:", err); }
+  requestAnimationFrame(ciclo);                 // el loop NUNCA muere
+}
+requestAnimationFrame(ciclo);
+// ── modo servidor: botón regenerar (aparece solo si /estado responde) ──
+const btnR = document.getElementById("regen"), gir = document.getElementById("girando");
+fetch("/estado").then(r => r.json()).then(() => { btnR.style.display = ""; })
+  .catch(() => {});
+btnR.onclick = async () => {
+  btnR.disabled = true; gir.style.display = "inline";
+  await fetch("/regenerar", {method: "POST"});
+  const poll = setInterval(async () => {
+    try {
+      const e = await (await fetch("/estado")).json();
+      if (!e.generando) {
+        clearInterval(poll);
+        const sel = combo.value;
+        datos = await (await fetch("/datos.json")).json();
+        poblarCombo(sel); setRun();
+        btnR.disabled = false; gir.style.display = "none";
+      }
+    } catch (_) {}
+  }, 2000);
+};
+</script>
+</body>
+</html>
