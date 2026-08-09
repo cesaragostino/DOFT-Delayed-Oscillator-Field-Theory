@@ -68,6 +68,7 @@
   <button id="aristasbtn">Δω: ON</button>
   <button id="xyzbtn">XYZ: OFF</button>
   <button id="cuerposbtn">cuerpos: OFF</button>
+  <button id="genbtn">genes</button>
   <button id="regen" style="display:none">↻ regenerar</button>
   <span id="girando">regenerando…</span>
 </div>
@@ -81,12 +82,20 @@
         tamaño = actividad · color = temperatura (log e_Q) · radio = log(τ) · <em>transparencia = cuánto vive el onion FUERA de estos 3
         ejes</em></span>
 </div>
+<div id="genpanel" style="display:none;position:fixed;right:12px;top:60px;bottom:70px;width:240px;overflow-y:auto;background:rgba(20,26,38,.95);border:1px solid #2a3550;border-radius:10px;padding:12px;font-size:12px;z-index:5">
+  <div style="margin-bottom:8px;color:#e8a33d;font-weight:700">genotipos
+    <a href="#" id="gen_todos" style="color:#8fa1c7;font-weight:400;margin-left:8px">todos</a>
+    <a href="#" id="gen_ninguno" style="color:#8fa1c7;font-weight:400;margin-left:6px">ninguno</a></div>
+  <div id="genlista"></div>
+  <p style="color:#6b7a99;margin-top:8px">filtrados: color = genotipo · resto casi invisible.</p>
+</div>
 <div id="nota">fidelidad = fracción de la varianza del mapa τ capturada por la terna
 de ejes visible. Un onion transparente vive en las dimensiones que NO estás mirando —
 cambiá de terna con «ejes» y se vuelve sólido. Arrastrá para orbitar, rueda para
 zoom.</div>
 <script>
-const DATOS = {};  // lazy: se cargan de data/*.json
+const DATOS = {};
+const GENOS = {"lote1":["e0426f91","e0426f91","d06da976","d06da976","f46e6246","f46e6246","6b695be8","6b695be8","d83e3f9e","d83e3f9e","74bb83a9","74bb83a9","28c2cc18","28c2cc18","73f58442","73f58442","368379f7","368379f7","9adc3160","9adc3160","9d47feae","9d47feae","73ba1cb6","73ba1cb6","1c4f2de2","1c4f2de2","9e65e764","9e65e764","62e2304c","62e2304c","d06da976","d06da976","018aa6eb","018aa6eb","32d57b6a","32d57b6a","32d57b6a","32d57b6a","03109519","03109519","4f6d5d31","4f6d5d31","1a52f444","1a52f444","d4cf6508","d4cf6508","1793baf8","1793baf8","74bb83a9","74bb83a9","74bb83a9","74bb83a9","28c2cc18","28c2cc18","76ec5b3f","76ec5b3f","368379f7","368379f7","9d47feae","9d47feae","8c28f205","8c28f205","32d57b6a","32d57b6a","78245187","78245187","0157217d","0157217d","1a52f444","1a52f444","7e7382ca","7e7382ca","76ec5b3f","76ec5b3f","76ec5b3f","76ec5b3f","73ba1cb6","73ba1cb6","73ba1cb6","73ba1cb6","a65b7494","a65b7494","62e2304c","62e2304c","20668ba8","20668ba8","7abfbb8f","7abfbb8f","7abfbb8f","7abfbb8f","6b091ecd","6b091ecd","1d400ce1","1d400ce1","018aa6eb","018aa6eb","32d57b6a","32d57b6a","78245187","78245187","78245187","78245187","ed492c89","ed492c89","4f6d5d31","4f6d5d31","4f6d5d31","4f6d5d31","d00c646b","d00c646b","d83e3f9e","d83e3f9e","d83e3f9e","d83e3f9e","91041dc0","91041dc0","9adc3160","9adc3160","9d47feae","9d47feae","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","02d1251b","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","56ed1a6d","f73b0619","f73b0619","f73b0619","f73b0619","f73b0619","f73b0619"],"m1":"f73b0619"};  // lazy: se cargan de data/*.json
 const cv = document.getElementById("lienzo"), cx = cv.getContext("2d");
 let W, H; function medir(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
 medir(); addEventListener("resize", medir);
@@ -115,6 +124,7 @@ async function setRun(){
     datos[k] = await (await fetch("data/" + k + ".json")).json();
   }
   run = datos[k]; fr = 0; run._rmax = 0; run._esc = null;
+  genoDe = genosDe(k, run.N); genoSel = null; armarPanelGenes();
   slider.max = run.frames.length - 1; slider.value = 0;
 }
 async function arrancar(){
@@ -155,6 +165,39 @@ document.getElementById("xyzbtn").onclick = e => { verXYZ = !verXYZ;
 document.getElementById("ejesbtn").onclick = e => { modo = (modo + 1) % 4;
   e.target.textContent = "ejes: " + ETIQ[modo];
   document.getElementById("ejes_v").textContent = ETIQ[modo]; run._rmax = 0; };
+
+let genoSel = null, genoDe = null, genoCol = {};
+function genosDe(k, N){
+  return N === 150 ? GENOS.lote1 : (k.startsWith("caldo") ? Array(N).fill(GENOS.m1)
+    : GENOS.lote1.slice(0, N));
+}
+function armarPanelGenes(){
+  const unicos = {};
+  genoDe.forEach((g, i) => { (unicos[g] = unicos[g] || []).push(i); });
+  const claves = Object.keys(unicos).sort((a, b) => unicos[b].length - unicos[a].length);
+  genoCol = {};
+  claves.forEach((g, ix) => genoCol[g] = [(ix * 47) % 360, 70, 60]);
+  const L = document.getElementById("genlista");
+  L.innerHTML = claves.map(g =>
+    `<label style="display:flex;gap:6px;align-items:center;margin:2px 0;cursor:pointer">
+     <input type="checkbox" class="genchk" value="${g}">
+     <span style="width:10px;height:10px;border-radius:5px;display:inline-block;background:hsl(${genoCol[g][0]},70%,60%)"></span>
+     <span>${g} <em style="color:#6b7a99">×${unicos[g].length}</em></span></label>`).join("");
+  L.querySelectorAll(".genchk").forEach(c => c.onchange = () => {
+    const on = [...L.querySelectorAll(".genchk:checked")].map(c2 => c2.value);
+    genoSel = on.length ? new Set(on) : null;
+  });
+}
+document.getElementById("genbtn").onclick = () => {
+  const p = document.getElementById("genpanel");
+  p.style.display = p.style.display === "none" ? "block" : "none";
+};
+document.getElementById("gen_todos").onclick = e => { e.preventDefault();
+  document.querySelectorAll(".genchk").forEach(c => c.checked = true);
+  genoSel = new Set(genoDe); };
+document.getElementById("gen_ninguno").onclick = e => { e.preventDefault();
+  document.querySelectorAll(".genchk").forEach(c => c.checked = false);
+  genoSel = null; };
 let drag = null;
 cv.onmousedown = e => drag = [e.clientX, e.clientY];
 addEventListener("mouseup", () => drag = null);
@@ -302,9 +345,17 @@ function dibujar(){
       : 1.0;
     const u = colorB ? (F.b[i] - bMin) / (bMax - bMin + 1e-9)
                      : (F.e[i] - eMin) / (eMax - eMin + 1e-9);
-    const [r, g, b] = fuego(u);
+    let estilo;
+    if (genoSel && genoDe && genoSel.has(genoDe[i])) {
+      estilo = `hsla(${genoCol[genoDe[i]][0]},70%,60%,${alfa.toFixed(2)})`;
+    } else if (genoSel) {
+      estilo = `rgba(120,130,160,${(alfa * 0.07).toFixed(3)})`;
+    } else {
+      const [r, g, b] = fuego(u);
+      estilo = `rgba(${r},${g},${b},${alfa.toFixed(2)})`;
+    }
     const rad = (1.5 + 9 * Math.sqrt(F.rms[i] / rmsMax)) * pr[i][2] * Math.sqrt(zoom);
-    cx.fillStyle = `rgba(${r},${g},${b},${alfa.toFixed(2)})`;
+    cx.fillStyle = estilo;
     cx.beginPath(); cx.arc(pr[i][0], pr[i][1], Math.max(0.3, rad), 0, 7); cx.fill();
   }
   // ── histograma de ocupación por dimensión (9 barras, abajo-izquierda) ──
