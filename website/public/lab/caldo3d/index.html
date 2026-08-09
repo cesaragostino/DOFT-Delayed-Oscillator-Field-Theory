@@ -310,6 +310,13 @@ function dibujar(){
     cx.strokeStyle = "rgba(120,150,220,0.10)";
     for (const [i, j] of aristas) {
       if (!visible[i] || !visible[j]) continue;
+      if (genoSel && genoDe) {
+        const toca = genoSel.has(genoDe[i]) || genoSel.has(genoDe[j]);
+        if (!toca) continue;                       // solo aristas de los seleccionados
+        cx.strokeStyle = "rgba(232,163,61,0.28)";  // resaltadas: contra qué conectan
+      } else {
+        cx.strokeStyle = "rgba(120,150,220,0.10)";
+      }
       cx.beginPath(); cx.moveTo(pr[i][0], pr[i][1]);
       cx.lineTo(pr[j][0], pr[j][1]); cx.stroke();
     }
