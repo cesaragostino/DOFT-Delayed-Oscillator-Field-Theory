@@ -37,6 +37,27 @@
 </head>
 <body>
 <canvas id="lienzo"></canvas>
+<div id="onto" style="position:fixed;inset:0;display:flex;align-items:center;
+  justify-content:center;background:rgba(11,14,20,.88);z-index:10">
+  <div style="max-width:560px;margin:20px;padding:26px 30px;background:#141a26;
+    border:1px solid #2a3550;border-radius:12px;line-height:1.6">
+    <p style="color:#e8a33d;font-weight:700;margin-bottom:10px">
+      Acá no hay espacio. / There is no space here.</p>
+    <p style="margin-bottom:8px">Los puntos <b>no tienen posición</b>: el único dato
+    relacional del modelo es el <b>retardo τ</b> entre cada par de osciladores — cuánto
+    tarda uno en afectar al otro. Lo que ves es <b>el mapa de retardos</b> proyectado a
+    3D. Si parece espacio, es porque <b>el espacio emergió</b> de la dinámica — nadie lo
+    puso en las ecuaciones.</p>
+    <p style="color:#8fa1c7;font-size:13px;margin-bottom:16px">Nodes have <b>no
+    positions</b> — only mutual <b>delays (τ)</b>. What you see is the delay map itself,
+    projected to 3D. If it looks like space, that is because space <b>emerged</b> from
+    the dynamics; it was never written into the equations. The «fidelidad» gauge shows
+    how much of the map these 3 dimensions capture.</p>
+    <button onclick="document.getElementById('onto').style.display='none'"
+      style="background:#e8a33d;color:#0b0e14;border:0;border-radius:6px;
+      padding:8px 18px;font-weight:700;cursor:pointer">entendido / got it</button>
+  </div>
+</div>
 <div id="panel">
   <h1>DOFT · <b>mapa τ</b> — el espacio como lectura</h1>
   <select id="corrida"></select>
@@ -56,8 +77,8 @@
         <span id="fidbar"><span id="fidfill"></span></span> <b id="fid_v">–</b></span>
   <span class="dato">O_T térmico <b id="ot_v">–</b></span>
   <span class="dato">afinidad Δω <b id="lk_v">–</b> <em style="font-size:10px">(pico FFT/u.t. — NO es lock de fase)</em></span>
-  <span class="dato" id="leyenda">tamaño = actividad · color = temperatura (log e_Q) ·
-        radio = log(τ) · <em>transparencia = cuánto vive el onion FUERA de estos 3
+  <span class="dato" id="leyenda">SIN espacio previo: posición = solo retardos τ (el espacio EMERGE) ·
+        tamaño = actividad · color = temperatura (log e_Q) · radio = log(τ) · <em>transparencia = cuánto vive el onion FUERA de estos 3
         ejes</em></span>
 </div>
 <div id="nota">fidelidad = fracción de la varianza del mapa τ capturada por la terna
