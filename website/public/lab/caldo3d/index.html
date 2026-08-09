@@ -230,8 +230,10 @@ function dibujar(){
   const visible = F.pos9.map((p, i) => {
     if (modo === 0) return true;
     const e2 = p[d0]*p[d0] + p[d1]*p[d1] + p[d2]*p[d2];
-    const t2 = F.ntot[i] * F.ntot[i] + 1e-12;
-    return e2 / t2 >= 0.5;      // MAYORÍA DE ENERGÍA: exclusivo (una sola terna-hogar)
+    let t2 = 1e-12;                                  // §56 revisor: masa POSITIVA
+    for (let q = 0; q < 9; q++) t2 += p[q]*p[q];     // (ntot=diag(B) miente en
+    return e2 / t2 >= 0.5;   // geometría indefinida) — las 3 ternas parten estos 9:
+                             // fracciones suman 1 ⇒ exclusividad POR CONSTRUCCIÓN
   });
   cx.fillStyle = "#0b0e14"; cx.fillRect(0, 0, W, H);
   if (!run._rmax) { run._rmax = 1e-9;
