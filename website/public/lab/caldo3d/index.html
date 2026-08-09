@@ -313,7 +313,7 @@ function dibujar(){
       if (genoSel && genoDe) {
         const toca = genoSel.has(genoDe[i]) || genoSel.has(genoDe[j]);
         if (!toca) continue;                       // solo aristas de los seleccionados
-        cx.strokeStyle = "rgba(232,163,61,0.28)";  // resaltadas: contra qué conectan
+        cx.strokeStyle = "rgba(120,150,220,0.10)"; // mismo azul de siempre (liviano)
       } else {
         cx.strokeStyle = "rgba(120,150,220,0.10)";
       }
