@@ -119,7 +119,7 @@ export default function DynamicsPage() {
         <div className="page-shell status-strip-inner">
           <span>Study 06 · evidence in depth</span>
           <span className="status-strip-divider" aria-hidden="true" />
-          <span>Versioned artifact 5e2889b</span>
+          <span>Versioned artifact 5e2889b · pre-freeze (Study 06 sealed 29 July 2026)</span>
           <span className="status-strip-date">Reviewed 24 July 2026</span>
         </div>
       </div>

@@ -37,10 +37,126 @@ const studies = [
   {
     id: "06",
     title: "Fundamental lock dynamics",
+    status: "Sealed oracle",
+    summary:
+      "A deterministic laboratory for formation, aging, interaction, and failure. It contains the program’s strongest causal results so far—and its most disciplined record of retractions. Sealed 29 July 2026; Study 07 builds on it.",
+    href: "https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics",
+  },
+  {
+    id: "07",
+    title: "Worldline — the delay-first caldo",
     status: "Active",
     summary:
-      "A deterministic laboratory for formation, aging, interaction, and failure. It contains the program’s strongest causal results so far—and its most disciplined record of retractions.",
-    href: "https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics",
+      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A population census, sealed out-of-sample predictions, and same-day public corrections.",
+    href: "https://github.com/cesaragostino/doft-study07-worldline",
+  },
+];
+
+const study07Findings = [
+  {
+    number: "01",
+    label: "Instrument",
+    title: "τ-Lab: a universe with no space.",
+    text: (
+      <>
+        Every point in the <a href="/lab/caldo3d/">explorer</a> is an
+        oscillator; every distance is a <em>delay</em>. The 3D scene is a
+        projection (MDS over the delay matrix, with fidelity gauges on
+        screen)—there is no space in the model, only timing. The physics does
+        not depend on the picture: the headline correlation survives with the
+        embedding removed, computed directly on the raw delay profiles.
+        Seventeen experimental runs load live, including the complete species
+        run.
+      </>
+    ),
+  },
+  {
+    number: "02",
+    label: "Census",
+    title: "84 species, each with a bench card.",
+    text: (
+      <>
+        The full population census (three batches) collapses to{" "}
+        <strong>84 unique genotypes</strong>. Each carries a bench card: its
+        stability exponent (σ<sub>max</sub>, the real part of the dominant
+        pole, cross-validated bit-exact against an independent derivation) and
+        its resonant response. 57 are self-oscillators; 27 decay. The bench
+        card is measured in isolation—in the soup, the deviation from the
+        bench <em>is</em> the interaction.
+      </>
+    ),
+  },
+  {
+    number: "03",
+    label: "Sealed prediction",
+    title: "Constitution decides what; the cohort decides when.",
+    text: (
+      <>
+        Before running a species-only soup (one copy per genotype), we
+        committed a prediction: constitutional instability drives outward
+        drift. After an adversarial re-analysis the verdict is precise rather
+        than simple. The signal is real but partitioned: it lives among the
+        self-oscillators (ρ = +0.34, p = 0.009 at t = 60), survives removal of the
+        visualization, but is concentrated in one batch and carries a wide
+        confidence interval. An earlier claim that clone families
+        “double” the correlation was a sample-size confound: with cohort size
+        equalized, the correlations are statistically indistinguishable
+        (p = 0.58). What the cohort does change is <strong>timing</strong>—it
+        advances onset and ignition without changing slope, ceiling,
+        destination, or correlation.
+      </>
+    ),
+  },
+  {
+    number: "04",
+    label: "Measured",
+    title: "The delay map is an ordinal atlas, not a chronometer.",
+    text: (
+      <>
+        We kicked one oscillator and timed first arrivals at the other 149
+        (paired surgery: identical twin runs, kick minus control). Arrival{" "}
+        <em>order</em> follows the delay map (ρ = 0.91, reproduced by an
+        independent method)—but arrival <em>times</em> don’t wait for the
+        direct link: the medium is a dense web where signals travel
+        multi-hop, and what makes an arrival detectable is the rise of
+        amplitude, not the delay of the edge. No arrival-speed number
+        survived re-analysis, so none is quoted. Established so far for a
+        single cone, from a single origin; multi-source tomography is the
+        pre-registered next test.
+      </>
+    ),
+  },
+  {
+    number: "05",
+    label: "Reproduced",
+    title: "Same blocks, different history.",
+    text: (
+      <>
+        Two frontier runs with different random seeds—and different
+        lifespans—partition into exactly the same six blocks: identical sizes
+        [68, 32, 30, 6, 6, 4] and identical membership,{" "}
+        <strong>Jaccard 1.0 in all six</strong>. Earlier cross-seed
+        comparisons scored 0.9–1.0; here the match is exact. The partition of
+        this population is not a statistical tendency: membership is
+        deterministic across the realizations tested.
+      </>
+    ),
+  },
+  {
+    number: "06",
+    label: "Measured",
+    title: "Ignition is a schedule, not a switch.",
+    text: (
+      <>
+        Between two run lifespans the set of ignited units grows from 9 to
+        25—and the later set contains the earlier one. The wave advances
+        mostly in constitutional order, with measurable exceptions in both
+        directions: one unit ignites with a negative stability exponent
+        (recruited by the network, not by its constitution), and the five
+        most unstable genotypes never ignite in any run. An ordered process
+        with exceptions we can point to—not a binary threshold.
+      </>
+    ),
   },
 ];
 
@@ -163,7 +279,7 @@ export default function Home() {
           <span>Independent research program</span>
           <span className="status-strip-divider" aria-hidden="true" />
           <span>Current through Study 07</span>
-          <span className="status-strip-date">Reviewed 9 August 2026</span>
+          <span className="status-strip-date">Reviewed 10 August 2026</span>
         </div>
       </div>
 
@@ -453,6 +569,58 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="evidence-section section" id="study07">
+        <div className="page-shell">
+          <div className="section-heading split-heading evidence-heading">
+            <div>
+              <p className="eyebrow">Study 07 · the delay-first campaign</p>
+              <h2>A universe with no space, measured.</h2>
+            </div>
+            <p>
+              Study 07 removes space as an input and keeps only delays. These
+              are the campaign’s defensible statements—including the ones that
+              had to be corrected. The search for composite structure
+              (bound “things” made of things) is so far negative, and the
+              notebook says so.
+            </p>
+          </div>
+
+          <div className="evidence-list">
+            {study07Findings.map((item) => (
+              <article className="evidence-item" key={item.number}>
+                <div className="evidence-number">{item.number}</div>
+                <div>
+                  <span className="evidence-label">{item.label}</span>
+                  <h3>{item.title}</h3>
+                </div>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="retraction-note">
+            <span className="retraction-mark" aria-hidden="true">
+              ×
+            </span>
+            <div>
+              <p className="mini-label">A correction, on the record</p>
+              <h3>The error was in the tooling, not the physics.</h3>
+            </div>
+            <p>
+              We reported a run as dead at t = 63 and drew conclusions from
+              that snapshot. The run was alive—a shell-scripting bug in a
+              monitoring script had produced a false “terminated.” The run
+              actually lived to t = 104.5, and its full life reversed one
+              conclusion (three units ignite entirely alone, late: “ignition
+              never happens alone” is retracted) and reinforced another (the
+              inter-species blocks persist 44 more time units, with 92.8%
+              pair agreement). Both the error and the reversal are sealed in
+              the notebook.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="boundary-section">
         <div className="page-shell boundary-grid">
           <div>
@@ -526,7 +694,7 @@ export default function Home() {
               <h2>The method is part of the result.</h2>
             </div>
             <p>
-              Study 06 uses a deliberately adversarial workflow. A failed
+              Studies 06–07 use a deliberately adversarial workflow. A failed
               prediction, a broken instrument, and a surviving causal claim
               must all remain equally inspectable.
             </p>
@@ -555,6 +723,10 @@ export default function Home() {
               Instantaneous energy failed as a coordinate of instability.
               A proposed one-age rule broke under sustained asymmetry. Large
               within-run sigma counts were rejected as independent evidence.
+              In Study 07, a “×2 cohort amplification” and “ignition never
+              happens alone” were both retracted within a day—one by an
+              adversarial re-analysis, one by a full-life census. Retractions
+              keep the section numbers of the claims they replace.
             </p>
           </div>
         </div>
@@ -568,11 +740,12 @@ export default function Home() {
         <div className="north-columns">
           <div>
             <span>Now</span>
-            <h3>Resolve the interaction mechanism</h3>
+            <h3>Map the delay-first universe</h3>
             <p>
-              Separate node age, sector mixing, boundary drain, and
-              event-locked response with multichannel observables and
-              sub-time-unit sampling.
+              Study 07: a census-complete population with bench cards, sealed
+              out-of-sample predictions, multi-source tomography of the delay
+              geometry, and a composition law for an active, dispersive
+              medium—with clone cohorts as timing controls.
             </p>
           </div>
           <div>
@@ -661,7 +834,7 @@ export default function Home() {
             <p>
               Research status: active
               <br />
-              Last evidence review: 9 August 2026
+              Last evidence review: 10 August 2026
             </p>
             <p>
               <span>Contact</span>
