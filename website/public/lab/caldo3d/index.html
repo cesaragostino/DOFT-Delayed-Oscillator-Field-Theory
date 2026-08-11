@@ -68,6 +68,8 @@
   <button id="aristasbtn">Δω: ON</button>
   <button id="xyzbtn">XYZ: OFF</button>
   <button id="cuerposbtn">cuerpos: OFF</button>
+  <button id="wbtn" title="capa W (incrementos): verde=trabajo+, rojo=disipa">W: OFF</button>
+  <button id="puertosbtn" title="tamaño=fuerza entrante · anillo=clase">puertos: OFF</button>
   <button id="genbtn">genes</button>
   <button id="regen" style="display:none">↻ regenerar</button>
   <span id="girando">regenerando…</span>
@@ -100,9 +102,10 @@ const GENOS = {"lote1":["e0426f91","e0426f91","d06da976","d06da976","f46e6246","
 const cv = document.getElementById("lienzo"), cx = cv.getContext("2d");
 let W, H; function medir(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
 medir(); addEventListener("resize", medir);
-let genoSel = null, genoDe = null, genoCol = {};
+let genoSel = null, genoDe = null, genoCol = {}, genoFichas = {};
 let rot = {a: 0.6, b: 0.35}, zoom = 1.0, fr = 0, playa = false, colorB = false,
-    verAristas = true, modo = 0, verXYZ = false, verCuerpos = false;   // 0=todas (proyecta 1-3, alpha) · 1/2/3=terna con FILTRO
+    verAristas = true, modo = 0, verXYZ = false, verCuerpos = false,
+    verW = false, verPuertos = false, capas = null;   // §109 V7-a   // 0=todas (proyecta 1-3, alpha) · 1/2/3=terna con FILTRO
 const TERNAS = [[0,1,2],[0,1,2],[3,4,5],[6,7,8]];
 const ETIQ = ["todas (1-3)", "solo 1-3", "solo 4-6", "solo 7-9"];
 let datos = DATOS;
@@ -120,13 +123,18 @@ function poblarCombo(sel){
 let run = null;
 const slider = document.getElementById("tiempo");
 async function setRun(){
+  capas = null; document.getElementById("wbtn").disabled = true; document.getElementById("puertosbtn").disabled = true;
+  fetch("data/capas_" + combo.value + ".json").then(r => r.ok ? r.json() : null)
+    .then(c => { capas = c; const on = !!c;
+      document.getElementById("wbtn").disabled = !on; document.getElementById("puertosbtn").disabled = !on; })
+    .catch(() => { capas = null; });
   const k = combo.value;
   if (LAZY && !datos[k]) {
     document.getElementById("t_v").textContent = "cargando…";
     datos[k] = await (await fetch("data/" + k + ".json")).json();
   }
   run = datos[k]; fr = 0; run._rmax = 0; run._esc = null;
-  genoDe = genosDe(k, run.N); genoSel = null; armarPanelGenes();
+  genoDe = run.genos || genosDe(k, run.N); genoFichas = run.fichas || {}; genoSel = null; armarPanelGenes();
   slider.max = run.frames.length - 1; slider.value = 0;
 }
 async function arrancar(){
@@ -162,6 +170,15 @@ document.getElementById("aristasbtn").onclick = e => { verAristas = !verAristas;
   e.target.textContent = "Δω: " + (verAristas ? "ON" : "OFF"); };
 document.getElementById("cuerposbtn").onclick = e => { verCuerpos = !verCuerpos;
   e.target.textContent = "cuerpos: " + (verCuerpos ? "ON" : "OFF"); };
+document.getElementById("wbtn").onclick = e => { verW = !verW;
+  e.target.textContent = "W: " + (verW ? "ON" : "OFF"); };
+document.getElementById("puertosbtn").onclick = e => { verPuertos = !verPuertos;
+  e.target.textContent = "puertos: " + (verPuertos ? "ON" : "OFF"); };
+function capasVent(t){
+  if (!capas) return null;
+  for (const v of capas.ventanas) if (t >= v.t0 && t < v.t0 + capas.vent_ut) return v;
+  return null;
+}
 document.getElementById("xyzbtn").onclick = e => { verXYZ = !verXYZ;
   e.target.textContent = "XYZ: " + (verXYZ ? "ON" : "OFF"); };
 document.getElementById("ejesbtn").onclick = e => { modo = (modo + 1) % 4;
@@ -172,18 +189,24 @@ function genosDe(k, N){
   return N === 150 ? GENOS.lote1 : (k.startsWith("caldo") ? Array(N).fill(GENOS.m1)
     : GENOS.lote1.slice(0, N));
 }
+function fichaTxt(g){
+  const f = genoFichas[g];
+  if (!f) return "";
+  const c = f.sigma > 0 ? "#e8a33d" : "#8fa1c7";
+  return ` <em style="color:${c}">σ${f.sigma > 0 ? "+" : ""}${f.sigma.toFixed(3)} ${f.clase === "self-osc" ? "osc" : "dec"}</em>`;
+}
 function armarPanelGenes(){
   const unicos = {};
   genoDe.forEach((g, i) => { (unicos[g] = unicos[g] || []).push(i); });
   const claves = Object.keys(unicos).sort((a, b) => unicos[b].length - unicos[a].length);
   genoCol = {};
-  claves.forEach((g, ix) => genoCol[g] = [(ix * 47) % 360, 70, 60]);
+  claves.forEach(g => genoCol[g] = [parseInt(g.slice(0, 4), 16) % 360, 70, 60]);  // §84: color estable por hash
   const L = document.getElementById("genlista");
   L.innerHTML = claves.map(g =>
     `<label style="display:flex;gap:6px;align-items:center;margin:2px 0;cursor:pointer">
      <input type="checkbox" class="genchk" value="${g}">
      <span style="width:10px;height:10px;border-radius:5px;display:inline-block;background:hsl(${genoCol[g][0]},70%,60%)"></span>
-     <span>${g} <em style="color:#6b7a99">×${unicos[g].length}</em></span></label>`).join("");
+     <span>${g} <em style="color:#6b7a99">×${unicos[g].length}</em>${fichaTxt(g)}</span></label>`).join("");
   L.querySelectorAll(".genchk").forEach(c => c.onchange = () => {
     const on = [...L.querySelectorAll(".genchk:checked")].map(c2 => c2.value);
     genoSel = on.length ? new Set(on) : null;
@@ -309,6 +332,44 @@ function dibujar(){
       cx.fill(); cx.stroke();
     }
   }
+  const CV = capasVent(F.t);                       // §109 V7-a: capas medidas
+  if (CV && verCuerpos && capas.bloques && capas.bloques.length) {
+    // FRONTERA POR CLAUSURA: grosor = fracción de presupuesto intra-bloque
+    capas.bloques.forEach((bl, bi) => {
+      const pts = [];
+      for (const i of bl) if (visible[i]) pts.push([pr[i][0], pr[i][1]]);
+      if (pts.length < 3) return;
+      pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const cruz = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+      const ab = [];
+      for (const p of pts) { while (ab.length >= 2 && cruz(ab[ab.length-2], ab[ab.length-1], p) <= 0) ab.pop(); ab.push(p); }
+      const ar = [];
+      for (let k = pts.length - 1; k >= 0; k--) { const p = pts[k];
+        while (ar.length >= 2 && cruz(ar[ar.length-2], ar[ar.length-1], p) <= 0) ar.pop(); ar.push(p); }
+      const casco = ab.slice(0, -1).concat(ar.slice(0, -1));
+      const ci = CV.cierre && CV.cierre[bi] !== undefined ? CV.cierre[bi] : 0;
+      cx.beginPath(); cx.moveTo(casco[0][0], casco[0][1]);
+      for (const p of casco.slice(1)) cx.lineTo(p[0], p[1]);
+      cx.closePath();
+      cx.strokeStyle = `hsla(350, 70%, 60%, ${(0.25 + 0.6 * ci).toFixed(2)})`;
+      cx.lineWidth = 1 + 7 * ci;
+      cx.stroke();
+      cx.fillStyle = "rgba(232,163,61,0.9)"; cx.font = "10px sans-serif";
+      cx.fillText("cierre " + (100 * ci).toFixed(0) + "%", casco[0][0] + 4, casco[0][1] - 4);
+    });
+  }
+  if (CV && verW && CV.w_top && CV.w_top.length) {
+    // CAPA W (§106: NO mezclar con geometría — verde=+, rojo=−)
+    let wMax = 1e-30;
+    for (const [,, w] of CV.w_top) wMax = Math.max(wMax, Math.abs(w));
+    for (const [i, j, w] of CV.w_top) {
+      if (!visible[i] || !visible[j]) continue;
+      const a = Math.max(0.15, Math.abs(w) / wMax);
+      cx.strokeStyle = w > 0 ? `rgba(80,200,120,${a.toFixed(2)})` : `rgba(220,80,80,${a.toFixed(2)})`;
+      cx.lineWidth = 1.6;
+      cx.beginPath(); cx.moveTo(pr[i][0], pr[i][1]); cx.lineTo(pr[j][0], pr[j][1]); cx.stroke();
+    }
+  }
   if (verAristas) {
     cx.lineWidth = 0.6;
     cx.strokeStyle = "rgba(120,150,220,0.10)";
@@ -345,6 +406,11 @@ function dibujar(){
     const eT = Math.hypot(p[d0], p[d1], p[d2]);
     fidTerna += eT * eT; fidTot += F.ntot[i] * F.ntot[i];
   }
+  const CV2 = capasVent(F.t);
+  if (CV2 && CV2.f_in && CV2._lo === undefined) {
+    const fs = CV2.f_in.filter(v => v > -25).sort((a, b) => a - b);
+    CV2._lo = fs[0]; CV2._hi = fs[fs.length - 1];
+  }
   let nVis = 0;
   for (const [, i] of orden) {
     if (!visible[i]) continue;
@@ -365,9 +431,19 @@ function dibujar(){
       const [r, g, b] = fuego(u);
       estilo = `rgba(${r},${g},${b},${alfa.toFixed(2)})`;
     }
-    const rad = (1.5 + 9 * Math.sqrt(F.rms[i] / rmsMax)) * pr[i][2] * Math.sqrt(zoom);
+    let rad = (1.5 + 9 * Math.sqrt(F.rms[i] / rmsMax)) * pr[i][2] * Math.sqrt(zoom);
+    if (verPuertos && CV2 && CV2.f_in) {              // §109: tamaño = fuerza entrante (log)
+      const fi = CV2.f_in[i], lo = CV2._lo, hi = CV2._hi;
+      rad = (1.5 + 11 * Math.max(0, (fi - lo) / (hi - lo + 1e-9))) * pr[i][2] * Math.sqrt(zoom);
+    }
     cx.fillStyle = estilo;
     cx.beginPath(); cx.arc(pr[i][0], pr[i][1], Math.max(0.3, rad), 0, 7); cx.fill();
+    if (verPuertos && genoFichas && genoDe && genoFichas[genoDe[i]]) {
+      const cl = genoFichas[genoDe[i]].clase;         // anillo = clase constitucional
+      cx.strokeStyle = cl === "self-osc" ? "rgba(232,163,61,0.85)" : "rgba(120,150,220,0.85)";
+      cx.lineWidth = 1.4;
+      cx.beginPath(); cx.arc(pr[i][0], pr[i][1], Math.max(1.2, rad + 2), 0, 7); cx.stroke();
+    }
   }
   // ── histograma de ocupación por dimensión (9 barras, abajo-izquierda) ──
   const occ = new Array(9).fill(0); const dom = new Array(9).fill(0);
