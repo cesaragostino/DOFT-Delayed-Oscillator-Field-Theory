@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Microscopio de lenguas v1 — EXPLORATORIO</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --ink:#c9d1d9; --mut:#8b949e; --acc:#58a6ff;
+          --gold:#e3b341; --green:#3fb950; --red:#f85149; --line:#30363d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:13px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+           padding:10px 14px; border-bottom:1px solid var(--line); }
+  h1 { font-size:15px; margin:0; font-weight:600; }
+  .expl { background:#3d2e00; color:var(--gold); border:1px solid var(--gold);
+          border-radius:4px; padding:1px 8px; font-size:11px; letter-spacing:.08em; }
+  select, button { background:var(--panel); color:var(--ink); border:1px solid var(--line);
+          border-radius:5px; padding:3px 8px; font-size:12px; cursor:pointer; }
+  button.on { border-color:var(--acc); color:var(--acc); }
+  input[type=range] { width:280px; accent-color:var(--acc); }
+  main { display:flex; flex-wrap:wrap; gap:12px; padding:12px 14px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px; }
+  .lbl { color:var(--mut); font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  .big { font-size:20px; font-variant-numeric:tabular-nums; }
+  svg text { fill:var(--mut); font:10px sans-serif; }
+  footer { padding:8px 14px 16px; color:var(--mut); font-size:11px; max-width:1100px; }
+  footer b { color:var(--gold); }
+  #tt { position:fixed; display:none; background:#000c; border:1px solid var(--line);
+        border-radius:5px; padding:5px 8px; font-size:11px; pointer-events:none; z-index:9; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Microscopio de lenguas <span style="color:var(--mut)">v1</span></h1>
+  <span class="expl">EXPLORATORIO</span>
+  <span class="lbl">arista</span>
+  <select id="selI"></select><span style="color:var(--mut)">↔</span><select id="selJ"></select>
+  <span id="presets"></span>
+  <span class="lbl" style="margin-left:12px">ventana</span>
+  <input type="range" id="slider" min="0" value="40">
+  <span id="tlab" class="big" style="font-size:14px"></span>
+  <button id="play">▶</button>
+  <button id="bFresh" class="on">fresh</button>
+  <button id="bArr" class="on">flechas</button>
+</header>
+<main>
+  <div class="card"><svg id="scat" width="660" height="470"></svg></div>
+  <div style="display:flex; flex-direction:column; gap:12px; min-width:330px; flex:1; max-width:430px">
+    <div class="card" id="gauges"></div>
+    <div class="card"><div class="lbl">espectro de la arista (ω̂ por modo)</div>
+      <svg id="strip" width="100%" height="120" viewBox="0 0 400 120" preserveAspectRatio="none"></svg>
+      <div class="lbl" id="stripNote" style="text-transform:none"></div></div>
+    <div class="card" id="metaBox"></div>
+  </div>
+</main>
+<footer id="foot"></footer>
+<div id="tt"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const S = { i:0, j:1, k:40, fresh:true, arr:true, D:null, timer:null };
+const PISO = 1.2e-3, APAREO = 0.03;
+const pidx = (i,j) => { const a=Math.min(i,j), b=Math.max(i,j); return a*26 - a*(a+1)/2 + (b-a-1); };
+const el = (n,at) => { const e=document.createElementNS("http://www.w3.org/2000/svg",n);
+  for (const k in at) e.setAttribute(k,at[k]); return e; };
+
+fetch("data_lenguas/lenguas_a2tiempo_a2control_s20260809.json").then(r=>r.json()).then(D=>{
+  S.D = D;
+  $("slider").max = D.meta.n_ventanas - 1;
+  const opts = D.onions.map(o=>`<option value="${o.idx}">o${o.idx} · ${o.run_id}</option>`).join("");
+  $("selI").innerHTML = opts; $("selJ").innerHTML = opts;
+  $("selI").value = 0; $("selJ").value = 1;
+  const P = [["gemela (0,1)",0,1],["hub-viva (0,20)",0,20],["inter-bloque (0,6)",0,6],["par008 (16,17)",16,17],["par009 (18,19)",18,19]];
+  $("presets").innerHTML = P.map((p,n)=>`<button data-p="${n}">${p[0]}</button>`).join(" ");
+  $("presets").onclick = e => { const n=e.target.dataset.p; if(n===undefined) return;
+    S.i=P[n][1]; S.j=P[n][2]; $("selI").value=S.i; $("selJ").value=S.j; render(); };
+  $("selI").onchange = e => { S.i=+e.target.value; render(); };
+  $("selJ").onchange = e => { S.j=+e.target.value; render(); };
+  $("slider").oninput = e => { S.k=+e.target.value; render(); };
+  $("bFresh").onclick = () => { S.fresh=!S.fresh; $("bFresh").classList.toggle("on"); render(); };
+  $("bArr").onclick = () => { S.arr=!S.arr; $("bArr").classList.toggle("on"); render(); };
+  $("play").onclick = () => {
+    if (S.timer) { clearInterval(S.timer); S.timer=null; $("play").textContent="▶"; return; }
+    $("play").textContent="⏸";
+    S.timer = setInterval(()=>{ S.k=(S.k+1)%D.meta.n_ventanas; $("slider").value=S.k; render(); }, 450);
+  };
+  $("foot").innerHTML = "<b>EXPLORATORIO — reglas selladas:</b> " +
+    D.meta.prohibiciones.map(p=>"· "+p).join(" ") +
+    " · σ = max(piso sintético 0.083, deriva vecina) — no es error formal · " +
+    "banda sombreada = «banda exploratoria de proximidad 1:1 — no lock confirmado» (§110; el 0.275 viene del census). " +
+    `Datos: ${D.meta.run_id}, git ${D.meta.git_hash.slice(0,10)}, ventanas de ${D.meta.ventana_ut} ut.`;
+  render();
+});
+
+function canales(k) {
+  const D=S.D, res=[];
+  const omI = k==="fresh" ? D.fresh.om[S.i] : D.om[k][S.i];
+  const omJ = k==="fresh" ? D.fresh.om[S.j] : D.om[k][S.j];
+  const AI  = k==="fresh" ? D.fresh.A[S.i]  : D.A[k][S.i];
+  const AJ  = k==="fresh" ? D.fresh.A[S.j]  : D.A[k][S.j];
+  for (let a=0;a<7;a++) for (let m=0;m<7;m++) {
+    const d = Math.abs(omI[a]-omJ[m]);
+    res.push({a, m, d, inten: Math.sqrt(AI[a]*AJ[m]),
+      sig: k==="fresh" ? 2*0.083 : S.D.sig[k][S.i][a]+S.D.sig[k][S.j][m]});
+  }
+  return res;
+}
+
+function render() {
+  const D=S.D, k=S.k, t0=D.t0s[k];
+  $("tlab").textContent = `[${t0}, ${t0+D.meta.ventana_ut}) ut`;
+  const cur = canales(k), fre = canales("fresh");
+
+  // ── scatter δ × intensidad
+  const svg=$("scat"); svg.innerHTML="";
+  const W=660,H=470,L=52,R=14,T=26,B=40;
+  const xr=[Math.log10(PISO), Math.log10(80)];
+  const ys = cur.concat(S.fresh?fre:[]).map(c=>c.inten).filter(v=>v>0);
+  const yr=[Math.log10(Math.min(...ys)*0.7+1e-30), Math.log10(Math.max(...ys)*1.4+1e-30)];
+  const X=v=>L+(Math.log10(Math.max(v,PISO))-xr[0])/(xr[1]-xr[0])*(W-L-R);
+  const Y=v=>H-B-(Math.log10(Math.max(v,1e-30))-yr[0])/(yr[1]-yr[0])*(H-T-B);
+  svg.appendChild(el("rect",{x:L,y:T,width:X(D.meta.banda_exploratoria)-L,height:H-T-B,
+    fill:"#e3b341",opacity:.07}));
+  svg.appendChild(el("line",{x1:X(0.275),y1:T,x2:X(0.275),y2:H-B,stroke:"#e3b341",
+    "stroke-dasharray":"3 3",opacity:.5}));
+  const tb=el("text",{x:(L+X(0.275))/2,y:T+11,"text-anchor":"middle",fill:"#e3b341"});
+  tb.textContent="banda exploratoria 1:1 — no lock"; svg.appendChild(tb);
+  for (const e of [-3,-2,-1,0,1]) {
+    const x=X(Math.pow(10,e));
+    svg.appendChild(el("line",{x1:x,y1:T,x2:x,y2:H-B,stroke:"#30363d","stroke-width":.5}));
+    const t=el("text",{x,y:H-B+14,"text-anchor":"middle"}); t.textContent="1e"+e; svg.appendChild(t);
+  }
+  const xl=el("text",{x:W/2,y:H-8,"text-anchor":"middle"});
+  xl.textContent="δ = |ω̂ᵢₐ − ω̂ⱼₘ|  [rad/ut]  (log; ★ = bajo el piso)"; svg.appendChild(xl);
+  const yl=el("text",{x:12,y:H/2,transform:`rotate(-90 12 ${H/2})`,"text-anchor":"middle"});
+  yl.textContent="intensidad proxy √(Aᵢₐ·Aⱼₘ) — NO es transferencia (§114-b)"; svg.appendChild(yl);
+  const wm=el("text",{x:W-R,y:T-8,"text-anchor":"end",fill:"#e3b341",opacity:.8});
+  wm.textContent="EXPLORATORIO"; svg.appendChild(wm);
+
+  const imax=Math.max(...cur.map(c=>c.inten)), imin=Math.min(...cur.map(c=>c.inten));
+  const rad=v=>2.5+4.5*(Math.log10(v+1e-30)-Math.log10(imin+1e-30))/
+                (Math.log10(imax+1e-30)-Math.log10(imin+1e-30)+1e-9);
+  for (let n=0;n<49;n++) {
+    const c=cur[n], f=fre[n];
+    if (S.fresh) {
+      svg.appendChild(el("circle",{cx:X(f.d),cy:Y(f.inten),r:2.2,fill:"#8b949e",opacity:.35}));
+      if (S.arr) svg.appendChild(el("line",{x1:X(f.d),y1:Y(f.inten),x2:X(c.d),y2:Y(c.inten),
+        stroke:"#8b949e",opacity:.18}));
+    }
+    svg.appendChild(el("line",{x1:X(Math.max(c.d-c.sig,PISO)),y1:Y(c.inten),
+      x2:X(c.d+c.sig),y2:Y(c.inten),stroke:c.d<APAREO?"#e3b341":"#58a6ff",opacity:.35}));
+    const dot = c.d<PISO
+      ? el("text",{x:X(c.d),y:Y(c.inten)+4,"text-anchor":"middle",fill:"#e3b341","font-size":"13"})
+      : el("circle",{cx:X(c.d),cy:Y(c.inten),r:rad(c.inten),
+          fill:c.d<APAREO?"#e3b341":"#58a6ff",opacity:.85});
+    if (c.d<PISO) dot.textContent="★";
+    dot.addEventListener("mousemove",ev=>{ const tt=$("tt");
+      tt.style.display="block"; tt.style.left=(ev.clientX+12)+"px"; tt.style.top=(ev.clientY+8)+"px";
+      tt.innerHTML=`canal (${c.a}→${c.m}) · δ=${c.d.toExponential(2)} ±${c.sig.toFixed(2)}<br>`+
+        `ω̂ᵢ=${(k==="fresh"?0:S.D.om[k][S.i][c.a]).toFixed(2)} ω̂ⱼ=${S.D.om[k][S.j][c.m].toFixed(2)}<br>`+
+        `intensidad=${c.inten.toExponential(2)}${c.d<APAREO?" · <b>δ&lt;0.03</b>":""}`; });
+    dot.addEventListener("mouseleave",()=>{$("tt").style.display="none";});
+    svg.appendChild(dot);
+  }
+
+  // ── gauges reales de la arista (W y fS medidos, no proxy)
+  const p=pidx(S.i,S.j);
+  const wp=D.pares.w_pos.map(v=>v[p]), wn=D.pares.w_net.map(v=>v[p]), fs=D.pares.fs.map(v=>v[p]);
+  const g=(nom,v,serie,color,fmt)=>{
+    const mn=Math.min(...serie), mx=Math.max(...serie), rg=mx-mn||1;
+    const pts=serie.map((s,x)=>`${(x/(serie.length-1)*160).toFixed(1)},${(30-(s-mn)/rg*26).toFixed(1)}`).join(" ");
+    const cx=(k/(serie.length-1)*160).toFixed(1);
+    return `<div style="display:flex;gap:10px;align-items:center;margin:4px 0">
+      <div style="width:118px"><div class="lbl">${nom}</div><div class="big" style="color:${color}">${fmt(v)}</div></div>
+      <svg width="160" height="34"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1" opacity=".7"/>
+      <line x1="${cx}" y1="0" x2="${cx}" y2="34" stroke="#c9d1d9" opacity=".5"/></svg></div>`;
+  };
+  $("gauges").innerHTML = `<div class="lbl">la arista, MEDIDA (ventana actual + vida)</div>` +
+    g("ΔW⁺ ventana", wp[k], wp, "var(--green)", v=>v.toFixed(3)) +
+    g("ΔW neto", wn[k], wn, wn[k]>=0?"var(--green)":"var(--red)", v=>v.toFixed(3)) +
+    g("log₁₀ |fS|", fs[k], fs, "var(--acc)", v=>v.toFixed(2)) +
+    `<div class="lbl" style="text-transform:none">W = diffs del acumulador (§88/§100) · la transferencia la predice la AMPLITUD del canal, no δ (§114-b Q3)</div>`;
+
+  // ── espectro de la arista + banda propia §115
+  const st=$("strip"); st.innerHTML="";
+  const oX=v=>8+(v/70)*384;
+  const par = D.onions[S.i].par_idx===D.onions[S.j].par_idx ? D.onions[S.i].par_idx : null;
+  let nota = "modos de o"+S.i+" (arriba) y o"+S.j+" (abajo) · piso de lectura ~0.1 rad/ut (§115-b)";
+  if (par!==null) {
+    for (const b of D.bandas_propias_s115.bandas) {
+      if (b.par===`par${String(par).padStart(3,"0")}` && b.n_canales>=3 && b.especificidad_ok && b.banda && b.banda.length===2) {
+        st.appendChild(el("rect",{x:oX(b.banda[0]-0.15),y:0,width:Math.max(oX(b.banda[1]+0.15)-oX(b.banda[0]-0.15),3),
+          height:120,fill:"#3fb950",opacity:.22}));
+        nota = `banda propia §115 (medida A CIEGAS, ${b.ventana}): [${b.banda[0].toFixed(2)}, ${b.banda[1].toFixed(2)}] · ` + nota;
+      }
+    }
+  }
+  for (const e of [0,10,20,30,40,50,60,70]) {
+    st.appendChild(el("line",{x1:oX(e),y1:0,x2:oX(e),y2:104,stroke:"#30363d","stroke-width":.5}));
+    const t=el("text",{x:oX(e),y:116,"text-anchor":"middle"}); t.textContent=e; st.appendChild(t);
+  }
+  for (let a=0;a<7;a++) {
+    st.appendChild(el("line",{x1:oX(D.om[k][S.i][a]),y1:12,x2:oX(D.om[k][S.i][a]),y2:48,
+      stroke:"#58a6ff","stroke-width":2,opacity:.85}));
+    st.appendChild(el("line",{x1:oX(D.om[k][S.j][a]),y1:60,x2:oX(D.om[k][S.j][a]),y2:96,
+      stroke:"#bc8cff","stroke-width":2,opacity:.85}));
+  }
+  $("stripNote").textContent = nota;
+
+  // ── meta
+  const oi=D.onions[S.i], oj=D.onions[S.j];
+  $("metaBox").innerHTML = `<div class="lbl">identidad (census M1 §114-b)</div>
+    o${S.i} = ${oi.run_id} (par${String(oi.par_idx).padStart(3,"0")}, brazo ${oi.brazo}) ·
+    o${S.j} = ${oj.run_id} (par${String(oj.par_idx).padStart(3,"0")}, brazo ${oj.brazo})<br>
+    ${par!==null ? "<b style='color:var(--gold)'>PAR DE DISEÑO — clones constitucionales en el caldo (§114-b)</b>"
+                 : "no es par de diseño"} ·
+    <span style="color:var(--mut)">canales apareados ahora (δ&lt;0.03): ${cur.filter(c=>c.d<APAREO).length}/49</span>`;
+}
+</script>
+</body>
+</html>
