@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Película A/B — F0-scan del interruptor (§134) · DOFT lab</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --ink:#c9d1d9; --mut:#8b949e; --acc:#58a6ff;
+          --gold:#e3b341; --green:#3fb950; --red:#f85149; --line:#30363d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:13px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+           padding:10px 14px; border-bottom:1px solid var(--line); }
+  h1 { font-size:15px; margin:0; font-weight:600; }
+  .expl { background:#3d2e00; color:var(--gold); border:1px solid var(--gold);
+          border-radius:4px; padding:1px 8px; font-size:11px; letter-spacing:.08em; }
+  select, button { background:var(--panel); color:var(--ink); border:1px solid var(--line);
+          border-radius:5px; padding:3px 8px; font-size:12px; cursor:pointer; }
+  button.on { border-color:var(--acc); color:var(--acc); }
+  input[type=range] { width:300px; accent-color:var(--acc); }
+  .lbl { color:var(--mut); font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  .tnum { font-variant-numeric:tabular-nums; min-width:64px; display:inline-block; }
+  main { display:flex; flex-wrap:wrap; gap:12px; padding:12px 14px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px;
+          padding:10px; position:relative; }
+  .card h2 { font-size:12px; margin:0 0 6px; font-weight:600; color:var(--mut); }
+  canvas { display:block; background:#0a0e14; border:1px solid var(--line); border-radius:6px; }
+  .badge { position:absolute; top:34px; right:18px; background:#4a1210; color:var(--red);
+           border:1px solid var(--red); border-radius:4px; padding:1px 8px; font-size:11px;
+           letter-spacing:.08em; display:none; }
+  .leg { display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; font-size:11px; color:var(--mut); }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px;
+         vertical-align:-1px; }
+  footer { padding:8px 14px 18px; color:var(--mut); font-size:11px; max-width:1150px; }
+  footer b { color:var(--gold); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Película A/B — F0-scan del interruptor <span style="color:var(--mut)">§134</span></h1>
+  <span class="expl">EXPLORATORIO — visual</span>
+  <span class="lbl">ejes</span>
+  <select id="ejes">
+    <option value="0,1">1–2</option>
+    <option value="0,2">1–3</option>
+    <option value="1,2">2–3</option>
+  </select>
+  <button id="play" class="on">▶ play</button>
+  <span class="lbl">vel</span>
+  <select id="vel"><option>1</option><option selected>2</option><option>4</option></select>
+  <input type="range" id="slider" min="0" max="78" value="0">
+  <span class="lbl">t</span><span class="tnum" id="tlab">—</span>
+  <label style="font-size:11px;color:var(--mut)"><input type="checkbox" id="trails" checked> estelas</label>
+  <label style="font-size:11px;color:var(--mut)"><input type="checkbox" id="lenguas" checked> lenguas</label>
+</header>
+<main>
+  <div class="card">
+    <h2>A · s132_chi0 — tríada libre (sin sonda)</h2>
+    <canvas id="cvA" width="470" height="440"></canvas>
+  </div>
+  <div class="card">
+    <h2>B · s134_f0_1 — sonda en o19, F0=1.0, ω=25.79, drive [160,162) → APAGADO</h2>
+    <canvas id="cvB" width="470" height="440"></canvas>
+    <span class="badge" id="driveBadge">DRIVE ON</span>
+  </div>
+  <div class="card" style="flex-basis:100%">
+    <h2>|Δpos| entre A y B por onion (distancia 9-dim en el embedding común; gauge: B alineado a A en t=160)</h2>
+    <canvas id="cvD" width="960" height="150"></canvas>
+    <div class="leg">
+      <span><span class="dot" style="background:#58a6ff"></span>o0 (díada e042)</span>
+      <span><span class="dot" style="background:#79c0ff"></span>o1 (díada e042)</span>
+      <span><span class="dot" style="background:#e3b341"></span>o18 (9adc)</span>
+      <span><span class="dot" style="background:#f85149"></span>o19 (9adc · AGENTE §131-b)</span>
+      <span><span class="dot" style="background:#8b949e"></span>mediana resto (22, férula)</span>
+      <span style="margin-left:auto">franja roja = drive ON [160,162)</span>
+    </div>
+  </div>
+</main>
+<footer>
+  <b>Qué se ve:</b> el mapa τ (convención censal: MDS de log1p(τ̄/τ_s), procrustes encadenado;
+  B alineado a A en t=160 — mismas condiciones iniciales, mismo ruido: toda diferencia es efecto
+  de la sonda). Aristas punteadas celestes = la máscara tríada (0,1)-(0,19)-(1,19), las únicas
+  interacciones vivas; el resto del caldo está en férula (δ≡0 bit-exacto verificado, §132-b).
+  Aristas grises finas = afinidad de frecuencia (lengua 0.275, convención censal, por u.t.).
+  <b>Adjudicación:</b> la película es ilustración del sello <b>§134-b</b> (bitácora 2026-08-13):
+  0/4 dosis conmutan — |Δφ del lock| en [163,164) &lt; 10° en 4 instrumentos incluso a F0=1
+  (que compite con las fS naturales); la fuerza no escribe identidad. Lo post-drive que se ve
+  crecer es divergencia caótica sembrada dentro del MISMO lock (línea/amp/SNR = baseline), no
+  conmutación. <b>Lo que la película muestra:</b> el mapa τ NI SE INMUTA — |Δpos| de la tríada ~10⁻⁴,
+  que CAE al apagar el drive (resiste y vuelve) y recién después crece como divergencia sembrada.
+  El resto en férula queda dos órdenes abajo (~10⁻⁶: residuo de gauge del embedding global — en los
+  ESTADOS su δ es 0.0 bit-exacto, §132-b). Datos: gates OK, clamp=0; prereg §134 sellado antes de correr.
+</footer>
+<script>
+const TETRA = {0:"#58a6ff", 1:"#79c0ff", 18:"#e3b341", 19:"#f85149"};
+const MASCARA = [[0,1],[0,19],[1,19]];
+let D=null, fi=0, playing=true, timer=null;
+
+fetch("data/f0scan_ab.json").then(r=>r.json()).then(d=>{
+  D=d;
+  document.getElementById("slider").max = d.A.frames.length-1;
+  precomputar();
+  render();
+  arrancar();
+});
+
+let lims={}, deltas=null;
+function precomputar(){
+  // límites comunes por par de ejes (ambas corridas, todos los frames)
+  for(const par of ["0,1","0,2","1,2"]){
+    const [i,j]=par.split(",").map(Number);
+    let xs=[],ys=[];
+    for(const R of [D.A,D.B]) for(const f of R.frames) for(const p of f.pos9){
+      xs.push(p[i]); ys.push(p[j]);
+    }
+    lims[par]={x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)};
+  }
+  // |Δpos| 9-dim por onion por frame — embarcado a precisión completa desde el extractor
+  if(D.deltas){ deltas=D.deltas; }
+  else{
+    const n=D.A.N, F=Math.min(D.A.frames.length,D.B.frames.length);
+    deltas=[];
+    for(let a=0;a<F;a++){
+      const pa=D.A.frames[a].pos9, pb=D.B.frames[a].pos9, row=[];
+      for(let o=0;o<n;o++){
+        let s=0; for(let k=0;k<9;k++){const d=pa[o][k]-pb[o][k]; s+=d*d;}
+        row.push(Math.sqrt(s));
+      }
+      deltas.push(row);
+    }
+  }
+}
+
+function proyectar(cv, run, fidx){
+  const ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const par=document.getElementById("ejes").value;
+  const [di,dj]=par.split(",").map(Number);
+  const L=lims[par], mx=28, my=28;
+  const sx=v=>(v-L.x0)/(L.x1-L.x0)*(cv.width-2*mx)+mx;
+  const sy=v=>cv.height-((v-L.y0)/(L.y1-L.y0)*(cv.height-2*my)+my);
+  const fr=run.frames[fidx], pos=fr.pos9;
+  // lenguas (afinidad de frecuencia) del ut actual
+  if(document.getElementById("lenguas").checked){
+    const ar=run.aristas_ut[String(Math.floor(fr.t))];
+    if(ar){ ctx.strokeStyle="#2a3038"; ctx.lineWidth=0.6;
+      for(const [a,b] of ar.l){ ctx.beginPath();
+        ctx.moveTo(sx(pos[a][di]),sy(pos[a][dj]));
+        ctx.lineTo(sx(pos[b][di]),sy(pos[b][dj])); ctx.stroke(); } }
+  }
+  // máscara tríada (las únicas interacciones vivas)
+  ctx.setLineDash([4,4]); ctx.strokeStyle="#58a6ff55"; ctx.lineWidth=1.2;
+  for(const [a,b] of MASCARA){ ctx.beginPath();
+    ctx.moveTo(sx(pos[a][di]),sy(pos[a][dj]));
+    ctx.lineTo(sx(pos[b][di]),sy(pos[b][dj])); ctx.stroke(); }
+  ctx.setLineDash([]);
+  // estelas
+  if(document.getElementById("trails").checked){
+    const t0=Math.max(0,fidx-12);
+    for(let o=0;o<run.N;o++){
+      const col=TETRA[o]||"#8b949e";
+      ctx.strokeStyle=col+"44"; ctx.lineWidth=(o in TETRA)?1.3:0.7;
+      ctx.beginPath();
+      for(let a=t0;a<=fidx;a++){
+        const p=run.frames[a].pos9[o];
+        a===t0?ctx.moveTo(sx(p[di]),sy(p[dj])):ctx.lineTo(sx(p[di]),sy(p[dj]));
+      }
+      ctx.stroke();
+    }
+  }
+  // onions
+  const nt=fr.ntot, ntmax=Math.max(...nt);
+  for(let o=0;o<run.N;o++){
+    const p=pos[o], esT=o in TETRA;
+    const al=esT?1:(0.25+0.5*nt[o]/ntmax);
+    ctx.globalAlpha=al;
+    ctx.fillStyle=TETRA[o]||"#8b949e";
+    ctx.beginPath();
+    ctx.arc(sx(p[di]),sy(p[dj]),esT?6:3.2,0,7);
+    ctx.fill();
+    if(esT){ ctx.globalAlpha=0.95; ctx.fillStyle="#c9d1d9";
+      ctx.font="10px sans-serif";
+      ctx.fillText("o"+o, sx(p[di])+8, sy(p[dj])+3); }
+  }
+  ctx.globalAlpha=1;
+  ctx.fillStyle="#8b949e"; ctx.font="10px sans-serif";
+  ctx.fillText("ejes "+(di+1)+"–"+(dj+1)+"  ·  fid "+fr.fid, 8, cv.height-8);
+}
+
+function tira(){
+  const cv=document.getElementById("cvD"), ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const F=deltas.length, n=D.A.N;
+  const RESTO=[...Array(n).keys()].filter(o=>!(o in TETRA));
+  let vmax=0; for(const row of deltas) for(const o in TETRA) vmax=Math.max(vmax,row[o]);
+  vmax=Math.max(vmax,1e-6);
+  const mx=36,my=12;
+  const sx=a=>a/(F-1)*(cv.width-mx-8)+mx;
+  const sy=v=>cv.height-my-(v/vmax)*(cv.height-2*my);
+  // franja drive [160,162)
+  const ts=D.A.frames.map(f=>f.t);
+  const a0=ts.findIndex(t=>t>=D.meta.drive[0]), a1=ts.findIndex(t=>t>=D.meta.drive[1]);
+  ctx.fillStyle="#f8514918";
+  ctx.fillRect(sx(Math.max(a0,0)),my,sx(a1<0?F-1:a1)-sx(Math.max(a0,0)),cv.height-2*my);
+  // mediana resto
+  ctx.strokeStyle="#8b949e"; ctx.lineWidth=1; ctx.beginPath();
+  for(let a=0;a<F;a++){
+    const vs=RESTO.map(o=>deltas[a][o]).sort((x,y)=>x-y);
+    const v=vs[Math.floor(vs.length/2)];
+    a?ctx.lineTo(sx(a),sy(v)):ctx.moveTo(sx(a),sy(v));
+  } ctx.stroke();
+  // tétrada
+  for(const o in TETRA){
+    ctx.strokeStyle=TETRA[o]; ctx.lineWidth=1.6; ctx.beginPath();
+    for(let a=0;a<F;a++) a?ctx.lineTo(sx(a),sy(deltas[a][o])):ctx.moveTo(sx(a),sy(deltas[a][o]));
+    ctx.stroke();
+  }
+  // cursor
+  ctx.strokeStyle="#c9d1d9"; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(fi),my); ctx.lineTo(sx(fi),cv.height-my); ctx.stroke();
+  ctx.fillStyle="#8b949e"; ctx.font="10px sans-serif";
+  ctx.fillText(vmax.toExponential(1), 2, my+8);
+  ctx.fillText("0", 24, cv.height-my);
+  ctx.fillText("t "+ts[0].toFixed(2)+" → "+ts[F-1].toFixed(2)+" ut", cv.width-150, cv.height-2);
+}
+
+function render(){
+  if(!D) return;
+  fi=Math.min(fi, D.A.frames.length-1);
+  proyectar(document.getElementById("cvA"), D.A, fi);
+  proyectar(document.getElementById("cvB"), D.B, fi);
+  tira();
+  const t=D.A.frames[fi].t;
+  document.getElementById("tlab").textContent=t.toFixed(2)+" ut";
+  document.getElementById("slider").value=fi;
+  document.getElementById("driveBadge").style.display=
+    (t>=D.meta.drive[0]&&t<D.meta.drive[1])?"block":"none";
+}
+
+function arrancar(){
+  clearInterval(timer);
+  const vel=+document.getElementById("vel").value;
+  timer=setInterval(()=>{ if(playing&&D){ fi=(fi+1)%D.A.frames.length; render(); } }, 220/vel);
+}
+document.getElementById("play").onclick=e=>{
+  playing=!playing;
+  e.target.textContent=playing?"▶ play":"❚❚ pausa";
+  e.target.classList.toggle("on",playing);
+};
+document.getElementById("slider").oninput=e=>{ playing=false;
+  document.getElementById("play").textContent="❚❚ pausa";
+  fi=+e.target.value; render(); };
+document.getElementById("ejes").onchange=render;
+document.getElementById("vel").onchange=arrancar;
+document.getElementById("trails").onchange=render;
+document.getElementById("lenguas").onchange=render;
+</script>
+</body>
+</html>
