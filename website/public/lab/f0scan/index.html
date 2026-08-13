@@ -82,6 +82,16 @@
     </div>
   </div>
   <div class="card" style="flex-basis:100%">
+    <h2>Instrumento ε (Sol): ε_ij = log(τ_B/τ_A) por arista — volumétrico vs forma, y área del triángulo por Herón (sin embedding)</h2>
+    <canvas id="cvE" width="960" height="130"></canvas>
+    <div class="leg">
+      <span><span class="dot" style="background:#58a6ff"></span>ε_vol (media de las 3) — negativa dominante ⇒ compresión</span>
+      <span><span class="dot" style="background:#e3b341"></span>ε_forma (dispersión) — dominante ⇒ cizalla/bisagra</span>
+      <span><span class="dot" style="background:#3fb950"></span>Δlog área(0-1-19)</span>
+      <span style="margin-left:auto">escala asinh · piso de cuantización ~10⁻⁷</span>
+    </div>
+  </div>
+  <div class="card" style="flex-basis:100%">
     <h2>|Δpos| entre A y B por onion (distancia 9-dim en el embedding común; gauge: B alineado a A en t=160)</h2>
     <canvas id="cvD" width="960" height="150"></canvas>
     <div class="leg">
@@ -106,7 +116,7 @@
   crecer es divergencia caótica sembrada dentro del MISMO lock (línea/amp/SNR = baseline), no
   conmutación. <b>Lo que la película muestra:</b> el mapa τ NI SE INMUTA — |Δpos| de la tríada ~10⁻⁴,
   que CAE al apagar el drive (resiste y vuelve) y recién después crece como divergencia sembrada.
-  El resto en férula queda dos órdenes abajo (~10⁻⁶: residuo de gauge del embedding global — en los ESTADOS su δ es 0.0 bit-exacto, §132-b). <b>¿Por qué el mapa parece quieto?</b> El espacio SÍ cambia — τ(0,1) crece +3.7% y τ(0,19) +1.6% en los 4 ut (panel de respiración; los 322 pares en férula tienen τ CONGELADO bit-exacto) — pero la coordenada log1p(τ/τ_s) a τ~100 comprime ese cambio a ~0.1% del span del mapa (sub-pixel). La LUPA amplifica la deformación desde t=160 (rotulada, ×50-×800) para hacerla visible; en la madre con red completa se ve a ojo porque los 325 τ respiran juntos. Datos: gates OK, clamp=0; prereg §134 sellado antes de correr.
+  El resto en férula queda dos órdenes abajo (~10⁻⁶: residuo de gauge del embedding global — en los ESTADOS su δ es 0.0 bit-exacto, §132-b). <b>¿Por qué el mapa parece quieto?</b> El espacio SÍ cambia — τ(0,1) crece +3.7% y τ(0,19) +1.6% en los 4 ut (panel de respiración; los 322 pares en férula tienen τ CONGELADO bit-exacto) — pero la coordenada log1p(τ/τ_s) a τ~100 comprime ese cambio a ~0.1% del span del mapa (sub-pixel). La LUPA amplifica la deformación desde t=160 (rotulada, ×50-×800) para hacerla visible; en la madre con red completa se ve a ojo porque los 325 τ respiran juntos. <b>Veredicto del instrumento ε</b> (exploratorio): el efecto puro de la sonda NO es compresión volumétrica — durante el drive vive casi entero en ε(0,19), la arista que lleva la fuerza (−1.6·10⁻⁴ con las otras ~0), y post-drive la componente de FORMA domina a la volumétrica ×13.8 (cizalla oscilante); el área del triángulo por Herón no colapsa (±~10⁻⁴, termina +6.7·10⁻⁴). Datos: gates OK, clamp=0; prereg §134 sellado antes de correr.
 </footer>
 <script>
 const TETRA = {0:"#58a6ff", 1:"#79c0ff", 18:"#e3b341", 19:"#f85149"};
@@ -280,12 +290,55 @@ function respiracion(){
   ctx.fillText((100*vmin).toFixed(1)+"%", 2, cv.height-my);
 }
 
+function heron(tt){
+  const s=(tt[0]+tt[1]+tt[2])/2;
+  return Math.sqrt(Math.max(s*(s-tt[0])*(s-tt[1])*(s-tt[2]),0));
+}
+function epsilon(){
+  const cv=document.getElementById("cvE"), ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!D.A.frames[0].tau_tri) return;
+  const F=D.A.frames.length, ts=D.A.frames.map(f=>f.t);
+  const rows=[];
+  for(let a=0;a<F;a++){
+    const eA=D.A.frames[a].tau_tri, eB=D.B.frames[a].tau_tri;
+    const e=[0,1,2].map(k=>Math.log(eB[k]/eA[k]));
+    const vol=(e[0]+e[1]+e[2])/3;
+    const forma=Math.sqrt(e.reduce((s,x)=>s+(x-vol)*(x-vol),0)/3);
+    rows.push([vol,forma,Math.log(heron(eB)/heron(eA))]);
+  }
+  const S=1e-6, tr=v=>Math.asinh(v/S);
+  let vmax=0; for(const r of rows) for(const v of r) vmax=Math.max(vmax,Math.abs(tr(v)));
+  vmax=vmax||1;
+  const mx=36,my=10;
+  const sx=a=>a/(F-1)*(cv.width-mx-8)+mx;
+  const sy=v=>cv.height/2-(tr(v)/vmax)*(cv.height/2-my);
+  const a0=ts.findIndex(t=>t>=D.meta.drive[0]), a1=ts.findIndex(t=>t>=D.meta.drive[1]);
+  ctx.fillStyle="#f8514918";
+  ctx.fillRect(sx(Math.max(a0,0)),my,sx(a1<0?F-1:a1)-sx(Math.max(a0,0)),cv.height-2*my);
+  ctx.strokeStyle="#30363d"; ctx.beginPath();
+  ctx.moveTo(mx,cv.height/2); ctx.lineTo(cv.width-8,cv.height/2); ctx.stroke();
+  const cols=["#58a6ff","#e3b341","#3fb950"];
+  for(let e=0;e<3;e++){
+    ctx.strokeStyle=cols[e]; ctx.lineWidth=1.5; ctx.beginPath();
+    for(let a=0;a<F;a++) a?ctx.lineTo(sx(a),sy(rows[a][e])):ctx.moveTo(sx(a),sy(rows[a][e]));
+    ctx.stroke();
+  }
+  ctx.strokeStyle="#c9d1d9"; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(fi),my); ctx.lineTo(sx(fi),cv.height-my); ctx.stroke();
+  ctx.fillStyle="#8b949e"; ctx.font="10px sans-serif";
+  ctx.fillText("+"+ (S*Math.sinh(vmax)).toExponential(1), 2, my+8);
+  ctx.fillText("0", 24, cv.height/2+3);
+  ctx.fillText("−"+(S*Math.sinh(vmax)).toExponential(1), 2, cv.height-my);
+}
+
 function render(){
   if(!D) return;
   fi=Math.min(fi, D.A.frames.length-1);
   proyectar(document.getElementById("cvA"), D.A, fi);
   proyectar(document.getElementById("cvB"), D.B, fi);
   respiracion();
+  epsilon();
   tira();
   const t=D.A.frames[fi].t;
   document.getElementById("tlab").textContent=t.toFixed(2)+" ut";
