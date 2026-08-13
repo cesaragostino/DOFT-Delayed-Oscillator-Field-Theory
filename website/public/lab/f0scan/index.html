@@ -91,6 +91,21 @@
       <span style="margin-left:auto">escala asinh · piso de cuantización ~10⁻⁷</span>
     </div>
   </div>
+  <div class="card" style="display:flex;gap:14px;flex-basis:100%;align-items:flex-start">
+    <div>
+      <h2>R(t) = Z₍₁,₁₉₎/Z₍₀,₁₉₎ — plano complejo (instrumento Sol §137-c): eco por la díada vs divergencia compartida</h2>
+      <canvas id="cvR" width="300" height="300"></canvas>
+    </div>
+    <div style="flex:1">
+      <h2>arg R(t) y |R|(t) — la coherencia decide el mecanismo</h2>
+      <canvas id="cvRt" width="620" height="270"></canvas>
+      <div class="leg">
+        <span><span class="dot" style="background:#58a6ff"></span>arg R [°]</span>
+        <span><span class="dot" style="background:#e3b341"></span>|R| (log)</span>
+        <span style="margin-left:auto">coherencia de fase: DURANTE 0.71 (eco) → post2 0.32 (divergencia)</span>
+      </div>
+    </div>
+  </div>
   <div class="card" style="flex-basis:100%">
     <h2>|Δpos| entre A y B por onion (distancia 9-dim en el embedding común; gauge: B alineado a A en t=160)</h2>
     <canvas id="cvD" width="960" height="150"></canvas>
@@ -116,7 +131,7 @@
   crecer es divergencia caótica sembrada dentro del MISMO lock (línea/amp/SNR = baseline), no
   conmutación. <b>Lo que la película muestra:</b> el mapa τ NI SE INMUTA — |Δpos| de la tríada ~10⁻⁴,
   que CAE al apagar el drive (resiste y vuelve) y recién después crece como divergencia sembrada.
-  El resto en férula queda dos órdenes abajo (~10⁻⁶: residuo de gauge del embedding global — en los ESTADOS su δ es 0.0 bit-exacto, §132-b). <b>¿Por qué el mapa parece quieto?</b> El espacio SÍ cambia — τ(0,1) crece +3.7% y τ(0,19) +1.6% en los 4 ut (panel de respiración; los 322 pares en férula tienen τ CONGELADO bit-exacto) — pero la coordenada log1p(τ/τ_s) a τ~100 comprime ese cambio a ~0.1% del span del mapa (sub-pixel). La LUPA amplifica la deformación desde t=160 (rotulada, ×50-×800) para hacerla visible; en la madre con red completa se ve a ojo porque los 325 τ respiran juntos. <b>Veredicto del instrumento ε</b> (exploratorio): el efecto puro de la sonda NO es compresión volumétrica — durante el drive vive casi entero en ε(0,19), la arista que lleva la fuerza (−1.6·10⁻⁴ con las otras ~0), y post-drive la componente de FORMA domina a la volumétrica ×13.8 (cizalla oscilante); el área del triángulo por Herón no colapsa (±~10⁻⁴, termina +6.7·10⁻⁴). Datos: gates OK, clamp=0; prereg §134 sellado antes de correr.
+  El resto en férula queda dos órdenes abajo (~10⁻⁶: residuo de gauge del embedding global — en los ESTADOS su δ es 0.0 bit-exacto, §132-b). <b>¿Por qué el mapa parece quieto?</b> El espacio SÍ cambia — τ(0,1) crece +3.7% y τ(0,19) +1.6% en los 4 ut (panel de respiración; los 322 pares en férula tienen τ CONGELADO bit-exacto) — pero la coordenada log1p(τ/τ_s) a τ~100 comprime ese cambio a ~0.1% del span del mapa (sub-pixel). La LUPA amplifica la deformación desde t=160 (rotulada, ×50-×800) para hacerla visible; en la madre con red completa se ve a ojo porque los 325 τ respiran juntos. <b>Veredicto de R(t)</b> (§137-c, exploratorio): DURANTE el drive R es un ECO parcialmente coherente transmitido por la díada (coherencia de fase 0.71, arg estable ~+22°, |R|~0.1-0.2); al APAGAR la coherencia colapsa (0.62→0.32) y la fase deriva a ~467°/ut — DIVERGENCIA COMPARTIDA. El cruce ocurre en el apagado, rimando con el cruce SYM→ANTI del soporte (§137-b). El δW alternante entre brazos se llama «intercambio de ledger» (no energía) hasta cerrar el balance con todas las aristas — pendiente declarado. <b>Veredicto del instrumento ε</b> (exploratorio): el efecto puro de la sonda NO es compresión volumétrica — durante el drive vive casi entero en ε(0,19), la arista que lleva la fuerza (−1.6·10⁻⁴ con las otras ~0), y post-drive la componente de FORMA domina a la volumétrica ×13.8 (cizalla oscilante); el área del triángulo por Herón no colapsa (±~10⁻⁴, termina +6.7·10⁻⁴). Datos: gates OK, clamp=0; prereg §134 sellado antes de correr.
 </footer>
 <script>
 const TETRA = {0:"#58a6ff", 1:"#79c0ff", 18:"#e3b341", 19:"#f85149"};
@@ -332,6 +347,63 @@ function epsilon(){
   ctx.fillText("−"+(S*Math.sinh(vmax)).toExponential(1), 2, cv.height-my);
 }
 
+function panelR(){
+  if(!D.m19R) return;
+  const Rr=D.m19R, F=Rr.length;
+  // plano complejo: radio = log|R| comprimido, ángulo = arg R, color = tiempo
+  const cv=document.getElementById("cvR"), ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const cx=cv.width/2, cy=cv.height/2, RMAX=cv.width/2-14;
+  const rad=v=>RMAX*Math.min(1,(Math.log10(v)+3)/3.3);  // |R| 1e-3..2 → 0..RMAX
+  ctx.strokeStyle="#30363d";
+  for(const rr of [0.01,0.1,1]){ ctx.beginPath(); ctx.arc(cx,cy,rad(rr),0,7); ctx.stroke(); }
+  ctx.fillStyle="#8b949e"; ctx.font="9px sans-serif";
+  ctx.fillText("|R|=1",cx+rad(1)-18,cy-4); ctx.fillText("0.1",cx+rad(0.1)-14,cy-4); ctx.fillText("0.01",cx+rad(0.01)-18,cy-4);
+  ctx.beginPath(); ctx.moveTo(cx-RMAX,cy); ctx.lineTo(cx+RMAX,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,cy-RMAX); ctx.lineTo(cx,cy+RMAX); ctx.stroke();
+  const tdrv=D.meta.drive[1];
+  for(let a=0;a<F;a++){
+    const [tt,re,im]=Rr[a];
+    const mod=Math.hypot(re,im), th=Math.atan2(im,re);
+    const x=cx+rad(mod)*Math.cos(th), y=cy-rad(mod)*Math.sin(th);
+    const frac=a/(F-1);
+    ctx.fillStyle = tt<tdrv ? `rgba(248,81,73,${0.35+0.6*frac})` : `rgba(88,166,255,${0.35+0.6*frac})`;
+    ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill();
+    if(a>0){
+      const [t2,r2,i2]=Rr[a-1];
+      const m2=Math.hypot(r2,i2), th2=Math.atan2(i2,r2);
+      ctx.strokeStyle=ctx.fillStyle; ctx.lineWidth=0.7;
+      ctx.beginPath(); ctx.moveTo(cx+rad(m2)*Math.cos(th2),cy-rad(m2)*Math.sin(th2));
+      ctx.lineTo(x,y); ctx.stroke();
+    }
+  }
+  ctx.fillStyle="#f85149"; ctx.fillText("● drive ON",8,12);
+  ctx.fillStyle="#58a6ff"; ctx.fillText("● post",8,24);
+  // strip arg/|R| vs t
+  const cv2=document.getElementById("cvRt"), c2=cv2.getContext("2d");
+  c2.clearRect(0,0,cv2.width,cv2.height);
+  const mx=40,my=12;
+  const ts2=Rr.map(r=>r[0]);
+  const sx=a=>a/(F-1)*(cv2.width-mx-8)+mx;
+  const a0=ts2.findIndex(v=>v>=D.meta.drive[0]), a1=ts2.findIndex(v=>v>=D.meta.drive[1]);
+  c2.fillStyle="#f8514918";
+  c2.fillRect(sx(Math.max(a0,0)),my,sx(a1<0?F-1:a1)-sx(Math.max(a0,0)),cv2.height-2*my);
+  const syA=v=>cv2.height/2-(v/180)*(cv2.height/2-my);
+  c2.strokeStyle="#30363d"; c2.beginPath(); c2.moveTo(mx,cv2.height/2); c2.lineTo(cv2.width-8,cv2.height/2); c2.stroke();
+  c2.strokeStyle="#58a6ff"; c2.lineWidth=1.4; c2.beginPath();
+  for(let a=0;a<F;a++){ const v=Math.atan2(Rr[a][2],Rr[a][1])*180/Math.PI;
+    a?c2.lineTo(sx(a),syA(v)):c2.moveTo(sx(a),syA(v)); }
+  c2.stroke();
+  const syM=v=>cv2.height-my-((Math.log10(v)+3)/3.3)*(cv2.height-2*my);
+  c2.strokeStyle="#e3b341"; c2.beginPath();
+  for(let a=0;a<F;a++){ const v=Math.max(1e-3,Math.hypot(Rr[a][1],Rr[a][2]));
+    a?c2.lineTo(sx(a),syM(v)):c2.moveTo(sx(a),syM(v)); }
+  c2.stroke();
+  c2.fillStyle="#8b949e"; c2.font="10px sans-serif";
+  c2.fillText("+180°",2,my+8); c2.fillText("−180°",2,cv2.height-my);
+  c2.fillText("t "+ts2[0].toFixed(1)+" → "+ts2[F-1].toFixed(1)+" ut", cv2.width-140, cv2.height-2);
+}
+
 function render(){
   if(!D) return;
   fi=Math.min(fi, D.A.frames.length-1);
@@ -339,6 +411,7 @@ function render(){
   proyectar(document.getElementById("cvB"), D.B, fi);
   respiracion();
   epsilon();
+  panelR();
   tira();
   const t=D.A.frames[fi].t;
   document.getElementById("tlab").textContent=t.toFixed(2)+" ut";
