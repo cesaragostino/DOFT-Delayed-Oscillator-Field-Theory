@@ -39,16 +39,16 @@ const studies = [
     title: "Fundamental lock dynamics",
     status: "Sealed oracle",
     summary:
-      "A deterministic laboratory for formation, aging, interaction, and failure. It contains the program’s strongest causal results so far—and its most disciplined record of retractions. Sealed 29 July 2026; Study 07 builds on it.",
-    href: "https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics",
+      "A deterministic laboratory for formation, aging, interaction, and failure. It contains the program’s strongest causal results so far—and its most disciplined record of retractions. Sealed 29 July 2026; Study 07 builds on it. Repository private since August 2026 (see access note).",
+    href: null,
   },
   {
     id: "07",
     title: "Worldline — the delay-first caldo",
     status: "Active",
     summary:
-      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A population census, sealed out-of-sample predictions, and same-day public corrections.",
-    href: "https://github.com/cesaragostino/doft-study07-worldline",
+      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A population census, sealed out-of-sample predictions, and same-day public corrections. Repository private since August 2026 (see access note).",
+    href: null,
   },
 ];
 
@@ -257,13 +257,13 @@ const repositories = [
   },
   {
     name: "Study 06",
-    detail: "Fundamental lock dynamics · sealed oracle",
-    href: "https://github.com/cesaragostino/doft-study06-fundamental-lock-dynamics",
+    detail: "Fundamental lock dynamics · sealed oracle · repo private (see note)",
+    href: "#repo-access",
   },
   {
     name: "Study 07",
-    detail: "Worldline · τ-fundamental caldo · active",
-    href: "https://github.com/cesaragostino/doft-study07-worldline",
+    detail: "Worldline · τ-fundamental caldo · active · repo private (see note)",
+    href: "#repo-access",
   },
 ];
 
@@ -279,7 +279,7 @@ export default function Home() {
           <span>Independent research program</span>
           <span className="status-strip-divider" aria-hidden="true" />
           <span>Current through Study 07</span>
-          <span className="status-strip-date">Reviewed 10 August 2026</span>
+          <span className="status-strip-date">Reviewed 16 August 2026</span>
         </div>
       </div>
 
@@ -301,11 +301,8 @@ export default function Home() {
           <a href="#program">Program</a>
           <a href="#method">Method</a>
         </nav>
-        <a
-          className="header-link"
-          href="https://github.com/cesaragostino/doft-study07-worldline"
-        >
-          Study 07 <Arrow />
+        <a className="header-link" href="#study07">
+          Study 07
         </a>
       </header>
 
@@ -790,6 +787,15 @@ export default function Home() {
               </a>
             ))}
           </div>
+
+          <p className="ledger-note" id="repo-access">
+            Access note — the Study 06 and Study 07 development repositories
+            are private as of August 2026 while an intellectual-property
+            review is completed. Every measured result summarized on this
+            site remains public, the written summaries of both studies stay
+            on this page, and the sealed records keep their integrity hashes.
+            Reasonable access requests are considered by mail.
+          </p>
         </div>
       </section>
 
@@ -820,7 +826,7 @@ export default function Home() {
             <a href="https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory">
               GitHub
             </a>
-            <a href="https://github.com/cesaragostino/doft-study07-worldline">
+            <a href="#study07">
               Active study (07)
             </a>
             <a href="/lab/caldo3d/">
@@ -834,7 +840,7 @@ export default function Home() {
             <p>
               Research status: active
               <br />
-              Last evidence review: 10 August 2026
+              Last evidence review: 16 August 2026
             </p>
             <p>
               <span>Contact</span>
