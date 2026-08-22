@@ -158,6 +158,58 @@ const study07Findings = [
       </>
     ),
   },
+  {
+    number: "07",
+    label: "Sealed + replicated",
+    title: "The past is a state variable.",
+    text: (
+      <>
+        Two realizations sharing a bit-identical present but different
+        retained delay-line content evolve differently—and the difference is
+        causal, measured, and replicated across seeds. Draining the present
+        energy of the dominant subnetwork leaves the collective rate
+        unchanged (0.994×); erasing that subnetwork&apos;s <em>history</em>
+        —present verified intact—collapses it (0.171×), with recovery
+        staggered link-by-link at times predicted blind, pre-registered, from
+        each link&apos;s own measured delay (exact 6/6 order in the
+        replication, p&nbsp;=&nbsp;1/720). <strong>Patent pending.</strong>
+      </>
+    ),
+  },
+  {
+    number: "08",
+    label: "Sealed + replicated",
+    title: "Beyond the spectrum.",
+    text: (
+      <>
+        A synthetic past that preserves the full cross-spectral matrix and
+        variance of the original (phases randomized) accelerates the
+        transient ×1.16–1.23—replicated on an independent second realization
+        at matched magnitude. The information the system reads from its past
+        is not contained in its spectral summary. Declared honestly: the
+        surrogate also de-stationarizes the past; the operator family
+        disclosed with the filing (band-selective, time-reversal,
+        block-shuffle) is the tomography that separates those readings.{" "}
+        <strong>Patent pending.</strong>
+      </>
+    ),
+  },
+  {
+    number: "09",
+    label: "Sealed",
+    title: "The arrow carries physics.",
+    text: (
+      <>
+        Reversing the retained past in time—power spectrum and
+        autocorrelation preserved exactly—does not reproduce that
+        acceleration: it suppresses the dynamics (0.52–0.56× in the mid
+        window), and per-link growth tracks the epoch content re-read under
+        the time mirror (6/6 links). Which epoch is read <em>when</em>{" "}
+        carries causal effect beyond the spectral summary. Single-instance so
+        far (n&nbsp;=&nbsp;1 seed, declared). <strong>Patent pending.</strong>
+      </>
+    ),
+  },
 ];
 
 const evidence = [
@@ -279,7 +331,9 @@ export default function Home() {
           <span>Independent research program</span>
           <span className="status-strip-divider" aria-hidden="true" />
           <span>Current through Study 07</span>
-          <span className="status-strip-date">Reviewed 16 August 2026</span>
+          <span className="status-strip-divider" aria-hidden="true" />
+          <span>First patent filing 2026</span>
+          <span className="status-strip-date">Reviewed 21 August 2026</span>
         </div>
       </div>
 
@@ -691,9 +745,12 @@ export default function Home() {
               <h2>The method is part of the result.</h2>
             </div>
             <p>
-              Studies 06–07 use a deliberately adversarial workflow. A failed
-              prediction, a broken instrument, and a surviving causal claim
-              must all remain equally inspectable.
+              Studies 06–07 use a deliberately adversarial workflow: every
+              campaign is pre-registered before it runs, verdict-bearing
+              analyses are performed blind, and an adversarial critic reviews
+              each design before data exists. A failed prediction, a broken
+              instrument, and a surviving causal claim must all remain equally
+              inspectable.
             </p>
           </div>
 
