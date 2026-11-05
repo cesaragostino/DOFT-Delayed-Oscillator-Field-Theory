@@ -103,6 +103,12 @@ test("publishes the November 2026 evidence review without retired claims", async
   assert.match(tauLab, /It is not a map of space/);
   assert.match(tauLab, /No es un mapa espacial/);
   assert.doesNotMatch(tauLab, /lab\/emergent/);
+
+  // a literal backslash-n appended by a patch script once folded into the next
+  // selector ("n .north-lede") and left the North lede unstyled (5 November 2026)
+  const stylesheet = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.doesNotMatch(stylesheet, /\\[nrt]/);
+  assert.match(stylesheet, /^\.north-lede \{/m);
 });
 
 test("ships the project social preview and no disposable starter assets", async () => {
