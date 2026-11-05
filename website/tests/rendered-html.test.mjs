@@ -75,10 +75,24 @@ test("publishes the November 2026 evidence review without retired claims", async
   assert.match(html, /became a sealed library of 373/);
   assert.match(html, /one common relational structure/);
   assert.match(html, /What a kick propagates: a linear cone, ordered by delay\./);
-  assert.match(html, /The vacuum is a regime, not an absence\./);
-  assert.match(html, /The loop must be live\./);
   assert.match(html, /found nothing that moves/);
   assert.match(html, /54 of 96 cells/);
+  assert.match(html, /held from this page while an\s+intellectual-property review is completed/);
+  assert.match(html, /Being closed now:/);
+  assert.match(html, /Not closed:/);
+  // held pending the intellectual-property review (owner decision, 5 November 2026)
+  assert.doesNotMatch(html, /The vacuum is a regime/);
+  assert.doesNotMatch(html, /The loop must be live/);
+  assert.doesNotMatch(html, /LAZO|τ̇|clamp the epoch/i);
+  // evidence map rendered from the exported notebook record
+  assert.match(html, /Evidence map · reviewed (<!-- -->)?5 November 2026/);
+  assert.match(html, /Sixteen stations on the road, scored on seven criteria\./);
+  assert.match(html, /href="#north"/);
+  assert.match(html, /Before particles/);
+  assert.match(html, /Mobility: an organization that travels across the network/);
+  assert.equal((html.match(/class="map-row"/g) ?? []).length, 16);
+  assert.equal((html.match(/class="map-cell yes"/g) ?? []).length, 54 + 1);
+  assert.equal((html.match(/class="map-cell na"/g) ?? []).length, 16 + 1);
   assert.doesNotMatch(html, /a universe with no space\./);
   assert.doesNotMatch(html, /multi-source tomography is the\s+pre-registered next test/);
   assert.doesNotMatch(html, /href="\/lab\/emergent\/"/);

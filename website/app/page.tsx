@@ -1,5 +1,13 @@
+import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  criteria,
+  evidenceMap,
+  evidenceMapDate,
+  evidenceMapGroups,
+  evidenceMapTotals,
+} from "@/lib/evidence-map";
 import { assetPath } from "@/lib/site";
 
 const studies = [
@@ -47,7 +55,7 @@ const studies = [
     title: "Worldline — the delay-first caldo",
     status: "Active",
     summary:
-      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A sealed library of 373 onions, a measured causal cone, a rigid regime of the medium and the live read loop behind it—with same-day public corrections. Repository private since August 2026 (see access note).",
+      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A sealed library of 373 onions, a measured causal cone, and small-network campaigns on what sustains a coherent state—two of them held from this page pending an intellectual-property review—with same-day public corrections. Repository private since August 2026 (see access note).",
     href: null,
   },
 ];
@@ -93,7 +101,9 @@ const study07Findings = [
         component (368 of 373); no segregation by origin was detected, with
         the caveat that only five onions sit outside the giant component. The
         bench card is measured in isolation—in the soup, the deviation from
-        the bench <em>is</em> the interaction.
+        the bench <em>is</em> the interaction. Being closed now: the same
+        population is being re-read over a longer life, with the instruments
+        built since, before any larger population is grown.
       </>
     ),
   },
@@ -138,7 +148,9 @@ const study07Findings = [
         the order is perspectival—it is not dictated by the destination’s
         impedance. What the atlas is not: a metric. Reciprocity is
         asymmetric and 11.9% of triangles violate the triangle inequality.
-        Order, yes; clean geometry, no.
+        Order, yes; clean geometry, no. Not closed: whether a geometry can be
+        earned from measured response rather than from the delay map. That
+        instrument is specified and paused.
       </>
     ),
   },
@@ -242,56 +254,9 @@ const study07Findings = [
         measured with its own clock rather than assumed. The “bursts” that
         once looked like responses are events of the population itself—
         present, tick for tick, in twins that were never kicked. Scope: one
-        population, five sources, one time of kick.
-      </>
-    ),
-  },
-  {
-    number: "11",
-    label: "Sealed",
-    title: "The vacuum is a regime, not an absence.",
-    text: (
-      <>
-        Small networks of identical copies of one genome (6 to 96 onions; a
-        prism versus a bipartite K<sub>3,3</sub>; eight seeds) show what a
-        “vacuum” is in this model. When the delay on a link grows locked to
-        the partner’s ignition, the fast layer collapses by four orders of
-        magnitude and the slow layer ignites into a{" "}
-        <strong>rigid pattern of arbitrary per-edge phase angles</strong>;
-        with the delay fixed, or frozen in flight, it does not happen (4 of
-        4). The odd cycle does not frustrate: prism and K<sub>3,3</sub> do
-        the same in everything measured (16 of 16 collapse). The rigid state
-        appears only if every onion ignites, and who ignites is a collective
-        lottery that hardens with size—from 92% of onions at 6 to 17% at
-        96—while the rigid state’s clock follows a DC prediction from the
-        frozen delays (5 of 5 sizes). Kicked, it recovers from a small push
-        and jumps to another, equally rigid pattern from a large one (16 of
-        16 by jumps, never by sliding back). Scope: one genome; in the mother
-        of 373, the latent onions ignite on their own.
-      </>
-    ),
-  },
-  {
-    number: "12",
-    label: "Sealed",
-    title: "The loop must be live.",
-    text: (
-      <>
-        In that rigid state the retarded field does the work that keeps the
-        slow layer alive: work over stored energy ≈ 10, positive in 117 of
-        117 onions, in networks of 6 and of 96. Clamp the epoch each link
-        reads by decree and the slow layer neither ignites (12 of 12 runs
-        clamped before ignition) nor survives (18 of 18 clamped after it
-        decay at about 0.8 of their own damping rate): sampling the right
-        value of the past is not enough—the reading has to keep moving. A
-        recorded field played back does return and entrain a perturbed
-        receiver; what only the live loop does is collective—it shifts the
-        phase of the whole network together (0.05, 0.57 and 1.0 rad for
-        rising doses). The energy ledger closes to 3·10<sup>−7</sup>: after
-        ignition the read past pays the slow layer’s dissipation almost
-        exactly, while the fast layer charges and discharges as an internal
-        reservoir (97% by its own law). Scope: one genome, six-onion
-        networks, one seed for the ledger.
+        population, five sources, one time of kick. Not closed: a second
+        population, and a dispersion relation read on this linear cone—the
+        first observable on the road to “mass”—are defined and not yet run.
       </>
     ),
   },
@@ -408,6 +373,121 @@ function Arrow() {
   return <span aria-hidden="true">↗</span>;
 }
 
+function EvidenceMap() {
+  const cellLabel = (value: 0 | 1 | null) =>
+    value === 1 ? "evidence" : value === null ? "not applicable yet" : "not yet";
+  return (
+    <figure className="north-map" aria-labelledby="north-map-caption">
+      <div className="map-heading">
+        <div>
+          <p className="mini-label">Evidence map · reviewed {evidenceMapDate}</p>
+          <h3>Sixteen stations on the road, scored on seven criteria.</h3>
+        </div>
+        <div className="map-legend" aria-label="Legend">
+          <span>
+            <i className="map-cell yes" /> evidence with a notebook citation
+          </span>
+          <span>
+            <i className="map-cell" /> not yet
+          </span>
+          <span>
+            <i className="map-cell na" /> criterion not applicable yet
+          </span>
+        </div>
+      </div>
+      <div
+        className="map-grid"
+        role="table"
+        aria-label="DOFT evidence map: sixteen stations scored on seven criteria"
+      >
+        <div className="map-head" role="row">
+          <span role="columnheader" aria-label="Station id" />
+          <span role="columnheader">Station</span>
+          <span className="map-head-cells" role="columnheader">
+            {criteria.map((criterion) => (
+              <abbr key={criterion.key} title={criterion.label}>
+                {criterion.short}
+              </abbr>
+            ))}
+          </span>
+          <span role="columnheader">Returned</span>
+        </div>
+        {evidenceMapGroups.map((group) => (
+          <Fragment key={group.key}>
+            <div className="map-group" role="row">
+              <span role="cell">{group.label}</span>
+              <span role="cell">
+                {group.yes} of {group.applicable} cells · {group.sealed} of{" "}
+                {group.stations} stations sealed
+              </span>
+            </div>
+            {evidenceMap
+              .filter((station) => station.group === group.key)
+              .map((station) => (
+                <div className="map-row" role="row" key={station.id}>
+                  <span className="map-id" role="cell">
+                    {station.id}
+                  </span>
+                  <span className="map-name" role="cell">
+                    {station.name}
+                  </span>
+                  <span
+                    className="map-cells"
+                    role="cell"
+                    aria-label={`${station.yes} of ${station.applicable} criteria: ${
+                      station.met.length ? station.met.join(", ") : "none"
+                    }`}
+                  >
+                    {criteria.map((criterion) => {
+                      const value = station.cells[criterion.key];
+                      return (
+                        <i
+                          key={criterion.key}
+                          className={`map-cell${value === 1 ? " yes" : value === null ? " na" : ""}`}
+                          title={`${criterion.label}: ${cellLabel(value)}`}
+                        />
+                      );
+                    })}
+                  </span>
+                  <span className={`map-result tone-${station.tone}`} role="cell">
+                    {station.result}
+                  </span>
+                </div>
+              ))}
+          </Fragment>
+        ))}
+      </div>
+      <div className="map-totals">
+        <div>
+          <strong>
+            {evidenceMapTotals.yes} / {evidenceMapTotals.applicable}
+          </strong>
+          <span>cells with evidence</span>
+        </div>
+        {evidenceMapGroups.map((group) => (
+          <div key={group.key}>
+            <strong>
+              {group.yes} / {group.applicable}
+            </strong>
+            <span>
+              {group.label.toLowerCase()} · {group.sealed} of {group.stations}{" "}
+              stations sealed
+            </span>
+          </div>
+        ))}
+      </div>
+      <figcaption id="north-map-caption">
+        A filled cell is one piece of evidence with a notebook citation, not a
+        confirmation of the phenomenon named; the label on the right says what
+        the station actually returned. Criteria: defined with a tested script,
+        measured, sealed with its scope, replicated across seeds, topologies,
+        genomes and network sizes. The map changes only by measurement and is
+        exported from the notebook’s sealed record.
+      </figcaption>
+    </figure>
+  );
+}
+
 export default function Home() {
   return (
     <main>
@@ -439,6 +519,7 @@ export default function Home() {
           <a href="/lab/caldo3d/">τ-Lab</a>
           <a href="#program">Program</a>
           <a href="#method">Method</a>
+          <a href="#north">North</a>
         </nav>
         <a className="header-link" href="#study07">
           Study 07
@@ -717,7 +798,11 @@ export default function Home() {
               are the campaign’s defensible statements—including the ones that
               had to be corrected. The search for composite structure
               (bound “things” made of things) is so far negative, and the
-              notebook says so.
+              notebook says so. Status, November 2026: the 373-onion
+              population is being read over a longer life before any larger
+              population is grown; two campaigns on small networks are sealed
+              in the notebook and held from this page while an
+              intellectual-property review is completed.
             </p>
           </div>
 
@@ -768,8 +853,7 @@ export default function Home() {
               DOFT currently demonstrates nontrivial dynamics in a constructed
               deterministic system. It has not established a new particle
               ontology, reproduced the Standard Model, or received
-              experimental confirmation in matter. The rigid states found so
-              far are regimes of the medium, not objects: the first probe for
+              experimental confirmation in matter. The first probe for
               something that travels across the network (complete graphs, one
               genome) found nothing that moves, and the notebook says so.
             </p>
@@ -879,10 +963,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="north section page-shell">
+      <section className="north section page-shell" id="north">
         <div className="north-title">
           <p className="eyebrow">North of the work</p>
           <h2>From a working laboratory to a portable physics claim.</h2>
+          <p className="north-lede">
+            The north, in one line: understand the link—what connects what,
+            and what it reads from the past—then what a population of linked
+            onions makes of itself, and only then ask whether anything in it
+            behaves like a particle: something that travels, keeps an
+            identity, carries a mass-like dispersion and collides. Mapping any
+            of it to known physics comes last. The map below is the
+            program’s own scorecard, updated only by measurement.
+          </p>
         </div>
         <div className="north-columns">
           <div>
@@ -890,12 +983,13 @@ export default function Home() {
             <h3>Close the base before growing it</h3>
             <p>
               Study 07, November 2026: the 373-onion population is being read
-              with the instruments built on small networks—the rigid regime,
-              the read loop and its energy ledger—before any larger population
-              is grown. An evidence map of 16 stations and 7 criteria stands at
-              54 of 96 cells: two thirds of the stretch before particles is
-              measured and sealed; the particle stretch has no sealed station
-              yet.
+              over a longer life with instruments built on small networks,
+              before any larger population is grown. Two of those
+              small-network campaigns are sealed in the notebook and held
+              from this page while an intellectual-property review is
+              completed. The map stands at 54 of 96 cells: two thirds of the
+              stretch before particles is measured and sealed; the particle
+              stretch has no sealed station yet.
             </p>
           </div>
           <div>
@@ -919,6 +1013,7 @@ export default function Home() {
             </p>
           </div>
         </div>
+        <EvidenceMap />
       </section>
 
       <section className="repository-section" id="repositories">
