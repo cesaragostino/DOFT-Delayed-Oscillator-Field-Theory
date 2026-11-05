@@ -1643,3 +1643,14 @@ footer {
     width: 11px;
   }
 }
+
+/* ── Research record: repository / papers labels (November 2026) ── */
+
+.record-label {
+  margin: 0 0 10px;
+  color: var(--orange-soft);
+}
+
+.record-label + .repository-list + .record-label {
+  margin-top: 38px;
+}

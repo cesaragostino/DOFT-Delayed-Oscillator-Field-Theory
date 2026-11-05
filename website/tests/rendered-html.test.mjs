@@ -108,6 +108,13 @@ test("publishes the November 2026 evidence review without retired claims", async
   // selector ("n .north-lede") and left the North lede unstyled (5 November 2026)
   const stylesheet = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.doesNotMatch(stylesheet, /\\[nrt]/);
+
+  // papers archived on Zenodo (added 5 November 2026)
+  for (const record of ["17620713", "17784477", "18214459", "17014532"]) {
+    assert.match(html, new RegExp(`href="https://zenodo\\.org/records/${record}"`));
+  }
+  assert.match(html, /Papers · archived on Zenodo/);
+  assert.match(html, /href="#papers"/);
   assert.match(stylesheet, /^\.north-lede \{/m);
 });
 

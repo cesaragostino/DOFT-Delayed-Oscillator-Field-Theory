@@ -369,6 +369,30 @@ const repositories = [
   },
 ];
 
+const papers = [
+  {
+    title: "Prime-space fingerprints of superconductors and superfluid helium",
+    detail: "Study 01 preprint · November 2025 · doi:10.5281/zenodo.17620713",
+    href: "https://zenodo.org/records/17620713",
+  },
+  {
+    title: "Integer participation and structural noise in superconducting clusters",
+    detail: "Study 02 preprint · December 2025 · doi:10.5281/zenodo.17784477",
+    href: "https://zenodo.org/records/17784477",
+  },
+  {
+    title: "Coherence scaling in hierarchical oscillator networks",
+    detail:
+      "Study 05 preprint, v1.1 · January 2026 · doi:10.5281/zenodo.18214459",
+    href: "https://zenodo.org/records/18214459",
+  },
+  {
+    title: "DOFT central repository, archived release",
+    detail: "Software record v0.1.4 · September 2025 · doi:10.5281/zenodo.17014532",
+    href: "https://zenodo.org/records/17014532",
+  },
+];
+
 function Arrow() {
   return <span aria-hidden="true">↗</span>;
 }
@@ -1023,19 +1047,38 @@ export default function Home() {
             <h2>Follow the evidence to its source.</h2>
             <p>
               The central index summarizes the program. Study repositories
-              retain their code, data, logs, and exact historical context.
+              retain their code, data, logs, and exact historical context. The
+              papers of Studies 01, 02 and 05 are archived on Zenodo with DOIs,
+              as is a release of the central repository.
             </p>
           </div>
-          <div className="repository-list">
-            {repositories.map((repository) => (
-              <a href={repository.href} key={repository.name}>
-                <span>
-                  <strong>{repository.name}</strong>
-                  <small>{repository.detail}</small>
-                </span>
-                <Arrow />
-              </a>
-            ))}
+          <div>
+            <p className="mini-label record-label">Repositories</p>
+            <div className="repository-list">
+              {repositories.map((repository) => (
+                <a href={repository.href} key={repository.name}>
+                  <span>
+                    <strong>{repository.name}</strong>
+                    <small>{repository.detail}</small>
+                  </span>
+                  <Arrow />
+                </a>
+              ))}
+            </div>
+            <p className="mini-label record-label" id="papers">
+              Papers · archived on Zenodo
+            </p>
+            <div className="repository-list">
+              {papers.map((paper) => (
+                <a href={paper.href} key={paper.href}>
+                  <span>
+                    <strong>{paper.title}</strong>
+                    <small>{paper.detail}</small>
+                  </span>
+                  <Arrow />
+                </a>
+              ))}
+            </div>
           </div>
 
           <p className="ledger-note" id="repo-access">
@@ -1069,6 +1112,9 @@ export default function Home() {
             </a>
             <a href="https://doi.org/10.5281/zenodo.16965707">
               Citation record
+            </a>
+            <a href="#papers">
+              Papers on Zenodo
             </a>
           </div>
           <div>
