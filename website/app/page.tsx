@@ -47,7 +47,7 @@ const studies = [
     title: "Worldline — the delay-first caldo",
     status: "Active",
     summary:
-      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A population census, sealed out-of-sample predictions, and same-day public corrections. Repository private since August 2026 (see access note).",
+      "The current laboratory removes space as an input: every distance is a delay, and geometry has to be earned by measurement. A sealed library of 373 onions, a measured causal cone, a rigid regime of the medium and the live read loop behind it—with same-day public corrections. Repository private since August 2026 (see access note).",
     href: null,
   },
 ];
@@ -56,33 +56,44 @@ const study07Findings = [
   {
     number: "01",
     label: "Instrument",
-    title: "τ-Lab: a universe with no space.",
+    title: "τ-Lab: a relational map of delays, not a map of space.",
     text: (
       <>
         Every point in the <a href="/lab/caldo3d/">explorer</a> is an
-        oscillator; every distance is a <em>delay</em>. The 3D scene is a
-        projection (MDS over the delay matrix, with fidelity gauges on
-        screen)—there is no space in the model, only timing. The physics does
-        not depend on the picture: the headline correlation survives with the
-        embedding removed, computed directly on the raw delay profiles.
-        Seventeen experimental runs load live, including the complete species
-        run.
+        oscillator; the only relational datum is the <em>delay</em> between
+        each pair. The 3D scene is a projection (MDS over the delay matrix,
+        with fidelity gauges on screen)—there is no space in the model, only
+        timing. An audit of this instrument (20 August 2026) found that the
+        picture is largely a map of nodal impedance: slow is drawn as far. It
+        reads as arrival order from an origin, not as distances, routes or
+        closeness. The physics does not depend on the picture: the headline
+        correlation survives with the embedding removed, computed directly on
+        the raw delay profiles. Seventeen experimental runs load live,
+        including the complete species run.
       </>
     ),
   },
   {
     number: "02",
     label: "Census",
-    title: "84 species, each with a bench card.",
+    title: "84 species became a sealed library of 373.",
     text: (
       <>
-        The full population census (three batches) collapses to{" "}
-        <strong>84 unique genotypes</strong>. Each carries a bench card: its
+        The first census (three batches) collapsed to{" "}
+        <strong>84 unique genotypes</strong>, each with a bench card: its
         stability exponent (σ<sub>max</sub>, the real part of the dominant
-        pole, cross-validated bit-exact against an independent derivation) and
-        its resonant response. 57 are self-oscillators; 27 decay. The bench
-        card is measured in isolation—in the soup, the deviation from the
-        bench <em>is</em> the interaction.
+        pole) and its resonant response; 57 self-oscillate, 27 decay.
+        Deduplicated, that first library holds 128 genotypes. A second
+        generation campaign, run without the temporal-sampling censorship of
+        the first, added 245 new ones; the resulting{" "}
+        <strong>373-onion population</strong> is the sealed base of every
+        campaign since, and each onion now carries its constitutional
+        clock—the leading eigenvalue at rest, bit-exact against the earlier
+        bench cards. Evolved together, the 373 percolate into one giant
+        component (368 of 373); no segregation by origin was detected, with
+        the caveat that only five onions sit outside the giant component. The
+        bench card is measured in isolation—in the soup, the deviation from
+        the bench <em>is</em> the interaction.
       </>
     ),
   },
@@ -109,7 +120,7 @@ const study07Findings = [
   },
   {
     number: "04",
-    label: "Measured",
+    label: "Sealed + extended",
     title: "The delay map is an ordinal atlas, not a chronometer.",
     text: (
       <>
@@ -118,11 +129,16 @@ const study07Findings = [
         <em>order</em> follows the delay map (ρ = 0.91, reproduced by an
         independent method)—but arrival <em>times</em> don’t wait for the
         direct link: the medium is a dense web where signals travel
-        multi-hop, and what makes an arrival detectable is the rise of
-        amplitude, not the delay of the edge. No arrival-speed number
-        survived re-analysis, so none is quoted. Established so far for a
-        single cone, from a single origin; multi-source tomography is the
-        pre-registered next test.
+        multi-hop. No arrival-speed number survived re-analysis, so none is
+        quoted. The pre-registered multi-source test then ran: eight origins
+        from different blocks, 28 shared source pairs where the perspectives
+        could contradict each other. They admit{" "}
+        <strong>one common relational structure</strong> (ordinal
+        consistency 0.9992; the best of 1,000 null draws reached 0.98), and
+        the order is perspectival—it is not dictated by the destination’s
+        impedance. What the atlas is not: a metric. Reciprocity is
+        asymmetric and 11.9% of triangles violate the triangle inequality.
+        Order, yes; clean geometry, no.
       </>
     ),
   },
@@ -207,6 +223,75 @@ const study07Findings = [
         the time mirror (6/6 links). Which epoch is read <em>when</em>{" "}
         carries causal effect beyond the spectral summary. Single-instance so
         far (n&nbsp;=&nbsp;1 seed, declared). <strong>Patent pending.</strong>
+      </>
+    ),
+  },
+  {
+    number: "10",
+    label: "Sealed",
+    title: "What a kick propagates: a linear cone, ordered by delay.",
+    text: (
+      <>
+        One kick at one of five sources in the 373-onion population, first
+        arrivals timed at all 372 targets against a twin that received no
+        kick. The cone measured at the working dose <em>is</em> the linear
+        cone: at a hundredth and a fiftieth of the dose the arrival times
+        agree to within one tick for 98% of targets (ρ = 1 ± 3.5·10
+        <sup>−4</sup>), the non-linearity scales as second order (confirmed
+        with the sign of the kick reversed), and the numerical floor was
+        measured with its own clock rather than assumed. The “bursts” that
+        once looked like responses are events of the population itself—
+        present, tick for tick, in twins that were never kicked. Scope: one
+        population, five sources, one time of kick.
+      </>
+    ),
+  },
+  {
+    number: "11",
+    label: "Sealed",
+    title: "The vacuum is a regime, not an absence.",
+    text: (
+      <>
+        Small networks of identical copies of one genome (6 to 96 onions; a
+        prism versus a bipartite K<sub>3,3</sub>; eight seeds) show what a
+        “vacuum” is in this model. When the delay on a link grows locked to
+        the partner’s ignition, the fast layer collapses by four orders of
+        magnitude and the slow layer ignites into a{" "}
+        <strong>rigid pattern of arbitrary per-edge phase angles</strong>;
+        with the delay fixed, or frozen in flight, it does not happen (4 of
+        4). The odd cycle does not frustrate: prism and K<sub>3,3</sub> do
+        the same in everything measured (16 of 16 collapse). The rigid state
+        appears only if every onion ignites, and who ignites is a collective
+        lottery that hardens with size—from 92% of onions at 6 to 17% at
+        96—while the rigid state’s clock follows a DC prediction from the
+        frozen delays (5 of 5 sizes). Kicked, it recovers from a small push
+        and jumps to another, equally rigid pattern from a large one (16 of
+        16 by jumps, never by sliding back). Scope: one genome; in the mother
+        of 373, the latent onions ignite on their own.
+      </>
+    ),
+  },
+  {
+    number: "12",
+    label: "Sealed",
+    title: "The loop must be live.",
+    text: (
+      <>
+        In that rigid state the retarded field does the work that keeps the
+        slow layer alive: work over stored energy ≈ 10, positive in 117 of
+        117 onions, in networks of 6 and of 96. Clamp the epoch each link
+        reads by decree and the slow layer neither ignites (12 of 12 runs
+        clamped before ignition) nor survives (18 of 18 clamped after it
+        decay at about 0.8 of their own damping rate): sampling the right
+        value of the past is not enough—the reading has to keep moving. A
+        recorded field played back does return and entrain a perturbed
+        receiver; what only the live loop does is collective—it shifts the
+        phase of the whole network together (0.05, 0.57 and 1.0 rad for
+        rising doses). The energy ledger closes to 3·10<sup>−7</sup>: after
+        ignition the read past pays the slow layer’s dissipation almost
+        exactly, while the fast layer charges and discharges as an internal
+        reservoir (97% by its own law). Scope: one genome, six-onion
+        networks, one seed for the ledger.
       </>
     ),
   },
@@ -333,7 +418,7 @@ export default function Home() {
           <span>Current through Study 07</span>
           <span className="status-strip-divider" aria-hidden="true" />
           <span>First patent filing 2026</span>
-          <span className="status-strip-date">Reviewed 21 August 2026</span>
+          <span className="status-strip-date">Reviewed 5 November 2026</span>
         </div>
       </div>
 
@@ -683,7 +768,10 @@ export default function Home() {
               DOFT currently demonstrates nontrivial dynamics in a constructed
               deterministic system. It has not established a new particle
               ontology, reproduced the Standard Model, or received
-              experimental confirmation in matter.
+              experimental confirmation in matter. The rigid states found so
+              far are regimes of the medium, not objects: the first probe for
+              something that travels across the network (complete graphs, one
+              genome) found nothing that moves, and the notebook says so.
             </p>
             <p>
               The near-term standard is therefore sharper and more useful:
@@ -779,8 +867,13 @@ export default function Home() {
               within-run sigma counts were rejected as independent evidence.
               In Study 07, a “×2 cohort amplification” and “ignition never
               happens alone” were both retracted within a day—one by an
-              adversarial re-analysis, one by a full-life census. Retractions
-              keep the section numbers of the claims they replace.
+              adversarial re-analysis, one by a full-life census. Later in
+              2026 the τ-Lab picture was re-read as impedance rather than
+              space, a launch error that cost fourteen hours of computation
+              was declared before its result was opened, and three bugs in a
+              reading script were caught on re-reading the raw comparisons
+              before anything was adjudicated. Retractions keep the section
+              numbers of the claims they replace.
             </p>
           </div>
         </div>
@@ -794,21 +887,26 @@ export default function Home() {
         <div className="north-columns">
           <div>
             <span>Now</span>
-            <h3>Map the delay-first universe</h3>
+            <h3>Close the base before growing it</h3>
             <p>
-              Study 07: a census-complete population with bench cards, sealed
-              out-of-sample predictions, multi-source tomography of the delay
-              geometry, and a composition law for an active, dispersive
-              medium—with clone cohorts as timing controls.
+              Study 07, November 2026: the 373-onion population is being read
+              with the instruments built on small networks—the rigid regime,
+              the read loop and its energy ledger—before any larger population
+              is grown. An evidence map of 16 stations and 7 criteria stands at
+              54 of 96 cells: two thirds of the stretch before particles is
+              measured and sealed; the particle stretch has no sealed station
+              yet.
             </p>
           </div>
           <div>
             <span>Next</span>
-            <h3>Test transportability</h3>
+            <h3>Ask what travels</h3>
             <p>
-              Ask which precursors, clocks, and causal link signatures survive
-              new draws, asymmetric pairs, larger networks, and alternate
-              failure modes.
+              The particle checklist, in order: mobility (does an organization
+              change carriers while keeping its identity?), internal identity,
+              a dispersion relation read on the linear cone, and
+              collisions—on sparse topologies with distance, with the
+              library’s genomes, and with populations of thousands.
             </p>
           </div>
           <div>
@@ -887,7 +985,7 @@ export default function Home() {
               Active study (07)
             </a>
             <a href="/lab/caldo3d/">
-              τ-Lab explorer
+              τ-Lab relational map
             </a>
             <a href="https://github.com/cesaragostino/DOFT-Delayed-Oscillator-Field-Theory/blob/main/LICENSE">
               MIT License
@@ -897,7 +995,7 @@ export default function Home() {
             <p>
               Research status: active
               <br />
-              Last evidence review: 16 August 2026
+              Last evidence review: 5 November 2026
             </p>
             <p>
               <span>Contact</span>

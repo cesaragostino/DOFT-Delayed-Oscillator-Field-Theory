@@ -36,7 +36,9 @@ test("server-renders the DOFT research overview", async () => {
   assert.match(html, /The link is not neutral/);
   assert.match(html, /Progress includes the results that did not survive/);
   assert.match(html, /The method is part of the result/);
-  assert.match(html, /doft-study06-fundamental-lock-dynamics/);
+  assert.match(html, /id="repo-access"/);
+  assert.match(html, /Reviewed 5 November 2026/);
+  assert.match(html, /Last evidence review: 5 November 2026/);
   assert.match(html, /doft-social-card\.jpg/);
   assert.match(html, /DOFT conceptual field/);
   assert.match(html, /href="\/dynamics"/);
@@ -64,6 +66,29 @@ test("server-renders the Study 06 dynamics page", async () => {
   assert.match(html, /5e2889b/);
   assert.match(html, /mailto:cesar\.agostino@gmail\.com/);
   assert.match(html, /AI collaborators/);
+});
+
+test("publishes the November 2026 evidence review without retired claims", async () => {
+  const response = await render();
+  const html = await response.text();
+  assert.match(html, /relational map of delays, not a map of space/);
+  assert.match(html, /became a sealed library of 373/);
+  assert.match(html, /one common relational structure/);
+  assert.match(html, /What a kick propagates: a linear cone, ordered by delay\./);
+  assert.match(html, /The vacuum is a regime, not an absence\./);
+  assert.match(html, /The loop must be live\./);
+  assert.match(html, /found nothing that moves/);
+  assert.match(html, /54 of 96 cells/);
+  assert.doesNotMatch(html, /a universe with no space\./);
+  assert.doesNotMatch(html, /multi-source tomography is the\s+pre-registered next test/);
+  assert.doesNotMatch(html, /href="\/lab\/emergent\/"/);
+
+  const { readFile } = await import("node:fs/promises");
+  const tauLab = await readFile(new URL("../public/lab/caldo3d/index.html", import.meta.url), "utf8");
+  assert.doesNotMatch(tauLab, /el espacio emergió|space <b>emerged<\/b>/);
+  assert.match(tauLab, /It is not a map of space/);
+  assert.match(tauLab, /No es un mapa espacial/);
+  assert.doesNotMatch(tauLab, /lab\/emergent/);
 });
 
 test("ships the project social preview and no disposable starter assets", async () => {
