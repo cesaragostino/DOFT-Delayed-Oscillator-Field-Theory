@@ -1467,6 +1467,36 @@ footer {
   background: transparent;
 }
 
+/* Rivals table (November 2026): same cell, four more states */
+
+.map-cell.excluded {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.map-cell.partial {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+}
+
+.map-cell.wins {
+  border-color: var(--orange-dark);
+  background: var(--orange);
+}
+
+.map-cell.testing {
+  border-color: var(--line-dark);
+  background: repeating-linear-gradient(
+    135deg,
+    var(--line-dark) 0 2px,
+    var(--paper-light) 2px 4px
+  );
+}
+
+.north-map + .north-map {
+  margin-top: 28px;
+}
+
 .map-grid {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto 168px;

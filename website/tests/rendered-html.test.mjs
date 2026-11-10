@@ -37,8 +37,8 @@ test("server-renders the DOFT research overview", async () => {
   assert.match(html, /Progress includes the results that did not survive/);
   assert.match(html, /The method is part of the result/);
   assert.match(html, /id="repo-access"/);
-  assert.match(html, /Reviewed 5 November 2026/);
-  assert.match(html, /Last evidence review: 5 November 2026/);
+  assert.match(html, /Reviewed 10 November 2026/);
+  assert.match(html, /Last evidence review: 10 November 2026/);
   assert.match(html, /doft-social-card\.jpg/);
   assert.match(html, /DOFT conceptual field/);
   assert.match(html, /href="\/dynamics"/);
@@ -85,14 +85,27 @@ test("publishes the November 2026 evidence review without retired claims", async
   assert.doesNotMatch(html, /The loop must be live/);
   assert.doesNotMatch(html, /LAZO|τ̇|clamp the epoch/i);
   // evidence map rendered from the exported notebook record
-  assert.match(html, /Evidence map · reviewed (<!-- -->)?5 November 2026/);
+  assert.match(html, /Evidence map · reviewed (<!-- -->)?10 November 2026/);
   assert.match(html, /Sixteen stations on the road, scored on seven criteria\./);
   assert.match(html, /href="#north"/);
   assert.match(html, /Before particles/);
   assert.match(html, /Mobility: an organization that travels across the network/);
   assert.equal((html.match(/class="map-row"/g) ?? []).length, 16);
   assert.equal((html.match(/class="map-cell yes"/g) ?? []).length, 54 + 1);
-  assert.equal((html.match(/class="map-cell na"/g) ?? []).length, 16 + 1);
+  // the rivals table shares the "not applicable" cell: 42 cells + its own legend entry
+  assert.equal((html.match(/class="map-cell na"/g) ?? []).length, 16 + 1 + 42 + 1);
+  // rivals table (the negative ledger), rendered from the exported notebook record (10 November 2026)
+  assert.match(html, /Rivals table · reviewed (<!-- -->)?10 November 2026/);
+  assert.match(html, /The same sixteen stations, against seven cheaper explanations\./);
+  assert.match(html, /Neither is read without the other\./);
+  assert.match(html, /they are not added into one score\./);
+  assert.equal((html.match(/class="map-row rivals-row"/g) ?? []).length, 16);
+  assert.equal((html.match(/class="map-cell wins"/g) ?? []).length, 5 + 1);
+  assert.equal((html.match(/class="map-cell partial"/g) ?? []).length, 16 + 1);
+  assert.equal((html.match(/class="map-cell excluded"/g) ?? []).length, 6 + 1);
+  assert.equal((html.match(/class="map-cell testing"/g) ?? []).length, 1 + 1);
+  // the notebook's section numbers and notes do not travel to the page
+  assert.doesNotMatch(html, /§\s?2[0-9]{2}/);
   assert.doesNotMatch(html, /a universe with no space\./);
   assert.doesNotMatch(html, /multi-source tomography is the\s+pre-registered next test/);
   assert.doesNotMatch(html, /href="\/lab\/emergent\/"/);

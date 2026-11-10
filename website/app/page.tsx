@@ -8,6 +8,14 @@ import {
   evidenceMapGroups,
   evidenceMapTotals,
 } from "@/lib/evidence-map";
+import {
+  rivals,
+  rivalsMap,
+  rivalsMapDate,
+  rivalsTotals,
+  type Direction,
+  type RivalState,
+} from "@/lib/rivals-map";
 import { assetPath } from "@/lib/site";
 
 const studies = [
@@ -512,6 +520,174 @@ function EvidenceMap() {
   );
 }
 
+function RivalsMap() {
+  const stateLabel: Record<RivalState, string> = {
+    open: "not attacked yet",
+    testing: "under test",
+    excluded: "rival excluded by measurement",
+    partial: "rival explains part",
+    wins: "rival wins",
+    na: "not applicable",
+  };
+  const directionLabel: Record<Direction, string> = {
+    toward: "toward",
+    away: "away",
+    mixed: "both ways",
+    open: "not adjudicated",
+    unmeasured: "not measured",
+  };
+  const directionTone: Record<Direction, string> = {
+    toward: "confirmed",
+    away: "negative",
+    mixed: "mixed",
+    open: "recorded",
+    unmeasured: "none",
+  };
+  return (
+    <figure className="north-map" aria-labelledby="rivals-map-caption">
+      <div className="map-heading">
+        <div>
+          <p className="mini-label">Rivals table · reviewed {rivalsMapDate}</p>
+          <h3>The same sixteen stations, against seven cheaper explanations.</h3>
+        </div>
+        <div className="map-legend" aria-label="Legend">
+          <span>
+            <i className="map-cell excluded" /> rival excluded by measurement
+          </span>
+          <span>
+            <i className="map-cell partial" /> rival explains part
+          </span>
+          <span>
+            <i className="map-cell wins" /> rival wins
+          </span>
+          <span>
+            <i className="map-cell testing" /> under test
+          </span>
+          <span>
+            <i className="map-cell" /> not attacked yet
+          </span>
+          <span>
+            <i className="map-cell na" /> not applicable
+          </span>
+        </div>
+      </div>
+      <div
+        className="map-grid"
+        role="table"
+        aria-label="DOFT rivals table: sixteen stations against seven cheaper explanations"
+      >
+        <div className="map-head" role="row">
+          <span role="columnheader" aria-label="Station id" />
+          <span role="columnheader">Station</span>
+          <span className="map-head-cells" role="columnheader">
+            {rivals.map((rival) => (
+              <abbr key={rival.key} title={`${rival.label}. ${rival.question}`}>
+                {rival.short}
+              </abbr>
+            ))}
+          </span>
+          <span role="columnheader">Points</span>
+        </div>
+        {evidenceMapGroups.map((group) => {
+          const stations = rivalsMap.filter(
+            (station) => station.group === group.key,
+          );
+          const cells = stations.flatMap((station) =>
+            Object.values(station.cells),
+          );
+          const applicable = cells.filter((value) => value !== "na").length;
+          const attacked = cells.filter(
+            (value) =>
+              value === "excluded" || value === "partial" || value === "wins",
+          ).length;
+          return (
+            <Fragment key={group.key}>
+              <div className="map-group" role="row">
+                <span role="cell">{group.label}</span>
+                <span role="cell">
+                  {applicable === 0
+                    ? "no observable to attack yet"
+                    : `${attacked} of ${applicable} rival cells attacked`}
+                </span>
+              </div>
+              {stations.map((station) => (
+                <div className="map-row rivals-row" role="row" key={station.id}>
+                  <span className="map-id" role="cell">
+                    {station.id}
+                  </span>
+                  <span className="map-name" role="cell">
+                    {station.name}
+                  </span>
+                  <span className="map-cells" role="cell">
+                    {rivals.map((rival) => {
+                      const value = station.cells[rival.key];
+                      return (
+                        <i
+                          key={rival.key}
+                          className={`map-cell${value === "open" ? "" : ` ${value}`}`}
+                          title={`${rival.label}: ${stateLabel[value]}`}
+                        />
+                      );
+                    })}
+                  </span>
+                  <span
+                    className={`map-result tone-${directionTone[station.direction]}`}
+                    role="cell"
+                  >
+                    {directionLabel[station.direction]}
+                  </span>
+                </div>
+              ))}
+            </Fragment>
+          );
+        })}
+      </div>
+      <div className="map-totals">
+        <div>
+          <strong>
+            {rivalsTotals.attacked} / {rivalsTotals.applicable}
+          </strong>
+          <span>rival cells attacked by a measurement</span>
+        </div>
+        <div>
+          <strong>{rivalsTotals.wins}</strong>
+          <span>where the rival wins</span>
+        </div>
+        <div>
+          <strong>{rivalsTotals.partial}</strong>
+          <span>where it explains part</span>
+        </div>
+        <div>
+          <strong>{rivalsTotals.excluded}</strong>
+          <span>where it is excluded</span>
+        </div>
+        <div>
+          <strong>{rivalsTotals.open}</strong>
+          <span>not attacked yet</span>
+        </div>
+      </div>
+      <figcaption id="rivals-map-caption">
+        The evidence map says how firmly each station has been measured, not
+        which way its result points: a well-measured negative fills cells
+        exactly as a positive does. This table is its counterpart. For the
+        same stations it lists seven cheaper explanations that would make the
+        physical reading unnecessary, and what the measurements say about
+        each: ins, the instrument (is it the detector?); knb, our own knob
+        (did we put it there?); con, constitution (is it the signature of the
+        component, the onion’s genome, rather than something collective?);
+        end, endpoints (do the properties of each node alone explain it?);
+        net, a conventional network (would fixed delays and relays do?); reg,
+        regime (does it hold only at this size, coupling and age of the
+        run?); acc, accounting (is it sustained by something not counted?).
+        An empty cell is ignorance, not support. The rivals were fixed before
+        the table was filled, they apply to bad news as well as to good, and
+        a cell changes only by measurement. The two tables are read together,
+        station by station; they are not added into one score.
+      </figcaption>
+    </figure>
+  );
+}
+
 export default function Home() {
   return (
     <main>
@@ -522,7 +698,7 @@ export default function Home() {
           <span>Current through Study 07</span>
           <span className="status-strip-divider" aria-hidden="true" />
           <span>First patent filing 2026</span>
-          <span className="status-strip-date">Reviewed 5 November 2026</span>
+          <span className="status-strip-date">Reviewed 10 November 2026</span>
         </div>
       </div>
 
@@ -997,8 +1173,10 @@ export default function Home() {
             onions makes of itself, and only then ask whether anything in it
             behaves like a particle: something that travels, keeps an
             identity, carries a mass-like dispersion and collides. Mapping any
-            of it to known physics comes last. The map below is the
-            program’s own scorecard, updated only by measurement.
+            of it to known physics comes last. The two tables below are the
+            program’s own ledger, updated only by measurement: one counts what
+            has been established, the other which cheaper explanation still
+            stands. Neither is read without the other.
           </p>
         </div>
         <div className="north-columns">
@@ -1038,6 +1216,7 @@ export default function Home() {
           </div>
         </div>
         <EvidenceMap />
+        <RivalsMap />
       </section>
 
       <section className="repository-section" id="repositories">
@@ -1136,7 +1315,7 @@ export default function Home() {
             <p>
               Research status: active
               <br />
-              Last evidence review: 5 November 2026
+              Last evidence review: 10 November 2026
             </p>
             <p>
               <span>Contact</span>
